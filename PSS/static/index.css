@@ -1,0 +1,34 @@
+#can {
+    opacity: 0;
+}
+#projection {
+    opacity: 0;
+}
+
+ul {
+    height: 200px;
+    margin:0;
+    padding: 0;
+}
+
+.mx-2{
+    background: url('trans_bg.png');
+    border:0px solid;
+    
+}
+
+.container-fluid{
+    display:flex;
+
+}
+.item{
+    width:170px;
+}
+
+.item:nth-child(2){
+    flex:1;
+}
+.item:last-child{
+    width:200px;
+    margin-left:auto;
+}

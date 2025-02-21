@@ -1,0 +1,169 @@
+{% extends "base.html" %} {% block content %}
+<div class="col-sm-8 offset-sm-2 p-3 border border-dark border-3 rounded-5" style="background-color: rgb(255, 239, 202)">
+  <div class="row">
+    <div class="col">
+      <h1 class="fw-bold m-3">Sharing Sketch</h1>
+    </div>
+    <div class="col-sm-3">
+      <h1
+        class="fw-bold m-3 text-center border border-dark border-3"
+        style="
+          background-color: rgb(255, 199, 199);
+          border-top-right-radius: 15px;
+        "
+        onclick="window.location.href='/gallery';"
+      >
+        Sketch Gallery
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="35"
+          height="35"
+          fill="currentColor"
+          class="bi bi-images"
+          viewBox="0 0 16 16"
+        >
+          <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+          <path
+            d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z"
+          />
+        </svg>
+      </h1>
+    </div>
+  </div>
+  <h3 class="mx-3" style="width: 80px;height: 80px;">
+    <button
+      type="button"
+      class="btn btn-outline-primary"
+      style="cursor: default"
+      id="user-btn"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="32"
+        height="32"
+        fill="currentColor"
+        class="bi bi-person-circle"
+        viewBox="0 0 16 16"
+      >
+        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"></path>
+        <path
+          fill-rule="evenodd"
+          d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
+        ></path>
+      </svg>
+      <span id="user-btn-text">{{username}}</span>
+    </button>
+  </h3>
+  
+  <div
+    class="border border-warning rounded-3 m-3"
+    style="background-color: rgb(255, 246, 226)"
+  >
+  <form class="px-3" action="" method="post" onSubmit="exportimage(event)">
+    <h3>Sketch Information</h3>
+    <div class="form-group row">
+      <label for="title" class="col-sm-2 col-form-label">Image title:</label>
+      <div class="col-sm-10">
+        <input
+          class="form-control"
+          id="title"
+          name="title"
+          placeholder="Title"
+          required
+        />
+      </div>
+      <label for="description" class="col-sm-2 col-form-label"
+        >Description:</label
+      >
+      <div class="col-sm-10">
+        <input
+          class="form-control"
+          id="description"
+          name="description"
+          placeholder="Description"
+          required
+        />
+      </div>
+    </div>
+    <div class="row">
+      <div class="justify-content-center my-3" style="display: flex">
+        <button class="btn btn-primary">Export</button>
+      </div>
+    </div>
+    <h3>Export Image</h3>
+    <img
+      class="border border-dark border-1 rounded-1"
+      id="localimage"
+      width="200"
+      style="background-color: white;"
+    />
+  </form>
+  </div>
+</div>
+
+<script>
+  window.onload = showlocalimage;
+  const username = "{{ username }}";
+  const button = document.getElementById("user-btn");
+  const buttontext = document.getElementById("user-btn-text");
+  function showlocalimage() {
+    const dataURL = localStorage.getItem("savedImage");
+    const img = document.getElementById("localimage");
+    img.src = dataURL;
+  }
+  const exportimage = async (event) => {
+    event.preventDefault();
+
+    const dataURL = localStorage.getItem("savedImage");
+    console.log(dataURL);
+    const blob = await fetch(dataURL).then((res) => res.blob());
+    console.log(blob);
+    if (blob) {
+      const formData = new FormData();
+      formData.append("image", blob, "image.png");
+      formData.append("creator", username);
+      formData.append("title", document.getElementById("title").value);
+      formData.append(
+        "description",
+        document.getElementById("description").value
+      );
+
+      localStorage.removeItem("savedImage");
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("File upload failed");
+        }
+
+        const result = await response.json();
+        console.log("File uploaded successfully:", result);
+        onUploadSuccess();
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+      window.location.href = "/gallery";
+    }
+  };
+
+  button.addEventListener("mouseover", () => {
+    button.className = "btn btn-outline-dark";
+    buttontext.textContent = "Logout";
+  });
+
+  button.addEventListener("mouseout", () => {
+    button.className = "btn btn-outline-primary";
+    buttontext.textContent = "{{username}}";
+  });
+  button.addEventListener("click", () => {
+    const form = document.createElement('form');
+    form.method = 'GET';
+    form.action = '/logout';
+    document.body.appendChild(form);
+    form.submit();
+  });
+</script>
+{% endblock %}

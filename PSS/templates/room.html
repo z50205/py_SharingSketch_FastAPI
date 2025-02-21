@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sharing Sketch</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="static/index.css"
+    />
+  </head>
+
+  <body onload="init()" style="background-color: rgb(179, 179, 179)">
+    <div class="container-fluid">
+      <div class="item">
+        <div
+          class="col rounded-3 border border-info"
+          style="
+            background: rgb(237, 255, 254);
+            position: relative;
+            z-index: 100;
+          "
+        >
+          <h4 data-bs-toggle="collapse" data-bs-target="#paintCollapse" aria-expanded="false" aria-controls="paintCollapse">
+            Painting Tool
+          </h4>
+          <div class="row collapse"  id="paintCollapse">
+
+            <div class="fw-bold">Color</div>
+            <div>
+              <input
+                type="color"
+                id="favcolor"
+                value="#ff0000"
+                style="width: 100%"
+              />
+            </div>
+            <div>
+              <div
+                class="p-1 mb-1 rounded-3 text-white"
+                style="background: green"
+                id="green"
+                onclick="color(this)"
+              >
+                green
+              </div>
+            </div>
+            <div>
+              <div
+                class="p-1 mb-1 rounded-3 text-white"
+                style="background: blue"
+                id="blue"
+                onclick="color(this)"
+              >
+                blue
+              </div>
+            </div>
+            <div>
+              <div
+                class="p-1 mb-1 rounded-3 text-white"
+                style="background: red"
+                id="red"
+                onclick="color(this)"
+              >
+                red
+              </div>
+            </div>
+            <div>
+              <div
+                class="p-1 mb-1 rounded-3 text-black"
+                style="background: yellow"
+                id="yellow"
+                onclick="color(this)"
+              >
+                yellow
+              </div>
+            </div>
+            <div>
+              <div
+                class="p-1 mb-1 rounded-3 text-white"
+                style="background: orange"
+                id="orange"
+                onclick="color(this)"
+              >
+                orange
+              </div>
+            </div>
+            <div>
+              <div
+                class="p-1 mb-1 rounded-3 text-white"
+                style="background: black"
+                id="black"
+                onclick="color(this)"
+              >
+                black
+              </div>
+            </div>
+            <div class="fw-bold">Eraser</div>
+            <div>
+              <input
+                type="checkbox"
+                class="btn-check"
+                id="erase"
+                autocomplete="off"
+                onclick="color(this)"
+              />
+              <label
+                class="btn btn-outline-secondary"
+                for="erase"
+                style="width: 100%"
+                >Eraser</label
+              ><br />
+            </div>
+            <div class="col" style="position: relative; z-index: 100">
+              <label for="customRange1" class="form-label">Line width</label>
+              <input type="range" class="form-range" id="width_range" />
+            </div>
+          </div>
+        </div>
+        <div
+          class="col rounded-3 align-middle border border-danger"
+          style="
+            background: rgb(255, 240, 237);
+            position: relative;
+            z-index: 100;
+          "
+        >
+        <h4 data-bs-toggle="collapse" data-bs-target="#canvasCollapse" aria-expanded="false" aria-controls="canvasCollapse">
+          Canvas Tool
+        </h4>
+        <div class="collapse" id="canvasCollapse">
+          <div id="revise_hide">
+            <div class="col" style="position: relative; z-index: 100">
+              <label for="customRange1" class="form-label">Canvas Scale</label>
+              <input type="range" class="form-range" id="zoom_range" min="0.1" max="3" step="0.001" value="1"/>
+            </div>
+            <button
+            type="button"
+            class="btn btn-outline-primary"
+            id="save_image"
+            onclick="backLastStep()"
+            style="width: 100%"
+          >
+            undo
+          </button>
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              id="clr"
+              onclick="erase_all()"
+              style="width: 100%"
+            >
+              clear</button
+            ><br />
+            <input
+              type="checkbox"
+              class="btn-check"
+              id="mirror_pivot"
+              autocomplete="off"
+              onclick="mirror()"
+            />
+            <label
+              class="btn btn-outline-info"
+              for="mirror_pivot"
+              style="width: 100%"
+              >mirror</label
+            ><br />
+          </div>
+          <div class="col" id="revise_range_div"  style="position: relative; z-index: 100;display:none">
+            <label for="customRange1" class="form-label">Revise Scale</label>
+            <input type="range" class="form-range" id="revise_range" min="0.5" max="3" step="0.001" value="1"/>
+          </div>
+          <button
+            class="btn btn-outline-primary"
+            id="revise_button"
+            onclick="revise_start()"
+            style="width: 100%"
+          >
+            revise
+          </button>
+        </div>
+        </div>
+        <div
+        class="col rounded-3 align-middle border border-warning"
+        style="
+          background: rgb(255, 252, 216);
+          position: relative;
+          z-index: 100;
+        "
+      >
+      <h4 data-bs-toggle="collapse" data-bs-target="#fileCollapse" aria-expanded="false" aria-controls="fileCollapse">
+        File Tool
+      </h4>
+      <div class="collapse" id="fileCollapse">
+          <div style="display: flex">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              id="save_image"
+              onclick="saveimage()"
+              style="width: 50%"
+            >
+              save png
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              id="save_image"
+              onclick="exportimage()"
+              style="width: 50%"
+            >
+              export gallery
+            </button>
+          </div>
+          <label
+            for="load_image"
+            class="btn btn-outline-success"
+            style="width: 100%"
+            >load</label
+          ><br />
+          <input id="load_image" style="display: none" type="file" />
+      </div>
+      </div>
+        <div
+          class="col rounded-3 align-middle border border-success"
+          style="
+            background: rgb(240, 255, 237);
+            position: relative;
+            z-index: 100;
+          "
+        >
+          <h4 data-bs-toggle="collapse" data-bs-target="#layerCollapse" aria-expanded="false" aria-controls="layerCollapse">
+            Layer
+          </h4>
+          <div class="collapse" id="layerCollapse">
+          <div class="btn-group" style="width: 100%">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="add_minelayer()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-plus-square"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
+                ></path>
+                <path
+                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+                ></path>
+              </svg>
+              <span class="visually-hidden">Button</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="delete_minelayer()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-dash-square"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
+                />
+                <path
+                  d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"
+                />
+              </svg>
+              <span class="visually-hidden">Button</span>
+            </button>
+          </div>
+          <div class="btn-group" style="width: 100%">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="change_minelayer_order(1)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-caret-up-square"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"
+                />
+                <path
+                  d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"
+                />
+              </svg>
+              <span class="visually-hidden">Button</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="change_minelayer_order(-1)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-caret-down-square"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M3.626 6.832A.5.5 0 0 1 4 6h8a.5.5 0 0 1 .374.832l-4 4.5a.5.5 0 0 1-.748 0z"
+                />
+                <path
+                  d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"
+                />
+              </svg>
+              <span class="visually-hidden">Button</span>
+            </button>
+          </div>
+          <div style="position: relative; z-index: 100">
+            <label for="customRange1" class="form-label">Opacity</label>
+            <input type="range" class="form-range" id="opacity_range" min="0" max="1" step ="0.01"/>
+          </div>
+          <ul id="layer_thumbnail" class="overflow-auto">
+            <li
+              id="thumbnail_1"
+              style="background-color: rgb(95, 103, 255)"
+              onclick="change_minelayer_active(this)"
+            ><button type="button" class="btn" id="visibility_1" style="background-color: white" onclick="change_minelayer_visibility(this)">
+                <img src="static/eye.svg">
+                <span class="visually-hidden">Button</span></button
+              ><img class="mx-2" width="75" height="75" />
+            </li>
+          </ul>
+        </div>
+        </div>
+        <div
+          class="col"
+          style="
+            background: rgb(232, 232, 232);
+            position: relative;
+            z-index: 100;
+          "
+        >
+          <h4>Shortcut</h4>
+          <p>
+            Mirror:Q<br />
+            Pan:Space+Mouse(Pointer) Move<br />
+            Undo:Ctrl+Z<br />
+            Eraser:E<br />
+            Zoom:Mouse Wheel<br />
+            Pen:P<br />
+          </p>
+        </div>
+      </div>
+      <div class="item" id="painting-area">
+        <canvas
+          id="middle"
+          style="
+            position: absolute;
+            border: 0px solid;
+            touch-action: none;
+            z-index: 80;
+          "
+        ></canvas>
+        <canvas
+          id="can"
+          style="
+            position: absolute;
+            border: 0px solid;
+            touch-action: none;
+            z-index: 70;
+          "
+        ></canvas>
+        <canvas
+          id="minelayer1"
+          class="minelayer"
+          style="
+            position: absolute;
+            border: 0px solid;
+            touch-action: none;
+            z-index: 10;
+            opacity:1;
+            visibility: visible;
+          "
+        ></canvas>
+        <canvas
+          id="projection"
+          style="
+            position: absolute;
+            border: 0px solid;
+            touch-action: none;
+            z-index: 2;
+          "
+        ></canvas>
+        <div
+          id="bg"
+          style="
+            position: absolute;
+            width: 2000px;
+            height: 2000px;
+            border: 0px solid;
+            border-style: dashed;
+            border-color: rgb(255, 255, 255);
+            background-color: rgb(255, 255, 255);
+            touch-action: none;
+            z-index: 0;
+          "
+        ></div>
+      </div>
+      <div
+        class="item"
+        style="
+          position: relative;
+          z-index: 100;
+          background-color: rgb(255, 229, 211);
+        "
+      >
+        <!-- col-sm-1 -->
+        <h1>Sharing Sketch</h1>
+        <div id="room-info"></div>
+        <div id="landing">
+          <div class="form-group row">
+            <div class="col-sm-12">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                id="join-btn"
+                style="width: 100%"
+                onclick="reconnect()"
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+          <!-- <div class="form-group row">
+                    <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                    </div>
+                </div> -->
+        </div>
+        <div
+          class="rounded-3 border border-dark p-3"
+          id="chat"
+          style="display: none"
+        >
+          <ul id="chat-messages" class="overflow-auto"></ul>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              id="message"
+              placeholder="Enter a Message"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="button-addon2"
+              onclick="sendMessage()"
+            >
+              Send
+            </button>
+          </div>
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="bye_button"
+            autocomplete="off"
+            onclick="bye()"
+          />
+          <label
+            class="btn btn-outline-warning"
+            style="width: 100%"
+            for="bye_button"
+            >Disconnect</label
+          ><br />
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="leave_room_button"
+            autocomplete="off"
+            onclick="reroomlist()"
+          />
+          <label
+            class="btn btn-outline-danger"
+            style="width: 100%"
+            for="leave_room_button"
+            >Return Roomlist</label
+          ><br />
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="gallery_button"
+            autocomplete="off"
+            onclick="gogallery()"
+          />
+          <label
+            class="btn btn-outline-info"
+            style="width: 100%"
+            for="gallery_button"
+            >Gallery</label
+          ><br />
+        </div>
+        <div
+          class="rounded-3 border border-dark p-3 mt-5"
+          id="members"
+          style="display: none"
+        >
+          <ul id="members-list"  class="overflow-auto"></ul>
+        </div>
+      </div>
+    </div>
+    <!-- Socketio Code -->
+    <script>
+      const username = "{{ username }}";
+      const room = "{{ roomname }}";
+    </script>
+    <script src="static/ws_client.js"></script>
+    <!-- Client Render Code -->
+    <script
+      type="text/javascript"
+      src="static/draw.js"
+    ></script>
+    <script src="static/mod_function.js"></script>
+    <script src="static/layer_function.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+
+    </body>
+</html>

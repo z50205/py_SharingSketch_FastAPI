@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block content %}
+<div class="col-sm-8 offset-sm-2 p-3 border border-dark border-3 rounded-5">
+  <form class="px-3" action="" method="post">
+    <h3>Import to SharingSketch</h3>
+    <div class="form-group row">
+      <label for="roomname" class="col-sm-2 col-form-label"
+        >SharingSketch Room</label
+      >
+      <div class="col-sm-10">
+        <input
+          class="form-control"
+          id="roomname"
+          name="roomname"
+          placeholder="Roomname"
+        />
+      </div>
+    </div>
+    <h3>Import Image</h3>
+    <img
+      class="border border-dark border-1 rounded-1"
+      id="localimage"
+      width="200"
+    />
+    <div class="row">
+      <div class="justify-content-center my-3" style="display: flex">
+        <button class="btn btn-primary">Import</button>
+      </div>
+    </div>
+  </form>
+</div>
+<script>
+
+  const importimage = async (event) => {
+    event.preventDefault();
+    const img = document.getElementById("localimage");
+    try {
+      const imageResponse = await fetch(`http://localhost/api{{src}}`);
+      if (!imageResponse.ok) throw new Error("Failed to fetch image");
+      const blob = await imageResponse.blob();
+      const imgURL = URL.createObjectURL(blob);
+      img.src = imgURL;
+      localStorage.setItem("importImage", imgURL);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
+  };
+  window.onload = importimage;
+</script>
+{% endblock %}
