@@ -1,112 +1,30 @@
-{% extends "base.html" %} {% block content %}
-<div
-  class="col-sm-8 offset-sm-2 p-3 border border-dark border-3 rounded-5"
-  style="background-color: rgb(255, 239, 202)"
->
-  <div class="row">
-    <div class="col">
-    <h1 class="fw-bold m-3">Sharing Sketch</h1></div>
-    <div class="col-sm-3" >
-    <h1 class="fw-bold m-3 text-center border border-dark border-3" style="background-color: rgb(255, 199, 199);border-top-right-radius: 15px;" onclick="window.location.href='/gallery';">Sketch Gallery
-        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16">
-            <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-            <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z"/>
-          </svg></h1></div>
-  </div>
-  <div
-    class="border border-warning rounded-3 m-3"
-    style="background-color: rgb(255, 246, 226)"
-  >
-    <h2 class="m-3">Login Form</h2>
-    <form class="px-3" action="" method="post">
-      <div class="form-group row">
-        <label for="inputEmail3" class="col-sm-2 col-form-label"
-          >Username</label
-        >
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="inputEmail3" placeholder="Username" name="username"/>
-        </div>
+{% extends "nav.html" %} {% block content %}
+<link rel="stylesheet" type="text/css" href="static/index.css"/>
+<div class="row">
+  <div class="col">
+    <div class="title">Sharing Sketch</div>
+    <div class="sub-title">A Sketch,Chat,Share</div>
+    <div class="sub-title">Integrated application.</div>
+    <div class="content">Providing basic sketch tools, sketch with others in a synchronization canvas.</div>
+    <div style="display:flex">
+      <form class="loginform" style="flex:4 0 0" action="" method="post">
+          <div class="form-group">
+            <input type="text" id="inputEmail3" placeholder="username" name="username" style="width:100%"/>
+          </div>
+          <div class="form-group" style="display: flex;">
+            <input class="col" type="password" id="inputPassword3" placeholder="password" name="password" style="flex:9 0 0"/>
+            <button class="col" style="border-radius:3px;margin: 5px;margin-right: 0px;flex:1 0 0">SignIn</button>
+          </div>
+          <b><p style="color: red;text-align: center;margin: 1px;font-size: 20px;">{{message}}</p></b>
+      </form>
+      <div class="loginform row" style="flex:1 0 0;margin-left: 10px;">
+        <div style="display: grid;justify-content: start;align-items: end;margin-bottom: 10px;padding-left: 0px;"><a href="/register" style="color:rgb(255, 255, 255)"><b>New User?</b></a></div>
       </div>
-      <div class="form-group row">
-        <label for="inputPassword3" class="col-sm-2 col-form-label"
-          >Password</label
-        >
-        <div class="col-sm-10">
-          <input type="password" class="form-control" id="inputPassword3" placeholder="Password" name="password"/>
-        </div>
-      </div>
-      <div class="row">
-        <b><p style="color: red;text-align: center;margin: 1px;font-size: 20px;">{{message}}</p></b>
     </div>
-      <div class="row">
-        <div class="justify-content-center my-1" style="display: flex">
-          <button class="btn btn-primary">SignIn</button>
-        </div>
-        <div class="justify-content-center" style="display: flex"><a href="/register">New User?</a></div>
-      </div>
-    </form>
-    <div class="justify-content-center" style="display: flex">
+  </div>
+  <div class="line-breaker"></div>
+  <div class="col">
 
-    </div>
-  </div>
-  <div
-    class="border border-info rounded-3 m-3"
-    style="background-color: rgb(255, 255, 255)"
-  >
-    <h2 class="m-3">Introduction of Sketch Sharing</h2>
-    <div class="p-3">
-      <p class="fs-6 m-1">
-        <b class="fs-5"
-          >Welcome to the demo of "Sketch Sharing"—a synchronization drawing
-          tool.</b
-        >
-        Utilizing Socket.IO, Flask models, and JavaScript, this website offers
-        the following features:
-      </p>
-      <p class="fs-6 m-1">
-        <b class="fs-5">Real-Time Collaboration</b>: Multiple users in the same
-        room can draw on the canvas simultaneously, with changes instantly
-        visible to everyone.
-      </p>
-      <p class="fs-6 m-1">
-        <b class="fs-5">Basic Drawing Features</b>: Includes commonly used
-        drawing functions such as panning, zooming, layer management, area
-        selection adjustments, and supported pen pressure sensitivity. For a
-        detailed explanation of these features, please refer to the diagram
-        below.
-      </p>
-      <p class="fs-6 m-1">
-        <b class="fs-5">Chat Room</b>: Allows you to communicate and share
-        messages with other members within the same room.
-      </p>
-      <br />
-      <img
-        src="static/SharingSketch_intro2.png"
-        class="img-fluid border border-dark rounded-3"
-        alt="Responsive image"
-      />
-    </div>
-    <h2 class="m-3">How to use</h2>
-    <div class="p-3">
-      <p class="fs-6 m-1"><b class="fs-5">Register or Log In:</b></p>
-      <p class="fs-6 m-1">
-        To start, please register for an account by visiting the registration
-        page. Note that email verification is not required at this time.
-      </p>
-      <p class="fs-6 m-1">
-        Alternatively, you can use the default account credentials:(Username:
-        123/Password: 123)
-      </p>
-      <p class="fs-6 m-1"><b class="fs-5">Access the Main Page:</b></p>
-      <p class="fs-6 m-1">
-        Enter your account and join a room on the main page.
-      </p>
-      <img
-        src="static/SharingSketch_intro2.png"
-        class="img-fluid border border-dark rounded-3"
-        alt="Responsive image"
-      />
-    </div>
   </div>
 </div>
 {% endblock %}

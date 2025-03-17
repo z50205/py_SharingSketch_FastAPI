@@ -25,10 +25,10 @@ class ConnectionManager:
             room_canvassids.append(membersid)
         await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},leave_roomname)
         await ws_manager.event_send_filter(websocket,{"event":"removeLeaveCanvas","sid":sid},leave_roomname)
-        await ws_manager.event_send_filter(websocket,{"event":"removeRoomCanvas","sid":sid})
         if not self.rooms[leave_roomname]:
             del self.rooms[leave_roomname]
         del self.active_connections[sid]
+        await ws_manager.event_send_filter(websocket,{"event":"removeRoomCanvas","sid":sid})
 
 
     async def send_personal_message(self, websocket: WebSocket,data: dict[str:str]):
@@ -82,11 +82,10 @@ class ConnectionManager:
         await ws_manager.event_send_filter(websocket,{"event":"updateImg","imgdata":img,"sid":request_sid,"start_at": start_at},roomname)
     
     async def sendMessage(self, websocket: WebSocket,ws_data:dict[str:str]):
-        start_at=ws_data['start_at']
         request_sid=ws_data['sid']
         roomname=self.active_connections[request_sid][0]
         username=self.active_connections[request_sid][1]
-        await ws_manager.event_send_filter(websocket,{"event":"sendMessage","message":ws_data['message'],"username":username,"sid":request_sid,"start_at": start_at},roomname)
+        await ws_manager.event_send_filter(websocket,{"event":"sendMessage","message":ws_data['message'],"username":username,"sid":request_sid},roomname)
 
     async def event_send_filter(self, websocket,ws_data,to:str=None):
         event=ws_data["event"]

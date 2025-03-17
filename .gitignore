@@ -1,2 +1,6 @@
 .env
 sharingsketch_env
+/docker_local
+/docker_local copy
+alembic.ini
+migrations

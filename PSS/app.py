@@ -9,7 +9,6 @@ import os
 load_dotenv()
 SECRET_KEY=os.environ.get("SECRET_KEY")
 
-
 app=FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(router)

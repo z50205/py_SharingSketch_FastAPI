@@ -1,12 +1,14 @@
 from typing import Annotated
 
 from fastapi import APIRouter,Request,Form,Depends,HTTPException,WebSocket
-from fastapi.responses import HTMLResponse,RedirectResponse,JSONResponse
+from fastapi.responses import HTMLResponse,RedirectResponse,JSONResponse,FileResponse,StreamingResponse
 from starlette.templating import Jinja2Templates
 
 from functools import wraps
 import os
-from models import UserData
+from io import BytesIO
+from models import UserData,ImageData
+
 
 from .wsrouter import ws_manager
 
@@ -25,6 +27,11 @@ def login_required(request:Request):
 async def index(request:Request,message:str=None):
     if message=="unauthorized":
         return template.TemplateResponse(request=request,name="index.html",context={"message":"請先登入"})
+    elif message=="signup":
+        return template.TemplateResponse(request=request,name="index.html",context={"message":"帳號已註冊完成，請登入"})
+    # elif "username" in request.session:
+    #     redirect_url=request.url_for('roomlist') 
+    #     return RedirectResponse(redirect_url,status_code=303)
     else:
         return template.TemplateResponse(request=request,name="index.html")
 
@@ -45,7 +52,8 @@ async def login(request:Request,username:str=Form(),password:str=Form()):
 @router.get("/logout",response_class=HTMLResponse, tags=["logout"])
 async def logout(request:Request):
     del request.session["username"]
-    return RedirectResponse(request.headers.get('referer'),status_code=303)
+    redirect_url=request.url_for('index') 
+    return RedirectResponse(redirect_url,status_code=303)
 
 @router.get("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["roomlist"])
 async def roomlist(request:Request):
@@ -108,8 +116,36 @@ async def register(request:Request,username:str=Form(...),password:str=Form(...)
     u=UserData.query_name(username)
     if u==None:
         u=UserData.create_account(username=username,password=password)
+        redirect_url=request.url_for('index').include_query_params(message="signup") 
+        return RedirectResponse(redirect_url,status_code=302)
     else:
         return template.TemplateResponse(request=request,name="register.html",context={"message":"帳號已使用過"})
+
+@router.post("/api/upload",response_class=HTMLResponse, tags=["uploadimage"])
+async def uploadImage(request:Request,image=Form(...),description:str=Form(...),title:str=Form(...),creator:str=Form(...)):
+    jsonRes=ImageData.create_image(image,description,title,creator)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@router.delete("/api/delete/{id}",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["deleteimage"])
+async def deleteImage(request:Request,id:str,page:int):
+    jsonRes=ImageData.delete_image(id,request.session['username'],page)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@router.get("/api/resources",response_class=HTMLResponse, tags=["resources"])
+async def getImages(request:Request,page:int):
+    jsonRes=ImageData.query_images(page)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@router.get("/image/{filename}",response_class=HTMLResponse, tags=["resources"])
+async def getImages(request:Request,filename:str):
+    file=ImageData.query_image(filename)
+    if file:
+        return StreamingResponse(BytesIO(file), media_type="image/png")
+    else:
+        return JSONResponse(status_code=404,content={
+            'status': 'error',
+            'message': 'Not found'
+            })
 
 def get_roomInfo():
     ws_manager.active_connections

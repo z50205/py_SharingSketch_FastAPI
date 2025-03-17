@@ -5,7 +5,7 @@ let self_sid;
 
 
 const connectWebSocket=()=>{
-    const socket = new WebSocket("http://localhost:8000/ws");
+    const socket = new WebSocket("https://bizara.link/ws");
     socket.onopen=(ev)=>{
         if (socket.readyState!=1){
             reconnect();
@@ -19,10 +19,6 @@ const connectWebSocket=()=>{
             socket.send(JSON.stringify(ws_packet));
             document.getElementById("bye_button").checked = true;
             document.getElementById("bye_button").disabled = false;
-            document.getElementById("leave_room_button").checked = true;
-            document.getElementById("leave_room_button").disabled = false;
-            document.getElementById("gallery_button").checked = true;
-            document.getElementById("gallery_button").disabled = false;
         }
     }
     socket.onmessage=(ev)=>{
@@ -53,6 +49,20 @@ const connectWebSocket=()=>{
         }
 
     }
+    socket.onclose=(ev)=>{
+      let othercanvasessetting = document.getElementsByClassName(
+        "othermembercanvases"
+      );
+      while (othercanvasessetting.length > 0) {
+        othercanvasessetting[0].remove();
+      }
+      document.getElementById("bye_button").checked = false;
+      document.getElementById("bye_button").disabled = true;
+      document.getElementById("chat").style.display = "none";
+      document.getElementById("members").style.display = "none";
+      document.getElementById("landing").style.display = "block";
+      console.log("disconnect()");
+  }
     const ws_join=(data)=>{
         self_sid = data["sid"];
         console.log(self_sid);
@@ -61,7 +71,7 @@ const connectWebSocket=()=>{
         memberlist = data["memberlist"];
         console.log("roomname" + room + "memberlist" + memberlist);
         let ul = document.getElementById("members-list");
-        ul.innerHTML = "";
+        ul.textContent = "";
         for (i = 0; i < memberlist.length; i++) {
           let li = document.createElement("li");
           li.appendChild(
@@ -123,26 +133,26 @@ const connectWebSocket=()=>{
       leave_sid = data["sid"];
       console.log("leave_sid :" + leave_sid);
       console.log("self_sid :" + self_sid);
-      let othercanvasessetting = document.getElementsByClassName(
-        "othermembercanvases"
-      );
-      while (othercanvasessetting.length > 0) {
-        othercanvasessetting[0].remove();
-      }
-      document.getElementById("bye_button").checked = false;
-      document.getElementById("bye_button").disabled = true;
-      document.getElementById("chat").style.display = "none";
-      document.getElementById("members").style.display = "none";
-      document.getElementById("landing").style.display = "block";
-      console.log("disconnect()");
+      socket.close();
     };
     const ws_sendMessage=(data)=>{
 
       let ul = document.getElementById("chat-messages");
       let li = document.createElement("li");
-      li.appendChild(
-        document.createTextNode(data["username"] + ":" + data["message"])
+      li.style.display="flex";
+      let p1=document.createElement("p");
+      let p2=document.createElement("p");
+      p1.appendChild(
+        document.createTextNode(data["username"] + ":")
       );
+      p1.style.marginBottom="0px";
+      p2.appendChild(
+        document.createTextNode(data["message"])
+      );
+      p2.style.overflowWrap="anywhere";
+      p2.style.marginBottom="0px";
+      li.appendChild(p1);
+      li.appendChild(p2);
       ul.appendChild(li);
       ul.scrollTop = ul.scrollHeight;
     };
@@ -151,7 +161,7 @@ const connectWebSocket=()=>{
 }
 
 function bye() {
-  let ws_packet={"event":"leave_room","sid":self_sid,"start_at":start_at}
+  let ws_packet={"event":"leave_room","sid":self_sid}
   socket.send(JSON.stringify(ws_packet));
 }
 
@@ -164,7 +174,7 @@ function reconnect(){
 
 function sendMessage() {
   let message = document.getElementById("message").value;
-  let ws_packet={"event":"send_message","message":message,"sid":self_sid,"start_at":start_at}
+  let ws_packet={"event":"send_message","message":message,"sid":self_sid}
   socket.send(JSON.stringify(ws_packet));
   document.getElementById("message").value = "";
 }

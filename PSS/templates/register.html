@@ -1,70 +1,24 @@
-{% extends "base.html" %} {% block content %}
+{% extends "nav.html" %} {% block content %}
+<link rel="stylesheet" type="text/css" href="static/index.css"/>
+  <div class="col left-intro">
+    <div class="sub-title">Register account</div>
+    <div class="content">Add your account Freely.</div>
+    <div style="display:flex">
+      <form class="loginform" style="flex:4 0 0" action="" method="post">
+          <div class="form-group">
+            <input type="text" id="inputEmail3" placeholder="username" name="username" style="width:100%"/>
+          </div>
+          <div class="form-group" style="display: flex;">
+            <input class="col" type="password" id="inputPassword3" placeholder="password" name="password" style="flex:9 0 0"/>
+            <button class="col" style="border-radius:3px;margin: 5px;margin-right: 0px;flex:1 0 0">Register</button>
+          </div>
+          <b><p style="color: red;text-align: center;margin: 1px;font-size: 20px;">{{message}}</p></b>
+      </form>
+      <div class="loginform row" style="flex:1 0 0;margin-left: 10px;">
+      </div>
+    </div>
+  </div>
+  <div class="col">
 
-<div
-  class="col-sm-8 offset-sm-2 p-3 border border-dark border-3 rounded-5"
-  style="background-color: rgb(255, 239, 202)"
->
-  <div class="row">
-    <div class="col">
-      <h1 class="fw-bold m-3">Sharing Sketch</h1>
-    </div>
-    <div class="col-sm-3">
-      <h1
-        class="fw-bold m-3 text-center border border-dark border-3"
-        style="
-          background-color: rgb(255, 199, 199);
-          border-top-right-radius: 15px;
-        "
-        onclick="window.location.href='/gallery';"
-      >
-        Sketch Gallery
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="35"
-          height="35"
-          fill="currentColor"
-          class="bi bi-images"
-          viewBox="0 0 16 16"
-        >
-          <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-          <path
-            d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z"
-          />
-        </svg>
-      </h1>
-    </div>
   </div>
-  <div
-    class="border border-warning rounded-3 m-3"
-    style="background-color: rgb(255, 246, 226)"
-  >
-    <h2 class="m-3">Register Form</h2>
-    <form class="px-3" action="" method="post">
-      <div class="form-group row">
-        <label for="inputEmail3" class="col-sm-2 col-form-label"
-          >Username</label
-        >
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="inputEmail3" placeholder="Username" name="username"/>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label for="inputPassword3" class="col-sm-2 col-form-label"
-          >Password</label
-        >
-        <div class="col-sm-10">
-          <input type="password" class="form-control" id="inputPassword3" placeholder="Password" name="password"/>
-        </div>
-      </div>
-      <div class="row">
-        <b><p style="color: red;text-align: center;margin: 1px;font-size: 20px;">{{message}}</p></b>
-    </div>
-      <div class="row">
-        <div class="justify-content-center my-1" style="display: flex">
-          <button class="btn btn-primary">Register</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
 {% endblock %}

@@ -53,20 +53,19 @@ function li_template(thumbnailsParentNode, thumbnail_active, minelayer_count_rec
     li = document.createElement("li");
     li.setAttribute("id", "thumbnail_" + minelayer_count_record);
     li.setAttribute("onclick", "change_minelayer_active(this)");
-    button = document.createElement("button");
-    button.setAttribute("class", "btn");
-    button.style.backgroundColor = "white";
-    button.setAttribute("id", "visibility_" + minelayer_count_record);
-    button.setAttribute("onclick", "change_minelayer_visibility(this)");
+    a_ele = document.createElement("a");
+    a_ele.style.margin = "10px";
+    a_ele.setAttribute("id", "visibility_" + minelayer_count_record);
+    a_ele.setAttribute("onclick", "change_minelayer_visibility(this)");
     svg = document.createElement("img");
-    svg.src="/static/eye.svg"
+    svg.src="/static/icons/eye.svg";
     img = document.createElement("img");
     img.setAttribute("class", "mx-2");
     img.width = 75;
     img.height = 75;
     img.style.backgroundColor = "white";
-    button.appendChild(svg);
-    li.appendChild(button);
+    a_ele.appendChild(svg);
+    li.appendChild(a_ele);
     li.appendChild(img);
     thumbnailsParentNode.insertBefore(li, thumbnail_active);
     return li;
@@ -124,10 +123,10 @@ function change_minelayer_visibility(obj) {
     let visset=can_set_vis.style.visibility;
     if (visset=="hidden"){
         can_set_vis.style.visibility="visible";
-        obj.children[0].src="/static/eye.svg"
+        obj.children[0].src="/static/icons/eye.svg"
     }else{
         can_set_vis.style.visibility="hidden";
-        obj.children[0].src="/static/eye-slash.svg"
+        obj.children[0].src="/static/icons/eye-slash.svg"
     }
     updateCanvas()
 }

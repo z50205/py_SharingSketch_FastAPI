@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  nginx:
+    container_name: nginx-fastapi
+    image: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - sketch
+      - backend
+      - frontend
+    volumes:
+      - ../letsencrypt/certbot/conf/:/etc/nginx/ssl/:ro
+      - ./app.conf:/etc/nginx/conf.d/app.conf
+  sketch:
+    ports:
+      - "8000:8000"
+    container_name: fastapi_pss_20250222
+    environment:
+      - PYTHONUNBUFFERED=1
+    image: bizara/fastapi_pss
+    env_file:
+      - .env
+  backend:
+    image: bizara/gallery_back
+    container_name: js_back_20250222
+    ports:
+      - "5000:5000"
+  frontend:
+    image: bizara/gallery_front
+    container_name: js_front_20250222
+    ports:
+      - "3000:3000"

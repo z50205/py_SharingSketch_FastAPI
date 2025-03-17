@@ -35,7 +35,7 @@ line_widths = [2, 10, 0]; //Set tools linewidth 1.pen；2.eraser 3.other(no _use
 line_widths_max = [100, 200, 0]; //Set tools linewidth Maximum 1.pen；2.eraser 3.other(no _use)
 pan_flag = false;
 mirror_flag = false;
-restore_max = 30;
+restore_max = 20;
 var x = "black";
 
 //Init
@@ -59,8 +59,8 @@ function init() {
   background.height = h;
   background.width = w;
   can_mid.style.display = "none";
-  top_key = (window.innerHeight / 2 - h / 2).toString() + "px";
-  left_key = (window.innerWidth / 2 - w / 2).toString() + "px";
+  top_key = (window.visualViewport.height / 2 - h / 2).toString() + "px";
+  left_key = (window.visualViewport.width / 2 - w / 2).toString() + "px";
   canvas.style.top = top_key;
   canvas.style.left = left_key;
   can_mid.style.top = top_key;
@@ -77,6 +77,7 @@ function init() {
   restore = [canvas.getContext("2d").getImageData(0, 0, w, h)]; //Undo record
   restore_active = ["minelayer1"]; //Undo record
   width_range = document.getElementById("width_range");
+  eraser_width_range = document.getElementById("eraser_width_range");
   custom_color = document.getElementById("favcolor");
   zoom_range = document.getElementById("zoom_range");
   revise_range = document.getElementById("revise_range");
@@ -94,8 +95,8 @@ function init() {
   });
 
   window.addEventListener("resize", function () {
-    top_key = (window.innerHeight / 2 - h / 2).toString() + "px";
-    left_key = (window.innerWidth / 2 - w / 2).toString() + "px";
+    top_key = (window.visualViewport.height / 2 - h / 2).toString() + "px";
+    left_key = (window.visualViewport.width/ 2 - w / 2).toString() + "px";
     canvas.style.top = top_key;
     canvas.style.left = left_key;
     can_mid.style.top = top_key;
@@ -126,7 +127,7 @@ function init() {
     function (e) {
       mouse_position = [e.clientX, e.clientY];
       if (space_pivot)panCanvas("move", e);
-      else if(Object.keys(pointers).length == 2)panCanvas("move", e);
+      // else if(Object.keys(pointers).length == 2)panCanvas("move", e);
       else findxy("move", e, draw_flag);
     },
     false
@@ -134,9 +135,7 @@ function init() {
   canvas.addEventListener(
     "pointerdown",
     function (e) {
-      pointers[e.pointerId] = true;
       if (space_pivot) panCanvas("down", e);
-      else if (Object.keys(pointers).length == 2) panCanvas("down", e);
       else findxy("down", e, draw_flag);
     },
     false
@@ -144,9 +143,7 @@ function init() {
   canvas.addEventListener(
     "pointerup",
     function (e) {
-      delete pointers[e.pointerId];
       if (space_pivot) panCanvas("up", e);
-      else if (pan_flag && Object.keys(pointers).length != 2) panCanvas("up", e);
       else findxy("up", e, draw_flag);
     },
     false
@@ -154,26 +151,33 @@ function init() {
   canvas.addEventListener(
     "pointerout",
     function (e) {
-      delete pointers[e.pointerId];
       if (space_pivot) panCanvas("out", e);
-      else if (pan_flag && Object.keys(pointers).length != 2)panCanvas("out", e);
       else findxy("out", e, draw_flag);
     },
     false
   );
+  canvas.addEventListener(
+    "contextmenu", (e) => {
+      e.preventDefault();}
+  );
 
   //Tool Change pointerwidth eventlistener
   width_range.addEventListener(
-    "pointerup",
+    "change",
     function (e) {
-      if (draw_flag) {
         line_widths[0] = width_range.value;
-      } else line_widths[1] = width_range.value;
+    },
+    false
+  );
+  eraser_width_range.addEventListener(
+    "change",
+    function (e) {
+       line_widths[1] =  eraser_width_range.value;
     },
     false
   );
   //Tool Change layer's opacity
-  opacity_range.addEventListener("pointerup",
+  opacity_range.addEventListener("change",
     function (e) {
       can_active.style.opacity=opacity_range.value;
       updateCanvas();
@@ -190,10 +194,14 @@ function init() {
       if (e.keyCode == 32) {
         e.preventDefault;
         space_pivot = true;
+        document.getElementById("pan_pivot").style.backgroundColor = "rgb(184, 184, 184)";
       }
       //keycode-E
       if (e.keyCode == 69) {
-        color(document.getElementById("erase"));
+        color(document.getElementById("eraser-tab"));
+        document.getElementById("draw").classList.remove("active");
+        document.getElementById("draw").classList.remove("show");
+        document.getElementById("draw-tab").style.borderColor="transparent";
       }
       //keycode-M
       if (e.keyCode == 77) {
@@ -201,11 +209,16 @@ function init() {
       }
       //keycode-P
       if (e.keyCode == 80) {
-        color(document.getElementById(x));
+        document.getElementById("eraser").classList.remove("active");
+        document.getElementById("eraser").classList.remove("show");
+        document.getElementById("eraser-tab").style.borderColor="transparent";
+        color("draw");
       }
       //keycode-Q
       if (e.keyCode == 81) {
-        mirror();
+        if(document.getElementById("revise_hide").style.display=="flex"){
+          mirror();
+        }
       }
       //keycode-[
       if (e.keyCode == 219) {
@@ -228,6 +241,7 @@ function init() {
         space_pivot = false;
         flag = false;
         panCanvas("out", e);
+        document.getElementById("pan_pivot").style.backgroundColor = "";
       }
       // console.log(space_pivot);
     },
@@ -243,7 +257,7 @@ function init() {
     false
   );
   zoom_range.addEventListener(
-    "pointerup",
+    "change",
     function () {
       range_zoom_in();
     },
@@ -266,12 +280,13 @@ function init() {
 }
 //Tool change linewidth
 function line_width_change(pivot) {
-  width_range.value = parseInt(width_range.value) + pivot;
   if (draw_flag) {
-    line_widths[0] = width_range.value;
+    line_widths[0] = parseInt(width_range.value) + pivot;
   } else if (!draw_flag) {
-    line_widths[1] = width_range.value;
+    line_widths[1] = parseInt(eraser_width_range.value) + pivot;
   }
+  updateToolInfo();
+  drawWidth(draw_flag);
 }
 //Tool Undo
 function backLastStep() {
@@ -318,15 +333,20 @@ function backLastStep() {
 }
 //Tool Zoom
 function wheel_zoom_in(e) {
-  if (0.1 <= scale <= 3) {
-    scale += e.deltaY * -0.001;
+  if (1< scale && scale <= 3) {
+    scale += e.deltaY * -1*0.0003*scale;
     if (scale > 3) scale = 3;
-    if (scale < 0.3) scale = 0.3;
+    if (scale < 0.05) scale = 0.05;
+  }
+  if (0.05<= scale && scale <= 1) {
+    scale += e.deltaY * -1*0.00003*Math.pow(10,scale);
+    if (scale > 3) scale = 3;
+    if (scale < 0.05) scale = 0.05;
   }
   zoom_in(scale);
 }
 function range_zoom_in() {
-  scale=parseFloat(zoom_range.value);
+  scale=Math.pow(10,parseFloat(zoom_range.value));
   zoom_in(scale);
 }
 function zoom_in(scale) {
@@ -371,7 +391,7 @@ function zoom_in(scale) {
   }
 }
 function update_zoom_range() {
-  zoom_range.value = scale;
+  zoom_range.value = Math.log10(scale);
 }
 
 //Tool Mirror
@@ -390,7 +410,7 @@ function mirror() {
       y_offset.toString() +
       "px)";
     mirror_flag = true;
-    document.getElementById("mirror_pivot").checked = true;
+    document.getElementById("mirror_pivot").style.backgroundColor = "rgb(184, 184, 184)";
   } else if (mirror_flag) {
     scale_x = scale;
     scale_xy = [1, 1];
@@ -406,7 +426,7 @@ function mirror() {
       y_offset.toString() +
       "px)";
     mirror_flag = false;
-    document.getElementById("mirror_pivot").checked = false;
+    document.getElementById("mirror_pivot").style.backgroundColor = "";
   }
   canvas.style.transform = scaleKey;
   can_mid.style.transform = scaleKey;
@@ -421,6 +441,16 @@ function mirror() {
   var minelayers = document.getElementsByClassName("minelayer");
   for (let i = 0; i < minelayers.length; i++) {
     minelayers[i].style.transform = scaleKey;
+  }
+}
+
+function pan() {
+  if (!space_pivot) {
+    space_pivot=true;
+    document.getElementById("pan_pivot").style.backgroundColor = "rgb(184, 184, 184)";
+  } else if (space_pivot) {
+    space_pivot=false;
+    document.getElementById("pan_pivot").style.backgroundColor = "";
   }
 }
 //Tool Save image by default name
@@ -454,7 +484,7 @@ async function reroomlist() {
 async function loadimage_gallery() {
   const cookieValue = cookie_value("src");
   try {
-    const imageResponse = await fetch(`/api${cookieValue}`);
+    const imageResponse = await fetch(`/image/${cookieValue}`);
     if (!imageResponse.ok) throw new Error("Failed to fetch image");
 
     const blob = await imageResponse.blob();
@@ -578,40 +608,49 @@ function panCanvas(res, e) {
 //Tool Color Change
 function color(obj) {
   draw_flag = true;
-  document.getElementById("erase").checked = false;
-  switch (obj.id) {
-    case "green":
-      x = "green";
-      break;
-    case "blue":
-      x = "blue";
-      break;
-    case "red":
-      x = "red";
-      break;
-    case "yellow":
-      x = "yellow";
-      break;
-    case "orange":
-      x = "orange";
-      break;
-    case "black":
-      x = "black";
-      break;
-    case "black":
-      x = "black";
-      break;
-    case "erase":
-      draw_flag = false;
-      document.getElementById("erase").checked = true;
-      break;
+  document.getElementById("eraser-tab").classList.remove("active");
+  if (obj=="draw"){
+    obj=document.getElementById(x);
+    document.getElementById("draw-tab").classList.add("active");
+    document.getElementById("draw-tab").style.borderColor="";
+  }else{
+    switch (obj.id) {
+      case "green":
+        x = "green";
+        break;
+      case "blue":
+        x = "blue";
+        break;
+      case "red":
+        x = "red";
+        break;
+      case "yellow":
+        x = "yellow";
+        break;
+      case "orange":
+        x = "orange";
+        break;
+      case "black":
+        x = "black";
+        break;
+      case "black":
+        x = "black";
+        break;
+      case "eraser-tab":
+        draw_flag = false;
+        document.getElementById("draw-tab").classList.remove("active");
+        document.getElementById("draw-tab").classList.remove("show");
+        document.getElementById("eraser-tab").classList.add("active");
+        document.getElementById("eraser-tab").style.borderColor="";
+        break;
+    }
   }
   updateToolInfo();
 }
 //Tool Change pointwidth(Pen/Eraser)
 function updateToolInfo() {
   if (draw_flag) width_range.value = line_widths[0];
-  else if (!draw_flag) width_range.value = line_widths[1];
+  else if (!draw_flag) eraser_width_range.value = line_widths[1];
 }
 //Sketch
 function findxy(res, e, draw_flag) {
@@ -654,6 +693,14 @@ function findxy(res, e, draw_flag) {
       currX = e.clientX - canvas.offsetLeft;
       currY = e.clientY - canvas.offsetTop;
       draw(e.pressure, draw_flag);
+      drawWidth(draw_flag);
+    }
+    else{
+      prevX = currX;
+      prevY = currY;
+      currX = e.clientX - canvas.offsetLeft;
+      currY = e.clientY - canvas.offsetTop;
+      drawWidth(draw_flag);
     }
   }
 }
@@ -687,7 +734,26 @@ function draw(pressure, draw_flag) {
   ctx_active.stroke();
   ctx_active.closePath();
 }
-
+//Sketch sub draw function
+function drawWidth(draw_flag) {
+  ctx.clearRect(0, 0, w, h);
+  if (draw_flag) {
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = 'red';
+    ctx.beginPath();
+    ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset, line_widths[0]/2, 0, Math.PI * 2, true);
+    ctx.stroke();
+    ctx.closePath();
+  } else {
+    // ctx.strokeStyle = rgba(0,0,0,0.0);
+    ctx.strokeStyle = 'blue';
+    ctx.globalCompositeOperation = "source-over";
+    ctx.beginPath();
+    ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset,line_widths[1]/2, 0, Math.PI * 2, true);
+    ctx.stroke();
+    ctx.closePath();
+  }
+}
 function erase_all() {
   var m = confirm("Want to clear");
   if (m) {

@@ -1,0 +1,7 @@
+./PSS/.env
+./sharingsketch_env
+./Dockerfile
+./docker-compose.yml
+./docker_local
+alembic.ini
+migrations

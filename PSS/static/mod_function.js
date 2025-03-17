@@ -154,7 +154,7 @@ function draw_mid() {
     ctx_mid.moveTo(init_point[0], init_point[1]);
     ctx_mid.lineTo((prevX - scale_orgin[0]) / (scale * scale_xy[0]) + scale_orgin[0] - x_offset, (prevY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset);
     ctx_mid.lineTo((currX - scale_orgin[0]) / (scale * scale_xy[0]) + scale_orgin[0] - x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset);
-    ctx_mid.fillStyle = 'rgba(255,200,200, 0.01)';
+    ctx_mid.fillStyle = 'rgba(255, 0, 0, 0.01)';
     ctx_mid.fill();
     console.log(first_choose);
     if (change_to_local(currX, scale_orgin[0], scale, scale_xy[0], x_offset) < min_x)
@@ -225,9 +225,10 @@ function writedown() {
     revise_button.innerHTML = "revise";
     restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
     restore_active[restore_active.length] = ctx_active.id;
-    document.getElementById('revise_hide').style.display='block';
+    document.getElementById('revise_hide').style.display='flex';
     revise_range.value=1;
     document.getElementById('revise_range_div').style.display="none";
+    document.getElementById('revise-tool').style.display="none";
     updateCanvas();
 }
 function change_to_local(curr, scale_orgin, scale, scale_xy, offset) {
