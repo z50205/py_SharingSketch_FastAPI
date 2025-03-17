@@ -13,9 +13,10 @@
 
 - **Join Room:** Enter a new room name and join the room, or use the room list to enter an existing room.
 
- <video  width="80%" controls>
-  <source src="./vids/vid1.mp4" type="video/mp4">
-</video> 
+
+
+https://github.com/user-attachments/assets/4d9941dd-5cf0-4f7d-abd3-edac81c2cad4
+
 
 
 ---
@@ -25,9 +26,8 @@
 - **Paint Tools:** Draw with a pen or an eraser that allows you to adjust color and line width.
 
 
- <video  width="80%" controls>
-  <source src="./vids/vid2.mp4" type="video/mp4">
-</video> 
+
+https://github.com/user-attachments/assets/ec60eb34-b3ad-41e0-9908-fbc97749e72f
 
 
 
@@ -36,9 +36,8 @@
 - **Canvas Tools:** Provide undo, mirror, and selection adjustment functionalities to enhance drawing efficiency.
 
 
- <video  width="80%" controls>
-  <source src="./vids/vid3.mp4" type="video/mp4">
-</video> 
+
+https://github.com/user-attachments/assets/8adad9de-992a-4383-b10b-2db6b417b02f
 
 
 
@@ -47,18 +46,18 @@
 - **File Tools:** Download image or export to SketchGallery for storage, as well as import image from your device to continue drawing.
 
 
- <video  width="80%" controls>
-  <source src="./vids/vid4.mp4" type="video/mp4">
-</video> 
+
+https://github.com/user-attachments/assets/f64e9b7f-2e1b-41a8-91cd-c0119cfb9306
+
+
 
 ---
 
 - **Layer Tools:** Create individual layers and easily change their order.
 
 
- <video  width="80%" controls>
-  <source src="./vids/vid5.mp4" type="video/mp4">
-</video> 
+
+https://github.com/user-attachments/assets/d8609c4b-e8d2-4e44-82f9-d9eed0fb6c73
 
 
 
@@ -71,9 +70,9 @@
 - **Download:** Download images to your device.
 - **Pagination:** Display 6 images per page to enhance navigation and performance.
 
- <video  width="80%" controls>
-  <source src="./vids/vid6.mp4" type="video/mp4">
-</video> 
+
+
+https://github.com/user-attachments/assets/25be2cd3-9278-4877-b3ab-30764efa6006
 
 
 
