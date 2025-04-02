@@ -1,43 +1,6 @@
-{% extends "base.html" %} {% block nav %}
-<body onload="init()" style="background-color: rgb(25, 25, 25);">
-  <div class="row" style="position: relative;z-index: 101; background-color:  rgb(64, 64, 64);">
-    <div class="col-10" style="display: flex;justify-content: start;align-items: center;">
-      <a style="text-decoration: none;" onclick="reroomlist()">
-          <h1 class="fw-bold text-light" style="width: fit-content;">Sharing Sketch</h1>
-      </a>
-      <li class="nav-item dropdown" style="list-style-type: none;">
-        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;" data-bs-offset="0,12.5px" >
-          <h1 class="fw-bold" style="width: fit-content;color: rgb(184, 184, 184);">File</h1>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-dark" style="background-color:  rgb(64, 64, 64);border:0px;">
-          <li>
-            <label class="dropdown-item" for="load_image">Import Image</label>
-            <input id="load_image" style="display: none" type="file" />
-          </li>
-          <li><div class="dropdown-item" onclick="exportimage()">Export to Gallery</div></li>
-          <li><div class="dropdown-item" onclick="saveimage()">Save as PNG</div></li>
-        </ul>
-      </li>
-      <li class="nav-item dropdown" style="list-style-type: none;">
-        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;" data-bs-auto-close="false" data-bs-offset="0,12.5px" >
-          <h1 class="fw-bold" style="width: fit-content;color: rgb(184, 184, 184);">Edit</h1>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-dark" style="background-color:  rgb(64, 64, 64);border:0px;">
-          <li><div class="dropdown-item" onclick="backLastStep()">Undo</div></li>
-          <li><div class="dropdown-item" onclick="show_revise_tool()">Adjust selection</div></li>
-          <li><div class="dropdown-item" onclick="erase_all()">Clear layer</div></li>
-        </ul>
-      </li>
-      
-    </div>
-    <div class="col-2" style="display: grid;justify-content: end;align-items: center;">
-      <a style="text-decoration: none;" onclick="gogallery()">
-        <h3 class="m-3 text-light" style="text-align: right;padding: 0.5rem;border: 2px solid white;border-radius: 3px;">Gallery</h3>
-      </a>
-    </div>
-  </div>
+{% extends "nav.html" %} {% block content %}
   <link rel="stylesheet" type="text/css" href="static/room.css"/>
-  <div class="container-fluid" style="padding: 0px;">
+  <div class="container-fluid" style="padding: 0px;justify-content: end;">
     <div class="item">
       <div class="col" style="background: rgb(64, 64, 64); position: relative;z-index: 100;">
         <div class="message-title" id="landing">
@@ -250,7 +213,6 @@
   <script src="static/mod_function.js"></script>
   <script src="static/layer_function.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
   <!-- Websocket Code -->
   <script>
     const username = "{{ username }}";
@@ -283,5 +245,4 @@
     }
   </script>
   <script src="static/ws_client.js"></script>
-</body>
 {% endblock%}

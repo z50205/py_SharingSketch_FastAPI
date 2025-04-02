@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-from sqlmodel import Field, Session, SQLModel,select,insert
+from sqlmodel import Field, Session, SQLModel,select,insert,update
 import datetime
 from passlib.hash import pbkdf2_sha256
 from typing import Optional
@@ -19,7 +19,7 @@ class ImageData(SQLModel, table=True):
 
     @classmethod
     def create_image(self,image:UploadFile,description,title,creator):
-        filename="image-"+str(int(time.time()*math.pow(10,6)))+"."+str.split(image.filename,".")[1]
+        filename="images/image-"+str(int(time.time()*math.pow(10,6)))+"."+str.split(image.filename,".")[1]+"/"
         try:
             contents=image.file.read()
             response = client.put_object(Body=contents,Bucket=BUCKET_NAME,Key=filename)
@@ -41,7 +41,7 @@ class ImageData(SQLModel, table=True):
         try:
             user=UserData.query_name(username)
             with Session(engine) as session:
-                result_img =session.exec(select(ImageData).where(ImageData.id == imageid)).one()
+                result_img =session.exec(select(ImageData).where(ImageData.id == imageid)).one_or_none()
                 if result_img.creator_id==user.id:
                     response = client.delete_object(Bucket=BUCKET_NAME,Key=result_img.src)
                     session.delete(result_img)
@@ -68,9 +68,42 @@ class ImageData(SQLModel, table=True):
                 nextPage=None
             return {"nextPage":nextPage,"imageData":images_dict}
     @classmethod
-    def query_image(self,filename:str):
-        response = client.get_object(Bucket=BUCKET_NAME,Key=filename)
-        return response['Body'].read()
-
+    def query_portfolio_images(self,username,page):
+        with Session(engine) as session:
+            results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(UserData.username == username).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
+            min_perpage=min(per_page,len(results))
+            images_dict = [{"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"creator":res[1]} for i,res in enumerate(results[0:min_perpage])]
+            if per_page<len(results):
+                nextPage=page+1
+            else:
+                nextPage=None
+            return {"nextPage":nextPage,"imageData":images_dict}
+    @classmethod
+    def toggle_display(self,imageid:str,username,page):
+        try:
+            with Session(engine) as session:
+                results=session.exec(select(ImageData).where(ImageData.creator_id == UserData.id).where(UserData.username == username).where(ImageData.id == imageid)).one_or_none()
+                if results:
+                    session.exec(update(ImageData).where(ImageData.id == imageid).values(is_display=not results.is_display) )
+                    session.commit()
+                    results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(UserData.username == username).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
+                    min_perpage=min(per_page,len(results))
+                    images_dict = [{"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"creator":res[1]} for i,res in enumerate(results[0:min_perpage])]
+                    if per_page<len(results):
+                        nextPage=page+1
+                    else:
+                        nextPage=None
+            return {"nextPage":nextPage,"imageData":images_dict}
+        except:
+            return {"message":"toggle failed!"}
+    @classmethod
+    def query_image(self,username,filename:str):
+        with Session(engine) as session:
+            results=session.exec(select(ImageData.is_display,UserData.username).where(ImageData.creator_id == UserData.id).where(ImageData.src == filename)).one_or_none()
+            if results:
+                is_display, username_from_db = results
+                if is_display or username_from_db==username:
+                    response = client.get_object(Bucket=BUCKET_NAME,Key=filename)
+                    return response['Body'].read()
 
 SQLModel.metadata.create_all(engine)

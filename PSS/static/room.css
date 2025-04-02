@@ -21,15 +21,7 @@ ul {
 
 }
 .item{
-    width:250px;
-}
-
-.item:nth-child(2){
-    flex:1;
-}
-.item:last-child{
-    width:200px;
-    margin-left:auto;
+    max-width:250px;
 }
 h1{
     margin:1rem;
@@ -58,6 +50,50 @@ input {
 }
 .btn-outline-secondary:hover{
     border: 1px solid white;
+}
+.canvas-left{
+    width: 20%;
+    min-width: 200px;
+    background-color:rgb(64, 64, 64);
+    padding: 0px;
+    position: absolute;
+}
+.canvas-left-info{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom:16px;
+}
+.canvas-left-info-img{
+    width: 30px;
+}
+.canvas-left-info-name{
+    color:white
+}
+.canvas-left-item{
+    margin-top:16px;
+    margin-bottom:16px;
+}
+.canvas-left-item-link{
+    text-decoration: none;
+}
+.canvas-left-itemdiv{
+    display:flex;
+    padding-top:5px;
+    padding-bottom:5px;
+}
+.canvas-left-img{
+    width: 30px;
+}
+.canvas-left-text{
+    flex:1 0 5%;
+    color: white;
+    font-size: 1.2rem;
+    padding-left:10px;
+}
+
+
+.tool_name:hover{
+    background-color: rgb(168, 168, 168);
 }
 
 

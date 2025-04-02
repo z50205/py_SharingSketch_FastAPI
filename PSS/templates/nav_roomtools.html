@@ -1,0 +1,25 @@
+<div style="display: flex">
+<li class="nav-item dropdown" style="list-style-type: none;">
+    <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
+        <div class="tool_name px-3" style="width: fit-content;color: rgb(255, 255, 255);">File</div>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark" style="background-color:  rgb(64, 64, 64);border:0px;">
+        <li>
+            <label class="dropdown-item" for="load_image">Import Image</label>
+            <input id="load_image" style="display: none" type="file" />
+        </li>
+        <li><div class="dropdown-item" onclick="exportimage()">Export to Gallery</div></li>
+        <li><div class="dropdown-item" onclick="saveimage()">Save as PNG</div></li>
+    </ul>
+</li>
+<li class="nav-item dropdown" style="list-style-type: none;">
+<a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;" data-bs-auto-close="false">
+    <div class="tool_name px-3" style="width: fit-content;color: rgb(255, 255, 255);">Edit</div>
+</a>
+<ul class="dropdown-menu dropdown-menu-dark" style="background-color:  rgb(64, 64, 64);border:0px;">
+    <li><div class="dropdown-item" onclick="backLastStep()">Undo</div></li>
+    <li><div class="dropdown-item" onclick="show_revise_tool()">Adjust selection</div></li>
+    <li><div class="dropdown-item" onclick="erase_all()">Clear layer</div></li>
+</ul>
+</li>
+</div>

@@ -478,7 +478,7 @@ async function gogallery() {
 }
 async function reroomlist() {
   bye();
-  window.location.href = "/chooseroom";
+  window.location.href = "/";
 }
 //Tool Load image from gallery
 async function loadimage_gallery() {

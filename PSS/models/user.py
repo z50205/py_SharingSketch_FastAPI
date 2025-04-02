@@ -1,8 +1,9 @@
-from sqlmodel import Field, Session, SQLModel,select,insert
+from sqlmodel import Field, Session, SQLModel,select,insert,update
+from fastapi import UploadFile
 import datetime
 from passlib.hash import pbkdf2_sha256
 from typing import Optional
-from . import engine
+from . import engine,client,BUCKET_NAME
 import uuid
 
 class UserData(SQLModel, table=True):
@@ -11,6 +12,7 @@ class UserData(SQLModel, table=True):
     password_hash: str= Field()
     email: Optional[str] = None
     about_me: Optional[str] = None
+    src_avatar:Optional[str] = None
     create_time: str = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     def set_pw(self,password):
@@ -33,5 +35,30 @@ class UserData(SQLModel, table=True):
         with Session(engine) as session:
             session.add(u)
             session.commit()
+    @classmethod
+    def upload_profile(self,username:str,about_me:str,avatar:UploadFile):
+        try:
+            update_info={}
+            if avatar !='':
+                if (avatar.content_type =="image/png" or avatar.content_type =="image/jpeg" or avatar.content_type =="image/jpg") and avatar.size<=2000000:
+                    filename="avatars/avatar-"+username+"."+str.split(avatar.filename,".")[1]
+                    contents=avatar.file.read()
+                    response = client.put_object(Body=contents,Bucket=BUCKET_NAME,Key=filename)
+                    update_info["src_avatar"]=filename
+                    avatar.file.close()
+            if about_me !='':
+                update_info["about_me"]=about_me
+            with Session(engine) as session:
+                statement = update(UserData).where(UserData.username == username).values(update_info)
+                result=session.exec(statement)
+                session.commit()
+                return {"message":"upload success!"}
+        except:
+            return {"message":"upload failed!"}
+    @classmethod
+    def query_avatar(self,src_avatar:str):
+        response = client.get_object(Bucket=BUCKET_NAME,Key=src_avatar)
+        return response['Body'].read()
+        
     
 SQLModel.metadata.create_all(engine)
