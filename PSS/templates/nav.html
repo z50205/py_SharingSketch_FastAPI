@@ -5,6 +5,7 @@
     <div class="row" style="position: relative;z-index: 101; background-color:  rgb(64, 64, 64);">
 {% else %}
 <body style="background-color: rgb(64, 64, 64)">
+  <link rel="stylesheet" type="text/css" href="static/nav.css"/>
   <div class="row">
     <div class="row" style="z-index: 900;">
 {% endif %}
@@ -17,7 +18,7 @@
             <a href="/gallery" style="text-decoration: none;">
               <h3 class="m-3 text-light" style="text-align: right;padding: 0.5rem;border: 2px solid white;border-radius: 3px;">Gallery</h3>
             </a>
-            {% if request.url.path != '/'  %}
+            {% if (request.url.path != '/' and request.url.path != '/register')  %}
             {% include "nav_collapse1.html"%}
             {% endif %}
           </div>
@@ -25,7 +26,7 @@
           {% include "nav_roomtools.html"%}
           {% endif %}
         </div>
-        {% if request.url.path != '/'  %}
+        {% if (request.url.path != '/' and request.url.path != '/register')  %}
         {% include "nav_collapse2.html"%}
         {% endif %}
         {% block content %}{% endblock %}

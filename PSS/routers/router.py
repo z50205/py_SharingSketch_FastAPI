@@ -7,7 +7,7 @@ from starlette.templating import Jinja2Templates
 from functools import wraps
 import os
 from io import BytesIO
-from models import UserData,ImageData
+from models import UserData,ImageData,TagData
 from typing import Optional
 
 
@@ -75,20 +75,26 @@ async def chooseroom(request:Request,roomname:str=Form()):
 async def room(request:Request):
     username = request.session.get('username')
     roomname = request.session.get('roomname')
+    u=UserData.query_name(username)
     if not roomname:
         return RedirectResponse(request.headers.get('referer'),status_code=303)
-    return template.TemplateResponse(request=request,name="room.html",context={"roomname":roomname, "username":username})
+    if u:
+        return template.TemplateResponse(request=request,name="room.html",context={"roomname":roomname, "username":username,'avatar':u.src_avatar})
+    else:
+        return JSONResponse(status_code=401,content={
+            'status': 'error',
+            'message': 'Not authenticated'
+        })
 
 @router.get("/export",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["export"])
 async def export(request:Request):
-    return template.TemplateResponse(request=request,name="gallery_export.html",context={ "username":request.session["username"]})
+    return template.TemplateResponse(request=request,name="gallery_export.html",context={"username":request.session["username"]})
 
 @router.get("/membership",response_class=HTMLResponse, tags=["membership"])
 async def membership(request:Request):
     username = request.session.get('username')
     u=UserData.query_name(username)
     if u:
-        
         return JSONResponse(status_code=200,content={
             'status': 'success',
             'username': u.username,
@@ -127,8 +133,8 @@ async def register(request:Request,username:str=Form(...),password:str=Form(...)
         return template.TemplateResponse(request=request,name="register.html",context={"message":"帳號已使用過"})
 
 @router.post("/api/upload",response_class=HTMLResponse, tags=["uploadimage"])
-async def uploadImage(request:Request,image=Form(...),description:str=Form(...),title:str=Form(...),creator:str=Form(...)):
-    jsonRes=ImageData.create_image(image,description,title,creator)
+async def uploadImage(request:Request,image=Form(...),description:str=Form(...),title:str=Form(...),creator:str=Form(...),tagsList:str=Form(...)):
+    jsonRes=ImageData.create_image(image,description,title,creator,tagsList)
     return JSONResponse(status_code=200,content=jsonRes)
 
 @router.delete("/api/image/{id}",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["deleteimage"])
@@ -156,6 +162,11 @@ async def patchImageDisplay(request:Request,id:str,page:int):
 async def patchUserAboutme(request: Request, about_me: Optional[str] = Form(None), avatar= Form(None)):
     username = request.session.get('username')
     jsonRes=UserData.upload_profile(username,about_me,avatar)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@router.get("/api/tag/prefix",response_class=HTMLResponse, tags=["patch_user_aboutme"])
+async def patchUserAboutme(request: Request, tag_prefix:str):
+    jsonRes=TagData.query_prefix(tag_prefix)
     return JSONResponse(status_code=200,content=jsonRes)
 
 @router.get("/image/avatars/{src}",response_class=HTMLResponse, tags=["resources"])

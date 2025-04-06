@@ -1,6 +1,7 @@
 {% extends "nav.html" %} {% block content %}
 <link rel="stylesheet" type="text/css" href="static/index.css"/>
-<div class="col-7 left-intro">
+<div class="row">
+<div class="col left-intro" style="flex:7 0 0;">
   <div style="width: 80%;">
     <div class="sub-title">Sketch Infomation</div>
     <div class="content">Fill your creative work information.</div>
@@ -11,21 +12,32 @@
             <div style="flex:1 0 0;margin-left: 5px;"><button class="col" style="border-radius:3px;margin-top: 5px;margin-bottom: 5px;flex:1 0 0;width: 100%;">Export</button></div>
           </div>
           <textarea type="text" id="description" name="description" placeholder="description" style="width: 100%;" required></textarea>
+          <div class="tags-div" id="tag-div">
+            <input class="tags-input"  id="tags-input" name="tags" placeholder="tags"/>
+          </div>
+          <div>
+            <ul class="tags-menu" id="tag-ul">
+              <li><div class="tags-menu-item-create" id="tag-create"></div></li>
+              <hr class="tags-menu-devider"/>
+            </ul>
+          </div>
+        
       </form>
     </div>
   </div>
 </div>
-<div class="col-4 left-intro" style="margin-right: 1rem;">
+<div class="line-breaker"></div>
+<div class="col left-intro" style="margin-right: 1rem;flex:4 0 0;">
   <div style="border-left: 2px solid white;">
     <div class="sub-title">Export image</div>
     <div class="content">Export and save image to Sketch Gallery.</div>
     <img
       class="m-3 border border-dark border-1 rounded-1"
       id="localimage"
-      width="200"
-      style="background-color: white;"
+      style="background-color: white;max-width: 200px;width: 100%;"
     />
   </div>
+</div>
 </div>
 
 
@@ -52,10 +64,13 @@
       formData.append("image", blob, "image.png");
       formData.append("creator", username);
       formData.append("title", document.getElementById("title").value);
-      formData.append(
-        "description",
-        document.getElementById("description").value
-      );
+      formData.append("description",document.getElementById("description").value);
+      let tagsList=document.getElementsByClassName("tags-item");
+      let tags=[];
+      for(let i=0;i<tagsList.length;i++){
+        tags.push(tagsList[i].textContent);
+      }
+      formData.append("tagsList",JSON.stringify(tags));
 
       localStorage.removeItem("savedImage");
       try {
@@ -77,5 +92,47 @@
       window.location.href = "/gallery";
     }
   };
+  let tagsInput=document.getElementById("tags-input");
+  let myTimeout="";
+  let tagCreate=document.getElementById("tag-create");
+  let tagUl=document.getElementById("tag-ul");
+  tagCreate.onclick=()=>addToTagDiv(tagsInput.value)
+  tagsInput.addEventListener("keydown",()=>{
+    clearTimeout(myTimeout);
+    myTimeout= setTimeout(()=>fetchRelateTagsRender(), 1500);
+  })
+  async function fetchRelateTagsRender(){
+    tagUl.style.display = "block";
+    const params = new URLSearchParams();
+    params.append("tag_prefix", tagsInput.value);
+    const response=await fetch(`/api/tag/prefix?${params}`);
+    const result=await response.json();
+    let tagsList=result["tags_list"];
+    tagCreate.textContent='create "'+tagsInput.value+'" tag.';
+    let oldTagList=document.getElementsByClassName("tags-menu-li");
+    for (let i = oldTagList.length - 1; i >= 0; i--) {
+      oldTagList[i].remove();
+    }
+    for(let i=0 ;i<tagsList.length;i++){
+      let tagDiv=document.createElement("div");
+      tagDiv.textContent=tagsList[i];
+      tagDiv.classList.add("tags-menu-item");
+      let tagLi=document.createElement("li");
+      tagLi.classList.add("tags-menu-li");
+      tagLi.appendChild(tagDiv);
+      tagLi.onclick=()=>addToTagDiv(tagsList[i]);
+      tagUl.appendChild(tagLi);
+    }
+  }
+  function addToTagDiv(tagName){
+    let tagDiv=document.getElementById("tag-div");
+    let tagInput=document.getElementById("tags-input");
+    let tagItem=document.createElement("div");
+    tagItem.classList.add("tags-item");
+    tagItem.textContent=tagName;
+    tagDiv.insertBefore(tagItem, tagInput);
+    tagUl.style.display = "none";
+    tagsInput.value="";
+  }
 </script>
 {% endblock %}

@@ -24,4 +24,6 @@ client = boto3.client('s3',aws_access_key_id = S3_KEYID,aws_secret_access_key = 
 engine = create_engine(url_object)
 
 from .user import UserData
+from .tag import TagData
+from .image_mtm_tag import ImageTagData
 from .image import ImageData

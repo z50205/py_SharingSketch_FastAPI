@@ -3,7 +3,7 @@ from sqlmodel import Field, Session, SQLModel,select,insert,update
 import datetime
 from passlib.hash import pbkdf2_sha256
 from typing import Optional
-from . import engine,UserData,client,BUCKET_NAME
+from . import engine,UserData,ImageTagData,client,BUCKET_NAME
 import os,uuid,time,math,json
 
 
@@ -18,7 +18,8 @@ class ImageData(SQLModel, table=True):
     is_display:bool= Field(default=True)
 
     @classmethod
-    def create_image(self,image:UploadFile,description,title,creator):
+    def create_image(self,image:UploadFile,description,title,creator,tagsList):
+        tags = json.loads(tagsList)
         filename="images/image-"+str(int(time.time()*math.pow(10,6)))+"."+str.split(image.filename,".")[1]+"/"
         try:
             contents=image.file.read()
@@ -27,10 +28,12 @@ class ImageData(SQLModel, table=True):
             dt = datetime.datetime.now(datetime.timezone.utc)
             dt_sec = dt.isoformat(timespec='seconds') 
             dt_iso = dt_sec.replace("+00:00", "Z")
-            img=ImageData(id=uuid.uuid4(),creator_id=user.id,description=description,src=filename,title=title,create_time=dt_iso)
+            img_id=uuid.uuid4()
+            img=ImageData(id=img_id,creator_id=user.id,description=description,src=filename,title=title,create_time=dt_iso)
             with Session(engine) as session:
                 session.add(img)
                 session.commit()
+            ImageTagData.create_imagetags(img_id,tags)
             return {"message":"upload sucess!"}
         except:
             return {"message":"upload failed!"}
@@ -59,9 +62,11 @@ class ImageData(SQLModel, table=True):
     @classmethod
     def query_images(self,page):
         with Session(engine) as session:
-            results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(ImageData.is_display == True).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
+            results=session.exec(select(ImageData,UserData.username,UserData.src_avatar).where(ImageData.creator_id == UserData.id).where(ImageData.is_display == True).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
             min_perpage=min(per_page,len(results))
-            images_dict = [{"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"creator":res[1]} for i,res in enumerate(results[0:min_perpage])]
+            images_dict=[]
+            for i,res in enumerate(results[0:min_perpage]):
+                images_dict.append({"id":res[0].id,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"creator":res[1],"avatar":res[2],"tags":ImageTagData.query_tagAll(res[0].id)})
             if per_page<len(results):
                 nextPage=page+1
             else:
@@ -72,7 +77,9 @@ class ImageData(SQLModel, table=True):
         with Session(engine) as session:
             results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(UserData.username == username).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
             min_perpage=min(per_page,len(results))
-            images_dict = [{"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"creator":res[1]} for i,res in enumerate(results[0:min_perpage])]
+            images_dict=[]
+            for i,res in enumerate(results[0:min_perpage]):
+                images_dict.append({"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"tags":ImageTagData.query_tagAll(res[0].id)})
             if per_page<len(results):
                 nextPage=page+1
             else:
@@ -88,7 +95,9 @@ class ImageData(SQLModel, table=True):
                     session.commit()
                     results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(UserData.username == username).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
                     min_perpage=min(per_page,len(results))
-                    images_dict = [{"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"creator":res[1]} for i,res in enumerate(results[0:min_perpage])]
+                    images_dict=[]
+                    for i,res in enumerate(results[0:min_perpage]):
+                        images_dict.append({"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"tags":ImageTagData.query_tagAll(res[0].id)})
                     if per_page<len(results):
                         nextPage=page+1
                     else:

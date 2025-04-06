@@ -51,8 +51,8 @@ th{
 
 textarea {
   margin-top:5px;
-  margin-bottom:5px;
   margin-right:5px;
+  margin-bottom:5px;
   background-color: transparent;
   border-radius: 3px;
   border: 2px solid rgb(184, 184, 184);
@@ -63,44 +63,47 @@ textarea::placeholder {
   color: rgb(184, 184, 184);
 
 }
-.offcanvas.offcanvas-end{
-  width: 20%;
-  min-width: 200px;
-  background-color:rgb(64, 64, 64);
-  padding: 0px;
-  position: absolute;
-}
-.canvas-left-info{
+.tags-div{
   display: flex;
-  justify-content: space-between;
-  margin-bottom:16px;
+  padding: 3px;
+  border: 2px solid rgb(184, 184, 184);
+  flex-wrap: wrap;
+  border-radius: 3px 3px 0px 0px;
 }
-.canvas-left-info-img{
-  width: 30px;
-}
-.canvas-left-info-name{
-  color:white
-}
-.canvas-left-item{
-  margin-top:16px;
-  margin-bottom:16px;
-}
-.canvas-left-item-link{
-  text-decoration: none;
-}
-.canvas-left-itemdiv{
-  display:flex;
-  padding-top:5px;
-  padding-bottom:5px;
-}
-.canvas-left-img{
-  width: 30px;
-}
-.canvas-left-text{
-  flex:1 0 5%;
+.tags-item{
+  flex:1 0 0%;
+  display: flex;
+  justify-content: center;
+  border :2px solid rgb(184, 184, 184);
   color: white;
-  font-size: 1.2rem;
-  padding-left:10px;
+  margin: 3px;
+  border-radius: 5px;
+}
+.tags-input{
+  width: 0%;
+  flex:1 0 0%;
+  color: white;
+  margin: 3px;
+  border-radius: 5px;
+}
+.tags-menu{
+  display: none;
+  background-color: transparent;
+  list-style: none;
+  padding: 10px;
+  border-radius: 0px 0px 5px 5px;
+  border: 2px solid rgb(184, 184, 184);
+  border-top:0px
+}
+.tags-menu-item{
+  color:white;
+}
+.tags-menu-item-create{
+  color:white;
+}
+.tags-menu-devider{
+  color: white;
+  opacity: 100%;
 }
 .line-breaker{
   flex:0 0 0;
