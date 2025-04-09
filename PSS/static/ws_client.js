@@ -23,7 +23,6 @@ const connectWebSocket=()=>{
     }
     socket.onmessage=(ev)=>{
       let data=JSON.parse(ev.data)
-        console.log(data);
         switch(data["event"]){
           case "join":
             ws_join(data);
@@ -56,18 +55,18 @@ const connectWebSocket=()=>{
       while (othercanvasessetting.length > 0) {
         othercanvasessetting[0].remove();
       }
+      // disconnect
       document.getElementById("bye_button").checked = false;
       document.getElementById("bye_button").disabled = true;
       document.getElementById("chat").style.display = "none";
       document.getElementById("members").style.display = "none";
       document.getElementById("landing").style.display = "block";
-      console.log("disconnect()");
   }
     const ws_join=(data)=>{
         self_sid = data["sid"];
-        console.log(self_sid);
     }
     const ws_updateMemberList=(data)=>{
+      // memberlist
         memberlist = data["memberlist"];
         console.log("roomname" + room + "memberlist" + memberlist);
         let ul = document.getElementById("members-list");
