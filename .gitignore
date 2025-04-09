@@ -4,3 +4,4 @@ sharingsketch_env
 /docker_local copy
 alembic.ini
 migrations
+loadtest

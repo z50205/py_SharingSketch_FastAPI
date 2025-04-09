@@ -12,17 +12,19 @@ build-docker-image:
   tags: 
     - group_docker 
   before_script:
+    - apk update && apk add --no-cache docker
     - echo '登入 docker hub'
     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
   script:
     - echo '打包 docker image'
+    - docker rmi $DOCKER_USERNAME/fastapi_pss
     - docker build -t $DOCKER_USERNAME/fastapi_pss .
     - docker push $DOCKER_USERNAME/fastapi_pss
 
 deploy-to-production:
   stage: deploy
   tags:
-    - group_docker 
+    - docker_try
   # needs:
   #   - build-docker-image
   before_script:
@@ -30,4 +32,4 @@ deploy-to-production:
   script:
     - echo '部屬 image 到EC2'
     - ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$EC2_IP "
-        ./1140402_fastapi/deploy.sh"
+        cd 1140402_fastapi && ./deploy.sh"
