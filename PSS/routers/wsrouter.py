@@ -1,5 +1,5 @@
 from fastapi import APIRouter,Request,Form,Depends,HTTPException,WebSocket,WebSocketDisconnect
-import uuid
+import uuid,asyncio
 
 class ConnectionManager:
     def __init__(self):
@@ -39,8 +39,7 @@ class ConnectionManager:
             if membersid != ws_data["sid"] or include_self:
                 await self.active_connections[membersid][2].send_json(ws_data)
     
-    async def event_receive_filter(self, websocket: WebSocket):
-        ws_data=await websocket.receive_json()
+    async def event_receive_filter(self, websocket: WebSocket,ws_data):
         event=ws_data["event"]
         if event=="user_join":
             await ws_manager.join(websocket,ws_data)
@@ -112,7 +111,8 @@ async def websocket_endpoint(websocket: WebSocket):
     await ws_manager.connect(websocket)
     try:
         while True:
-            await ws_manager.event_receive_filter(websocket)
+            ws_data=await websocket.receive_json()
+            asyncio.create_task(ws_manager.event_receive_filter(websocket,ws_data))
     except WebSocketDisconnect:
         await ws_manager.disconnect(websocket)
 
