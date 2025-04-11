@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+
     {
       "name": "Python Debugger: Current File",
       "type": "debugpy",
@@ -21,6 +22,21 @@
       "jinja": true,
       "cwd": "${workspaceFolder}/PSS",
       "justMyCode": false
-    }
+    },
+    {
+      "name": "Run current locust scenario, autostart",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "locust",
+      "args": [
+          "-f",
+          "${file}",
+          "--users=1",
+          "--autostart",
+          "-L=ERROR"
+      ],
+      "console": "integratedTerminal",
+      "gevent": true
+  }
   ]
 }

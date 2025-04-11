@@ -22,7 +22,8 @@ const connectWebSocket=()=>{
         }
     }
     socket.onmessage=(ev)=>{
-      let data=JSON.parse(ev.data)
+      let data=JSON.parse(ev.data);
+      console.log(data);
         switch(data["event"]){
           case "join":
             ws_join(data);
