@@ -33,7 +33,7 @@ class ImageData(SQLModel, table=True):
             with Session(engine) as session:
                 session.add(img)
                 session.commit()
-            ImageTagData.create_imagetags(img_id,tags)
+            ImageTagData.create_imagetags(img_id,list(set(tags)))
             return {"message":"upload sucess!"}
         except:
             return {"message":"upload failed!"}
@@ -46,12 +46,15 @@ class ImageData(SQLModel, table=True):
             with Session(engine) as session:
                 result_img =session.exec(select(ImageData).where(ImageData.id == imageid)).one_or_none()
                 if result_img.creator_id==user.id:
+                    ImageTagData.delete_imagetags(imageid)
                     response = client.delete_object(Bucket=BUCKET_NAME,Key=result_img.src)
                     session.delete(result_img)
                     session.commit()
                     results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(ImageData.is_display == True).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
                     min_perpage=min(per_page,len(results))
-                    images_dict = [{"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"creator":res[1]} for i,res in enumerate(results[0:min_perpage])]
+                    images_dict=[]
+                    for i,res in enumerate(results[0:min_perpage]):
+                        images_dict.append({"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"tags":ImageTagData.query_tagAll(res[0].id)})
                     if per_page<len(results):
                         nextPage=page+1
                     else:

@@ -19,19 +19,36 @@ class ImageTagData(SQLModel, table=True):
                 imagetag=ImageTagData(id=uuid.uuid4(),image_id=image_id,tag_id=tagid)
                 session.add(imagetag)
             session.commit()
+            tagids=session.exec(select(ImageTagData.tag_id).where(ImageTagData.image_id==image_id)).all()
+            for tagid in tagids:
+                times=ImageTagData.get_tag_times(tagid)
+                TagData.update_tag_times(tagid,times)
 
     @classmethod
-    def delete_imagetag(self,image_id:str,tagname:str):
+    def delete_imagetags(self,image_id:str):
         with Session(engine) as session:
-            tagid_record=session.exec(select(TagData.id).where(TagData.tag==tagname))
-            imagetag_record=session.exec(select(ImageTagData.id).where(ImageTagData.tag_id==tagid_record).where(ImageTagData.image_id==image_id)).one_or_none
-            session.delete(imagetag_record)
+            tagids=session.exec(select(ImageTagData.tag_id).where(ImageTagData.image_id==image_id)).all()
+            imagetag_records=session.exec(select(ImageTagData).where(ImageTagData.image_id==image_id)).all()
+            for imagetag_record in imagetag_records:
+                session.delete(imagetag_record)
             session.commit()
+            for tagid in tagids:
+                times=ImageTagData.get_tag_times(tagid)
+                TagData.update_tag_times(tagid,times)
+
+    @classmethod
+    def get_tag_times(self,tag_id:str):
+            with Session(engine) as session:
+                tag_times=session.exec(select(ImageTagData).where(ImageTagData.tag_id==tag_id)).all()
+                return len(tag_times)
 
     @classmethod
     def query_tagAll(self,image_id:str):
         with Session(engine) as session:
-            tag_records = session.exec(select(TagData.tag).where(ImageTagData.image_id== image_id).where(ImageTagData.tag_id== TagData.id)).fetchall()
+            try:
+                tag_records = session.exec(select(TagData.tag).where(ImageTagData.image_id== image_id).where(ImageTagData.tag_id== TagData.id)).fetchall()
+            except Exception as e:
+                print(e)
             return tag_records
             
     @classmethod

@@ -95,7 +95,7 @@ class ConnectionManager:
         elif event=="createRoomCanvas":
             await ws_manager.broadcast(ws_data,to,True)
         elif event=="updateImg":
-            await ws_manager.broadcast(ws_data,to,False)
+            await ws_manager.broadcast(ws_data,to,True)
         elif event=="removeLeaveCanvas":
             await ws_manager.broadcast(ws_data,to,False)
         elif event=="removeRoomCanvas":
