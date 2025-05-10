@@ -50,7 +50,7 @@ class ImageData(SQLModel, table=True):
                     response = client.delete_object(Bucket=BUCKET_NAME,Key=result_img.src)
                     session.delete(result_img)
                     session.commit()
-                    results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(ImageData.is_display == True).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
+                    results=session.exec(select(ImageData,UserData.username).where(ImageData.creator_id == UserData.id).where(UserData.username == username).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
                     min_perpage=min(per_page,len(results))
                     images_dict=[]
                     for i,res in enumerate(results[0:min_perpage]):

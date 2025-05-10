@@ -99,7 +99,7 @@
   tagCreate.onclick=()=>addToTagDiv(tagsInput.value)
   tagsInput.addEventListener("keydown",()=>{
     clearTimeout(myTimeout);
-    myTimeout= setTimeout(()=>fetchRelateTagsRender(), 1500);
+    myTimeout= setTimeout(()=>fetchRelateTagsRender(), 500);
   })
   async function fetchRelateTagsRender(){
     tagUl.style.display = "block";

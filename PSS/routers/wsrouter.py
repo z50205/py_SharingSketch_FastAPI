@@ -46,7 +46,7 @@ class ConnectionManager:
             print("in user_join:"+str(ws_data["username"])+str(ws_data["roomname"]))
         elif event=="new_img":
             await ws_manager.newImg(websocket,ws_data)
-            print("in new_img:"+str(ws_data["roomname"]))
+            print("in new_img:"+str(ws_data["roomname"]))        
         elif event=="leave_room":
             await ws_manager.disconnect(websocket)
             print("in leave_room:")
@@ -77,7 +77,7 @@ class ConnectionManager:
         img=ws_data['imgdata']
         roomname=ws_data['roomname']
         start_at=ws_data['start_at']
-        request_sid=ws_data['sid']
+        request_sid=ws_data.get("sid","try")
         await ws_manager.event_send_filter(websocket,{"event":"updateImg","imgdata":img,"sid":request_sid,"start_at": start_at},roomname)
     
     async def sendMessage(self, websocket: WebSocket,ws_data:dict[str:str]):

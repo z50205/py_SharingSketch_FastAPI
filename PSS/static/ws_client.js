@@ -5,7 +5,7 @@ let self_sid;
 
 
 const connectWebSocket=()=>{
-    const socket = new WebSocket("https://bizara.link/ws");
+    const socket = new WebSocket("http://127.0.0.1:8000/ws");
     socket.onopen=(ev)=>{
         if (socket.readyState!=1){
             reconnect();
@@ -34,6 +34,9 @@ const connectWebSocket=()=>{
             ws_createRoomCanvas(data);
             break;
           case "updateImg":
+            ws_updateImg(data);
+            break;
+          case "tryUpdateImg":
             ws_updateImg(data);
             break;
           case "removeLeaveCanvas":
