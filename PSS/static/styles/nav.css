@@ -3,7 +3,6 @@
     min-width: 200px;
     background-color:rgb(64, 64, 64);
     padding: 0px;
-    position: absolute;
   }
   .canvas-left-info{
     display: flex;

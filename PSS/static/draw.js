@@ -9,6 +9,7 @@ var canvas,
   currY = 0,
   dot_flag = false;
 var first_choose = true;
+const worker = new Worker("/static/scripts/worker.js");
 draw_flag = true; //pen or eraser
 var canvas = document.getElementById("can"); //main canvas
 var ctx = canvas.getContext("2d"); //canvas content
@@ -29,6 +30,11 @@ var w = 2000;
 var h = 2000;
 var scale_orgin = [w / 2, h / 2];
 var delete_canvas_pivots = [];
+
+let room_cursors={};
+let lastSendCursorPos=Date.now();
+const CURSORUPDATERATE=100;
+const CURSORSTAYTIME=10000;
 
 //Drawtool variables
 line_widths = [2, 10, 0]; //Set tools linewidth 1.pen；2.eraser 3.other(no _use)
@@ -286,6 +292,7 @@ function line_width_change(pivot) {
     line_widths[1] = parseInt(eraser_width_range.value) + pivot;
   }
   updateToolInfo();
+  ws_sendCursorPos();
   drawWidth(draw_flag);
 }
 //Tool Undo
@@ -442,6 +449,7 @@ function mirror() {
   for (let i = 0; i < minelayers.length; i++) {
     minelayers[i].style.transform = scaleKey;
   }
+  drawWidth(draw_flag);
 }
 
 function pan() {
@@ -682,7 +690,7 @@ function findxy(res, e, draw_flag) {
       }
       restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
       restore_active[restore_active.length] = can_active.id;
-      updateCanvas();
+      setTimeout(() => updateCanvas(), 0)
     }
     flag = false;
   }
@@ -693,6 +701,7 @@ function findxy(res, e, draw_flag) {
       currX = e.clientX - canvas.offsetLeft;
       currY = e.clientY - canvas.offsetTop;
       draw(e.pressure, draw_flag);
+      ws_sendCursorPos();
       drawWidth(draw_flag);
     }
     else{
@@ -700,6 +709,7 @@ function findxy(res, e, draw_flag) {
       prevY = currY;
       currX = e.clientX - canvas.offsetLeft;
       currY = e.clientY - canvas.offsetTop;
+      ws_sendCursorPos();
       drawWidth(draw_flag);
     }
   }
@@ -734,26 +744,6 @@ function draw(pressure, draw_flag) {
   ctx_active.stroke();
   ctx_active.closePath();
 }
-//Sketch sub draw function
-function drawWidth(draw_flag) {
-  ctx.clearRect(0, 0, w, h);
-  if (draw_flag) {
-    ctx.globalCompositeOperation = "source-over";
-    ctx.strokeStyle = 'red';
-    ctx.beginPath();
-    ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset, line_widths[0]/2, 0, Math.PI * 2, true);
-    ctx.stroke();
-    ctx.closePath();
-  } else {
-    // ctx.strokeStyle = rgba(0,0,0,0.0);
-    ctx.strokeStyle = 'blue';
-    ctx.globalCompositeOperation = "source-over";
-    ctx.beginPath();
-    ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset,line_widths[1]/2, 0, Math.PI * 2, true);
-    ctx.stroke();
-    ctx.closePath();
-  }
-}
 function erase_all() {
   var m = confirm("Want to clear");
   if (m) {
@@ -764,10 +754,10 @@ function erase_all() {
 //Updatecanvas
 function updateCanvas() {
   ctx_proj.clearRect(0, 0, w, h);
-  var thumbnail_img = document.getElementById(
+  let thumbnail_img = document.getElementById(
     "thumbnail_" + can_active.id.slice(9)
   ).childNodes[1];
-  var minelayers = document.getElementsByClassName("minelayer");
+  let minelayers = document.getElementsByClassName("minelayer");
   if (minelayers.length == 0) can_proj = can_active;
   else {
     for (let i = 0; i < minelayers.length; i++) {
@@ -780,9 +770,40 @@ function updateCanvas() {
     }
   }
   // console.log(thumbnail_img);
-  thumbnail_img.src = can_active.toDataURL("image/png");
-  const can_proj_data = can_proj.toDataURL("image/png");
-  start_at =  Date.now();
-  let ws_packet={"event":"new_img","sid":self_sid,"imgdata":can_proj_data,"roomname":room,"start_at":start_at}
-  socket.send(JSON.stringify(ws_packet));
+can_active.toBlob(function(blob) {
+  if (blob) {
+    if(thumbnail_img.src){
+      URL.revokeObjectURL(thumbnail_img.src);
+    }
+    thumbnail_img.src = URL.createObjectURL(blob);
+  }
+}, 'image/webp');
+can_proj.toBlob(function(blob) {
+  if (blob) {
+  const reader = new FileReader();
+  reader.onloadend=()=>{
+    let start_at =  Date.now();
+    let ws_packet={"event":"new_img","sid":self_sid,"imgdata":reader.result,"roomname":room,"start_at":start_at};
+    socket.send(JSON.stringify(ws_packet));
+  }
+  reader.readAsDataURL(blob);
+  }
+}, 'image/webp');
+  let otherlayers = document.getElementsByClassName("othermembercanvases");
+      for (let i = 0; i < otherlayers.length; i++) {
+        ctx_proj.drawImage(otherlayers[i], 0, 0);
+        ctx_proj.globalAlpha=1;
+    }
+
+  can_proj.toBlob(function(blob) {
+  if (blob) {
+  const reader = new FileReader();
+  reader.onloadend=()=>{
+    let start_at =  Date.now();
+    let ws_packet={"event":"update_room_img","sid":self_sid,"imgdata":reader.result,"roomname":room,"start_at":start_at};
+    socket.send(JSON.stringify(ws_packet));
+  }
+  reader.readAsDataURL(blob);
+  }
+}, 'image/webp');
 }

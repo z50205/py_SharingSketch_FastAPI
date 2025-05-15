@@ -1,88 +1,99 @@
 {% extends "nav.html" %} {% block content %}
-<link rel="stylesheet" type="text/css" href="static/index.css"/>
-<div class="row">
-<div class="col left-intro" style="flex:7 0 0 ">
-  <div style="width: 80%;">
-    <div class="sub-title">Select Sketch Room</div>
-    <div class="content">Create and join a brand new room.</div>
-    <div style="display:flex">
-      <form class="loginform" action="" method="post" style="width:100%">
-          <div class="form-group" style="display: flex;">
-            <div style="flex:3 0 0;margin-right: 5px;"><input type="text" id="roomname" placeholder="roomname" name="roomname" style="width: 100%;" required/></div>
-            <div style="flex:1 0 0;margin-left: 5px;"><button class="col" style="border-radius:3px;margin-top: 5px;margin-bottom: 5px;flex:1 0 0;width: 100%;">Create Room</button></div>
-          </div>
-      </form>
+<link rel="stylesheet" type="text/css" href="static/styles/index.css"/>
+<link rel="stylesheet" type="text/css" href="static/styles/room_choose.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Noto+Sans+TC:wght@100..900&display=swap" rel="stylesheet">
+<div id="form-mask" class="mask">
+  <div id="createroom-div" class="popup-form">
+    <div class="closeicondiv">
+      <img class="closeicon" src="/static/icons/close.svg" onclick="showUserForm(false)"/>
     </div>
-    {% if roominfo%}
-    <div class="content">Join to a specific room, and sketch with members together.</div>
-    <div style="display: flex;">
-      <div class="table loginform" style="--bs-table-bg:transparent;">
-        <div style="padding: 0px;display: flex;">
-          <div class="table_content" style="flex:1 0 0;color: white;border-bottom: 2px solid  rgb(184, 184, 184);">Existing Room</div>
-          <div class="table_content" style="flex:2 0 0;color: white;border-bottom: 2px solid  rgb(184, 184, 184);margin-right: 5px;">Members</div>
-          <div style="flex:1 0 0;margin-left: 5px;"></div>
+    <form id="createroom-form" class="createroom-form" method="post" action="/chooseroom">
+      <div class="form-title">Create New Room</div>
+      <div class="form-item-label">Room Name</div>
+      <input type="text" class="form-item" name="roomname" placeholder="roomname" required/>
+      <div class="form-item-label">Category</div>
+      <input type="text" class="form-item" name="category" placeholder="category" required/>
+      <div class="form-item-label">Tags</div>
+      <input type="text" class="form-item" name="tags" placeholder="tags" required/>
+      <button class="form-button">Create</button>
+    </form>
+  </div>
+</div>
+<div class="row">
+  <div class="content">
+    <div class="information">
+      <div class="left-sidebar">
+        {% if avatar%}
+        <img class="left-sidebar-avatar" src="{{avatar}}">
+        {% else%}
+        <img class="left-sidebar-avatar" src="static/icons/user.svg">
+        {% endif%}
+        <div class="left-sidebar-name">{{user.username}}</div>
+        <div class="left-sidebar-aboutme">
+          {{user.about_me}}
         </div>
-        <form method="post">
-          {% for room,members in roominfo.items() %}
-          <div style="display:flex;">
-            <div class="table_content" style="flex:1 0 0;color: rgb(184, 184, 184);padding:0px">{{room}}</div>
-            <div class="table_content" style="flex:2 0 0;margin-right: 5px;padding:0px">
-              {% for member in members %}
-              <div style="color: rgb(184, 184, 184);">{{member}} <br /></div>
+      </div>
+      <div class="main">
+        <div class="main-room">
+          <div class="sub-title">
+            <img class="main-title-icon" src="static/icons/record.svg"/>
+            <div>Live Sketch Rooms</div>
+          </div>
+          <div class="intros">Create your own Sketch room to draw, explore ideas, and have fun<br>— or check out existing rooms to join others in a creative session.</div>
+          <div class="main-room-scroll">
+            <div class="main-roomdiv">
+              <div class="main-roominfo main-roomform" onclick="showUserForm(true)">
+                <div class="main-roominfo-create">
+                  <img src="static/icons/plus-circle.svg"/>
+                </div>
+                <div class="main-roominfo-information">
+                  <div class="room-title">Create Live Room</div>
+                </div>
+              </div>
+              {% if roominfo%}
+              {% for room,roomdata in roominfo.items() %}
+              <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id="roomForm-{{room}}">
+                <input type="hidden" name="roomname" value="{{room}}">
+                <div class="main-roominfo" onclick="postRoomForm('{{room}}')">
+                  <img src="{{roomdata['thumbnail']}}">
+                  <div class="main-roominfo-banner">
+                    LIVE&nbsp;
+                    <img src="static/icons/user.svg"/>&nbsp;
+                    {{roomdata["member"]|length}}
+                  </div>
+                  <div class="main-roominfo-information">
+                    <div class="room-title">{{room}}</div>
+                  </div>
+                </div>
+              </form>
               {% endfor %}
-            </div>
-            <div style="flex:1 0 0;padding:0px;margin-left: 5px;">
-              <button type="submit" name="roomname" value="{{room}}" style="border-radius:3px;margin-top: 5px;margin-bottom: 5px;width: 100%;">
-                Join Room {{room}}
-              </button>
+              {% endif%}
             </div>
           </div>
-          {% endfor %}
-        </form>
+          <div class="sub-title">
+            <img class="main-title-icon" src="static/icons/history.svg"/>
+            <div>Your Former Rooms</div>
+          </div>
+        </div>
+        <div class="right-sidebar">
+          <div>
+            {% if src%}
+            <div>
+              <div class="sub-title">
+                <img class="main-title-icon" src="static/icons/import.svg"/>
+                <div>Import Image</div>
+              </div>
+              <div class="intros">Image will be added to the room</div>
+              <div class="right-sidebardiv">
+                <img class="right-sidebar-img" id="localimage"/>
+              </div>
+            </div>
+            {% endif%}
+          </div>
+        </div>
       </div>
     </div>
-    {% endif%}
   </div>
 </div>
-<div class="line-breaker"></div>
-<div class="col left-intro" style="margin-right: 1rem;flex:4 0 0 ">
-{% if src%}
-  <div style="border-left: 2px solid white;">
-    <div class="sub-title">Import image</div>
-    <div class="content">Import image from gallery.</div>
-    <img
-      class="m-3 border border-dark border-1 rounded-1"
-      id="localimage"
-      width="200"
-      style="background-color: white;"
-    />
-  </div>
-{% endif%}
-</div>
-</div>
-
-
-
-
-
-
-
-
-<script>
-  const importimage = async (event) => {
-    event.preventDefault();
-    const img = document.getElementById("localimage");
-    try {
-      const imageResponse = await fetch(`/image/{{src}}`);
-      if (!imageResponse.ok) throw new Error("Failed to fetch image");
-      const blob = await imageResponse.blob();
-      const imgURL = URL.createObjectURL(blob);
-      img.src = imgURL;
-      localStorage.setItem("importImage", imgURL);
-    } catch (error) {
-      console.error("Error downloading image:", error);
-    }
-  };
-  window.onload = importimage;
-</script>
+<script src="static/scripts/room_choose.js"></script>
 {% endblock %}

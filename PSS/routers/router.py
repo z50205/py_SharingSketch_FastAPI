@@ -58,8 +58,12 @@ async def logout(request:Request):
 
 @router.get("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["roomlist"])
 async def roomlist(request:Request):
-    roominfo=get_roomInfo()
-    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfo":roominfo, "username":request.session["username"]})
+    username=request.session["username"]
+    u=UserData.query_name(username)
+    avatar=None
+    if u.src_avatar:
+        avatar="/image/"+u.src_avatar
+    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfo":ws_manager.rooms, "user":u,"avatar":avatar})
 
 @router.post("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["chooseroom"])
 async def chooseroom(request:Request,roomname:str=Form()):
@@ -68,8 +72,12 @@ async def chooseroom(request:Request,roomname:str=Form()):
     if request.session["roomname"]:
         return RedirectResponse(redirect_url,status_code=303)
     else:
-        roominfo=get_roomInfo()
-        template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfo":roominfo, "username":request.session["username"]})
+        username=request.session["username"]
+        u=UserData.query_name(username)
+        avatar=None
+        if u.src_avatar:
+            avatar="/image/"+u.src_avatar
+        return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfo":ws_manager.rooms, "user":u,"avatar":avatar})
 
 @router.get("/room",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["room"])
 async def room(request:Request):
@@ -132,7 +140,7 @@ async def register(request:Request,username:str=Form(...),password:str=Form(...)
     else:
         return template.TemplateResponse(request=request,name="register.html",context={"message":"帳號已使用過"})
 
-@router.post("/api/upload",response_class=HTMLResponse, tags=["uploadimage"])
+@router.post("/api/upload",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["uploadimage"])
 async def uploadImage(request:Request,image=Form(...),description:str=Form(...),title:str=Form(...),creator:str=Form(...),tagsList:str=Form(...)):
     jsonRes=ImageData.create_image(image,description,title,creator,tagsList)
     return JSONResponse(status_code=200,content=jsonRes)
@@ -153,20 +161,25 @@ async def getUserImages(request:Request,page:int):
     jsonRes=ImageData.query_portfolio_images(username,page)
     return JSONResponse(status_code=200,content=jsonRes)
 
-@router.patch("/api/image/{id}/display",response_class=HTMLResponse, tags=["patch_image_display"])
+@router.patch("/api/image/{id}/display",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["patch_image_display"])
 async def patchImageDisplay(request:Request,id:str,page:int):
     jsonRes=ImageData.toggle_display(id,request.session['username'],page)
     return JSONResponse(status_code=200,content=jsonRes)
 
-@router.patch("/api/user/profile",response_class=HTMLResponse, tags=["patch_user_aboutme"])
+@router.patch("/api/user/profile",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["patch_user_aboutme"])
 async def patchUserAboutme(request: Request, about_me: Optional[str] = Form(None), avatar= Form(None)):
     username = request.session.get('username')
     jsonRes=UserData.upload_profile(username,about_me,avatar)
     return JSONResponse(status_code=200,content=jsonRes)
 
-@router.get("/api/tag/prefix",response_class=HTMLResponse, tags=["patch_user_aboutme"])
+@router.get("/api/tag/prefix",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["patch_user_aboutme"])
 async def patchUserAboutme(request: Request, tag_prefix:str):
     jsonRes=TagData.query_prefix(tag_prefix)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@router.get("/api/room/thumbnail/{roomname}",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["get_room_avatar"])
+async def getRoomThumbnail(request: Request,roomname:str):
+    jsonRes={"roomThumbnailImg":ws_manager.rooms[roomname]["thumbnail"]}
     return JSONResponse(status_code=200,content=jsonRes)
 
 @router.get("/image/avatars/{src}",response_class=HTMLResponse, tags=["resources"])
@@ -191,14 +204,3 @@ async def getImages(request:Request,src:str):
             'status': 'error',
             'message': 'Not found'
             })
-
-def get_roomInfo():
-    ws_manager.active_connections
-    ws_manager.rooms
-    room_dict={}
-    for k,v in ws_manager.rooms.items():
-        room_dict[k]=[]
-        for member in v:
-            room_dict[k].append(ws_manager.active_connections[member][1])
-
-    return room_dict

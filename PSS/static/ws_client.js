@@ -27,6 +27,9 @@ const connectWebSocket=()=>{
           case "join":
             ws_join(data);
             break;
+          case "updateCursorPos":
+            ws_updateCursorPos(data);
+            break;
           case "updateMemberList":
             ws_updateMemberList(data);
             break;
@@ -67,6 +70,10 @@ const connectWebSocket=()=>{
   }
     const ws_join=(data)=>{
         self_sid = data["sid"];
+    }
+    const ws_updateCursorPos=(data)=>{
+      // update
+      room_cursors[data["sid"]]={"username":data["username"],"cursorPos":data["cursor_pos"],"updateTime":Date.now()};
     }
     const ws_updateMemberList=(data)=>{
       // memberlist
@@ -158,12 +165,23 @@ const connectWebSocket=()=>{
       ul.appendChild(li);
       ul.scrollTop = ul.scrollHeight;
     };
-    
-    return socket
+
+    // send self mouse_postition to ws server per second
+    const ws_sendCursorPos =() => {
+      let current=Date.now();
+      if(current-lastSendCursorPos>=CURSORUPDATERATE){
+        if (socket.readyState === WebSocket.OPEN) {
+          const ws_packet={"event":"update_cursor_pos","sid":self_sid,"cursorPos":[(currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset,(currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset]}
+          socket.send(JSON.stringify(ws_packet));
+          lastSendCursorPos=current;
+        }
+      }
+    };
+    return {socket,ws_sendCursorPos}
 }
 
 function bye() {
-  let ws_packet={"event":"leave_room","sid":self_sid}
+  let ws_packet={"event":"leave_room","sid":self_sid};
   socket.send(JSON.stringify(ws_packet));
 }
 
@@ -171,25 +189,18 @@ function reconnect(){
   if (socket) {
     socket.close(); // 關閉舊的WebSocket連接
   }
-  socket=connectWebSocket();
+  const connectionInfo = connectWebSocket();
+  socket = connectionInfo.socket;
+  ws_sendCursorPos = connectionInfo.ws_sendCursorPos;
 }
 
 function sendMessage() {
   let message = document.getElementById("message").value;
-  let ws_packet={"event":"send_message","message":message,"sid":self_sid}
+  let ws_packet={"event":"send_message","message":message,"sid":self_sid};
   socket.send(JSON.stringify(ws_packet));
   document.getElementById("message").value = "";
 }
 
 
 
-let socket=connectWebSocket();
-
-// document.getElementById("join-btn").addEventListener("click", function () {
-//     if (socket.readyState!=1) {
-//       socket.connect();
-//       console.log("Connecting...");
-//     } else {
-//       console.log("Already connected");
-//     }
-//   });
+let {socket,ws_sendCursorPos}=connectWebSocket();

@@ -2,12 +2,12 @@
 {% if request.url.path == '/room'  %}
 <body onload="init()" style="background-color: rgb(64, 64, 64)">
   <div class="row">
-    <div class="row" style="position: relative;z-index: 101; background-color:  rgb(64, 64, 64);">
+    <div class="row" style="position: relative;z-index: 101; background-color:  rgb(64, 64, 64);border-bottom: 2px solid white;">
 {% else %}
 <body style="background-color: rgb(64, 64, 64)">
-  <link rel="stylesheet" type="text/css" href="static/nav.css"/>
+  <link rel="stylesheet" type="text/css" href="static/styles/nav.css"/>
   <div class="row">
-    <div class="row" style="z-index: 900;">
+    <div class="row" style="z-index: 900;border-bottom: 1px solid white;">
 {% endif %}
           <div class="col-10" style="display: flex;justify-content: start;align-items: center;">
             <a href="/" style="text-decoration: none;">

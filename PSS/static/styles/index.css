@@ -40,11 +40,6 @@ input::placeholder {
     margin-top:10px;
     margin-bottom:30px;
   }
-  .table_content{
-    color: rgb(184, 184, 184);
-    font-weight: 500;
-    font-size: 1.2rem;
-  }
 th{
   padding: 0px;
 }

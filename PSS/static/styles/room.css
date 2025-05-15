@@ -4,14 +4,13 @@
 #projection {
     opacity: 0;
 }
-
 ul {
     margin:0px;
     padding: 0px;
 }
 
 .mx-2{
-    background: url('trans_bg.png');
+    background: url('../trans_bg.png');
     border:0px solid;
     
 }
