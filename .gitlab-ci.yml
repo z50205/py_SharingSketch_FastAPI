@@ -17,7 +17,6 @@ build-docker-image:
     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
   script:
     - echo '打包 docker image'
-    - docker rmi $DOCKER_USERNAME/fastapi_pss
     - docker build -t $DOCKER_USERNAME/fastapi_pss .
     - docker push $DOCKER_USERNAME/fastapi_pss
 
