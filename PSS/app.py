@@ -2,7 +2,7 @@ from fastapi import FastAPI,Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from dotenv import load_dotenv
-from routers import router,wsrouter
+from routers import router,wsrouter,roomrouter
 from starlette.middleware.sessions import SessionMiddleware
 import os
 
@@ -13,6 +13,7 @@ app=FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(router)
 app.include_router(wsrouter)
+app.include_router(roomrouter)
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 

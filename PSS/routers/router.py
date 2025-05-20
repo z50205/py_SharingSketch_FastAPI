@@ -7,7 +7,7 @@ from starlette.templating import Jinja2Templates
 from functools import wraps
 import os
 from io import BytesIO
-from models import UserData,ImageData,TagData
+from models import UserData,ImageData,TagData,RoomData
 from typing import Optional
 
 
@@ -60,34 +60,41 @@ async def logout(request:Request):
 async def roomlist(request:Request):
     username=request.session["username"]
     u=UserData.query_name(username)
+    rooms=RoomData.query_rooms(u.id)
     avatar=None
     if u.src_avatar:
         avatar="/image/"+u.src_avatar
-    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfo":ws_manager.rooms, "user":u,"avatar":avatar})
+    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfolive":ws_manager.rooms,"roominfo":rooms,"user":u,"avatar":avatar})
 
 @router.post("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["chooseroom"])
-async def chooseroom(request:Request,roomname:str=Form()):
-    request.session["roomname"]=roomname
-    redirect_url=request.url_for('room') 
-    if request.session["roomname"]:
+async def chooseroom(request:Request,roomsid:str=Form(...)):
+    room=RoomData.query_room(roomsid)
+    if room:
+        request.session["roomsid"]=roomsid
+        redirect_url=request.url_for('room')
         return RedirectResponse(redirect_url,status_code=303)
     else:
-        username=request.session["username"]
-        u=UserData.query_name(username)
-        avatar=None
-        if u.src_avatar:
-            avatar="/image/"+u.src_avatar
-        return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfo":ws_manager.rooms, "user":u,"avatar":avatar})
+        return JSONResponse(status_code=401,content={'status': 'error','message': 'Room Not Found.'})
+    
+@router.post("/createroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["chooseroom"])
+async def createroom(request:Request,roomname:str=Form(...)):
+    username = request.session.get('username')
+    u=UserData.query_name(username)
+    roomsid=RoomData.create_room(roomname,u.id)
+    request.session["roomsid"]=roomsid
+    redirect_url=request.url_for('room')
+    return RedirectResponse(redirect_url,status_code=303)
 
 @router.get("/room",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["room"])
 async def room(request:Request):
     username = request.session.get('username')
-    roomname = request.session.get('roomname')
+    roomsid = request.session.get('roomsid')
     u=UserData.query_name(username)
-    if not roomname:
+    room=RoomData.query_room(roomsid)
+    if not roomsid:
         return RedirectResponse(request.headers.get('referer'),status_code=303)
     if u:
-        return template.TemplateResponse(request=request,name="room.html",context={"roomname":roomname, "username":username,'avatar':u.src_avatar})
+        return template.TemplateResponse(request=request,name="room.html",context={"roomname":room.roomname,"roomsid":roomsid,"username":username,'avatar':u.src_avatar})
     else:
         return JSONResponse(status_code=401,content={
             'status': 'error',

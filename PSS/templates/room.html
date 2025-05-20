@@ -57,16 +57,15 @@
             <div class="message-title" style="position: relative; z-index: 100">
               <input type="range" class="form-range" id="width_range" />
             </div>
-            <div class="message-title">Color:</div>
-            <div class="message-title">
-              <input type="color" id="favcolor" value="#ff0000" style="width: 100%"/>
-            </div>
-            <div class="message-title p-1 mb-1 text-white" style="background: blue" id="blue"onclick="color(this)">
-              blue
-            </div>
-            <div class="message-title p-1 mb-1 text-white" style="background: black" id="black"onclick="color(this)">
-              black
-            </div>
+              <div class="message-title draw-colorpickerdiv" id="colorpickerdiv">
+                <img class="draw-colorpicker-img" src="static/bg_colorpicker.png" id="colorpicker-img"/>
+                <div class="draw-colorpicker-bg" id="colorpicker-bg"></div>
+                <div class="draw-colorpicker-icon" id="colorpicker-icon"></div>
+              </div>
+              <div class="message-title draw-colorpickerdiv-hue">
+                <div class="draw-colorpicker-hue" id="colorpicker-hue"></div>
+                <div class="draw-colorpicker-hue-icon" id="colorpicker-hue-icon"></div>
+              </div>
           </div>
           <!-- Eraser Tool Code -->
           <div class="tab-pane fade" id="eraser" role="tabpanel" aria-labelledby="eraser-tab" style="padding:2px;">
@@ -211,6 +210,7 @@
   <!-- Client Render Code -->
   <script src="static/draw.js"></script>
   <script src="static/scripts/cursorTracker.js"></script>
+  <script src="static/scripts/colorPicker.js"></script>
   <script src="static/mod_function.js"></script>
   <script src="static/layer_function.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
@@ -218,6 +218,7 @@
   <script>
     const username = "{{ username }}";
     const room = "{{ roomname }}";
+    const roomsid = "{{ roomsid }}";
     let toolShow="";
     window.onload=init();
     function clickHidden(eleName){

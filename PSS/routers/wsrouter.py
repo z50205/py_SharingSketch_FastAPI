@@ -1,12 +1,13 @@
 from fastapi import APIRouter,Request,Form,Depends,HTTPException,WebSocket,WebSocketDisconnect
 import uuid,asyncio
+from models import RoomData
 
 class ConnectionManager:
     def __init__(self):
-        # active_connections dict k:v="sid":[roomname,username,websocket instance]
+        # active_connections dict k:v="sid":[roomsid,username,websocket instance]
         self.active_connections: dict[str,list[str,str,WebSocket]] = {}
-        # rooms dict k:v="roomname":[member,room img thumbnail]
-        self.rooms: dict[str,list[str],str] = {}
+        # rooms dict k:v="roomsid":[roomname,[member],room img thumbnail]
+        self.rooms: dict[str,str,list[str],str] = {}
 
 # connect to server ,have to set params in join API. 
     async def connect(self, websocket: WebSocket):
@@ -17,17 +18,17 @@ class ConnectionManager:
             if v[2]==websocket:
                 sid=k
                 break
-        leave_roomname=self.active_connections[sid][0]
-        self.rooms[leave_roomname]["member"].remove(sid)
+        leave_roomsid=self.active_connections[sid][0]
+        self.rooms[leave_roomsid]["member"].remove(sid)
         room_memberlist=[]
         room_canvassids=[]
-        for membersid in self.rooms[leave_roomname]["member"]:
+        for membersid in self.rooms[leave_roomsid]["member"]:
             room_memberlist.append(self.active_connections[membersid][1])
             room_canvassids.append(membersid)
-        await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},leave_roomname)
-        await ws_manager.event_send_filter(websocket,{"event":"removeLeaveCanvas","sid":sid},leave_roomname)
-        if not self.rooms[leave_roomname]["member"]:
-            del self.rooms[leave_roomname]
+        await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},leave_roomsid)
+        await ws_manager.event_send_filter(websocket,{"event":"removeLeaveCanvas","sid":sid},leave_roomsid)
+        if not self.rooms[leave_roomsid]["member"]:
+            del self.rooms[leave_roomsid]
         del self.active_connections[sid]
         await ws_manager.event_send_filter(websocket,{"event":"removeRoomCanvas","sid":sid})
 
@@ -44,12 +45,12 @@ class ConnectionManager:
         event=ws_data["event"]
         if event=="user_join":
             await ws_manager.join(websocket,ws_data)
-            print("in user_join:"+str(ws_data["username"])+str(ws_data["roomname"]))
+            print("in user_join:"+str(ws_data["username"])+str(ws_data["roomsid"]))
         elif event=="update_cursor_pos":
             await ws_manager.updateCursorPos(websocket,ws_data)
         elif event=="new_img":
             await ws_manager.newImg(websocket,ws_data)
-            print("in new_img:"+str(ws_data["roomname"]))        
+            print("in new_img:"+str(ws_data["roomsid"]))        
         elif event=="leave_room":
             await ws_manager.disconnect(websocket)
             print("in leave_room:")
@@ -63,46 +64,59 @@ class ConnectionManager:
     # assign sid and join to specific room. 
     async def join(self, websocket: WebSocket,ws_data:dict[str:str]):
         sid=str(uuid.uuid4())
-        roomname=ws_data["roomname"]
+        roomsid=ws_data["roomsid"]
         username=ws_data["username"]
-        self.active_connections[sid]=[roomname,username,websocket]
-        if roomname not in self.rooms.keys():
-            self.rooms[roomname] = {"member": [sid]}
-        else:
-            self.rooms[roomname]["member"].append(sid)
-        room_memberlist=[]
-        room_canvassids=[]
-        for membersid in self.rooms[roomname]["member"]:
+        self.active_connections[sid]=[roomsid,username,websocket]
+
+        # Verify whether the room exists in the database
+        room=RoomData.query_room(roomsid)
+        # Case1: roomsid is live
+        if roomsid in self.rooms.keys():
+            self.rooms[roomsid]["member"].append(sid)
+            room_memberlist=[]
+            room_canvassids=[]
+            for membersid in self.rooms[roomsid]["member"]:
                 room_memberlist.append(self.active_connections[membersid][1])
                 room_canvassids.append(membersid)
-        await ws_manager.event_send_filter(websocket,{"event":"join","sid":sid})
-        await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},roomname)
-        await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvas","canvassids":room_canvassids,"sid":sid},roomname)
+            await ws_manager.event_send_filter(websocket,{"event":"join","sid":sid})
+            await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},roomsid)
+            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvasDatabase","sid":sid},roomsid)
+            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvas","canvassids":room_canvassids,"sid":sid},roomsid)
+        # Case2: roomsid is in database
+        elif room:
+            self.rooms[roomsid] = {"roomname":room.roomname,"member": [sid]}
+            room_memberlist=[]
+            for membersid in self.rooms[roomsid]["member"]:
+                room_memberlist.append(self.active_connections[membersid][1])
+            await ws_manager.event_send_filter(websocket,{"event":"join","sid":sid})
+            await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},roomsid)
+            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvasDatabase","sid":sid},roomsid)
+            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvas","canvassids":room_canvassids,"sid":sid},roomsid)
 
     async def newImg(self, websocket: WebSocket,ws_data:dict[str:str]):
         img=ws_data['imgdata']
-        roomname=ws_data['roomname']
+        roomsid=ws_data['roomsid']
         start_at=ws_data['start_at']
         request_sid=ws_data.get("sid","try")
-        await ws_manager.event_send_filter(websocket,{"event":"updateImg","imgdata":img,"sid":request_sid,"start_at": start_at},roomname)
+        await ws_manager.event_send_filter(websocket,{"event":"updateImg","imgdata":img,"sid":request_sid,"start_at": start_at},roomsid)
     
     async def sendMessage(self, websocket: WebSocket,ws_data:dict[str:str]):
         request_sid=ws_data['sid']
-        roomname=self.active_connections[request_sid][0]
+        roomsid=self.active_connections[request_sid][0]
         username=self.active_connections[request_sid][1]
-        await ws_manager.event_send_filter(websocket,{"event":"sendMessage","message":ws_data['message'],"username":username,"sid":request_sid},roomname)
+        await ws_manager.event_send_filter(websocket,{"event":"sendMessage","message":ws_data['message'],"username":username,"sid":request_sid},roomsid)
 
     async def updateRoomImage(self, websocket: WebSocket,ws_data:dict[str:str]):
-        roomname=ws_data['roomname']
+        roomsid=ws_data['roomsid']
         img=ws_data['imgdata']
-        ws_manager.rooms[roomname]["thumbnail"]=img
+        ws_manager.rooms[roomsid]["thumbnail"]=img
 
 
     async def updateCursorPos(self, websocket: WebSocket,ws_data:dict[str:str]):
         request_sid=ws_data['sid']
-        roomname=self.active_connections[request_sid][0]
+        roomsid=self.active_connections[request_sid][0]
         username=self.active_connections[request_sid][1]
-        await ws_manager.event_send_filter(websocket,{"event":"updateCursorPos","username":username,"cursor_pos":ws_data['cursorPos'],"sid":request_sid},roomname)
+        await ws_manager.event_send_filter(websocket,{"event":"updateCursorPos","username":username,"cursor_pos":ws_data['cursorPos'],"sid":request_sid},roomsid)
 
     async def event_send_filter(self, websocket,ws_data,to:str=None):
         event=ws_data["event"]
@@ -114,6 +128,8 @@ class ConnectionManager:
             await ws_manager.broadcast(ws_data,to,True)
         elif event=="createRoomCanvas":
             await ws_manager.broadcast(ws_data,to,True)
+        elif event=="createRoomCanvasDatabase":
+            await ws_manager.send_personal_message(websocket,ws_data)
         elif event=="updateImg":
             await ws_manager.broadcast(ws_data,to,False)
         elif event=="removeLeaveCanvas":

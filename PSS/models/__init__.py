@@ -27,3 +27,5 @@ from .user import UserData
 from .tag import TagData
 from .image_mtm_tag import ImageTagData
 from .image import ImageData
+from .room import RoomData
+from .layer import LayerData

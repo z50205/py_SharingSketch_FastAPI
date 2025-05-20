@@ -84,7 +84,6 @@ function init() {
   restore_active = ["minelayer1"]; //Undo record
   width_range = document.getElementById("width_range");
   eraser_width_range = document.getElementById("eraser_width_range");
-  custom_color = document.getElementById("favcolor");
   zoom_range = document.getElementById("zoom_range");
   revise_range = document.getElementById("revise_range");
   let opacity_range=document.getElementById("opacity_range");
@@ -269,14 +268,6 @@ function init() {
     },
     false
   );
-  //Tool custom color eventlistener
-  custom_color.addEventListener(
-    "input",
-    function (e) {
-      x = custom_color.value.toString();
-    },
-    false
-  );
   updateToolInfo();
   loadimage_gallery();
   //Tool load eventlistener
@@ -318,6 +309,7 @@ function backLastStep() {
       restore_active.length--;
       delete_canvas_pivots.length--;
       restore.length--;
+      Updatethumbnail();
       updateCanvas();
     } else {
       console.log(restore_active);
@@ -334,6 +326,7 @@ function backLastStep() {
         .toDataURL("image/png");
       restore_active.length--;
       restore.length--;
+      Updatethumbnail();
       updateCanvas();
     }
   }
@@ -491,24 +484,26 @@ async function reroomlist() {
 //Tool Load image from gallery
 async function loadimage_gallery() {
   const cookieValue = cookie_value("src");
-  try {
-    const imageResponse = await fetch(`/image/${cookieValue}`);
-    if (!imageResponse.ok) throw new Error("Failed to fetch image");
+  if(cookieValue){
+    try {
+      const imageResponse = await fetch(`/image/${cookieValue}`);
+      if (!imageResponse.ok) throw new Error("Failed to fetch image");
 
-    const blob = await imageResponse.blob();
-    console.log(blob);
-    var img = new Image();
-    const imgURL = URL.createObjectURL(blob);
-    img.src = imgURL;
-    img.onload = function () {
-      ctx_active.globalCompositeOperation = "source-over";
-      ctx_active.clearRect(0, 0, w, h);
-      ctx_active.drawImage(img, 0, 0);
-      restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
-      restore_active[restore_active.length] = can_active.id;
-    };
-  } catch (error) {
-    console.error("Error downloading image:", error);
+      const blob = await imageResponse.blob();
+      console.log(blob);
+      var img = new Image();
+      const imgURL = URL.createObjectURL(blob);
+      img.src = imgURL;
+      img.onload = function () {
+        ctx_active.globalCompositeOperation = "source-over";
+        ctx_active.clearRect(0, 0, w, h);
+        ctx_active.drawImage(img, 0, 0);
+        restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
+        restore_active[restore_active.length] = can_active.id;
+      };
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
   }
 }
 function cookie_value(cookname) {
@@ -536,6 +531,7 @@ async function loadimage(event) {
       ctx_active.drawImage(img, 0, 0);
       restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
       restore_active[restore_active.length] = can_active.id;
+      Updatethumbnail();
       updateCanvas();
     };
   };
@@ -623,27 +619,6 @@ function color(obj) {
     document.getElementById("draw-tab").style.borderColor="";
   }else{
     switch (obj.id) {
-      case "green":
-        x = "green";
-        break;
-      case "blue":
-        x = "blue";
-        break;
-      case "red":
-        x = "red";
-        break;
-      case "yellow":
-        x = "yellow";
-        break;
-      case "orange":
-        x = "orange";
-        break;
-      case "black":
-        x = "black";
-        break;
-      case "black":
-        x = "black";
-        break;
       case "eraser-tab":
         draw_flag = false;
         document.getElementById("draw-tab").classList.remove("active");
@@ -690,7 +665,8 @@ function findxy(res, e, draw_flag) {
       }
       restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
       restore_active[restore_active.length] = can_active.id;
-      setTimeout(() => updateCanvas(), 0)
+      Updatethumbnail();
+      updateCanvas();
     }
     flag = false;
   }
@@ -748,15 +724,28 @@ function erase_all() {
   var m = confirm("Want to clear");
   if (m) {
     ctx_active.clearRect(0, 0, w, h);
+    Updatethumbnail();
     updateCanvas();
   }
 }
+//Updatethumbnail
+function Updatethumbnail() {
+  let thumbnail_img = document.getElementById("thumbnail_" + can_active.id.slice(9)).childNodes[1];
+  can_active.toBlob(function(blob) {
+    if (blob) {
+      if(thumbnail_img.src){
+        URL.revokeObjectURL(thumbnail_img.src);
+      }
+      thumbnail_img.src = URL.createObjectURL(blob);
+    }
+  }, 'image/webp');
+}
+
+
+
 //Updatecanvas
 function updateCanvas() {
   ctx_proj.clearRect(0, 0, w, h);
-  let thumbnail_img = document.getElementById(
-    "thumbnail_" + can_active.id.slice(9)
-  ).childNodes[1];
   let minelayers = document.getElementsByClassName("minelayer");
   if (minelayers.length == 0) can_proj = can_active;
   else {
@@ -769,21 +758,12 @@ function updateCanvas() {
       }
     }
   }
-  // console.log(thumbnail_img);
-can_active.toBlob(function(blob) {
-  if (blob) {
-    if(thumbnail_img.src){
-      URL.revokeObjectURL(thumbnail_img.src);
-    }
-    thumbnail_img.src = URL.createObjectURL(blob);
-  }
-}, 'image/webp');
 can_proj.toBlob(function(blob) {
   if (blob) {
   const reader = new FileReader();
   reader.onloadend=()=>{
     let start_at =  Date.now();
-    let ws_packet={"event":"new_img","sid":self_sid,"imgdata":reader.result,"roomname":room,"start_at":start_at};
+    let ws_packet={"event":"new_img","sid":self_sid,"imgdata":reader.result,"roomsid":roomsid,"start_at":start_at};
     socket.send(JSON.stringify(ws_packet));
   }
   reader.readAsDataURL(blob);
@@ -800,7 +780,7 @@ can_proj.toBlob(function(blob) {
   const reader = new FileReader();
   reader.onloadend=()=>{
     let start_at =  Date.now();
-    let ws_packet={"event":"update_room_img","sid":self_sid,"imgdata":reader.result,"roomname":room,"start_at":start_at};
+    let ws_packet={"event":"update_room_img","sid":self_sid,"imgdata":reader.result,"roomsid":roomsid,"start_at":start_at};
     socket.send(JSON.stringify(ws_packet));
   }
   reader.readAsDataURL(blob);

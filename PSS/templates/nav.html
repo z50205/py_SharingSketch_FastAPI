@@ -8,7 +8,6 @@
   <link rel="stylesheet" type="text/css" href="static/styles/nav.css"/>
   <div class="row">
     <div class="row" style="z-index: 900;border-bottom: 1px solid white;">
-{% endif %}
           <div class="col-10" style="display: flex;justify-content: start;align-items: center;">
             <a href="/" style="text-decoration: none;">
                 <h1 class="fw-bold m-3 text-light" style="width: fit-content;">Sharing Sketch</h1>
@@ -22,6 +21,7 @@
             {% include "nav_collapse1.html"%}
             {% endif %}
           </div>
+{% endif %}
           {% if request.url.path == '/room'  %}
           {% include "nav_roomtools.html"%}
           {% endif %}

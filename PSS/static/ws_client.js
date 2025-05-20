@@ -5,7 +5,7 @@ let self_sid;
 
 
 const connectWebSocket=()=>{
-    const socket = new WebSocket("http://127.0.0.1:8000/ws");
+    const socket = new WebSocket("http://localhost/ws");
     socket.onopen=(ev)=>{
         if (socket.readyState!=1){
             reconnect();
@@ -15,7 +15,7 @@ const connectWebSocket=()=>{
             document.getElementById("chat").style.display = "block";
             document.getElementById("members").style.display = "block";
             document.getElementById("landing").style.display = "none";
-            let ws_packet={"event":"user_join","username":username,"roomname":room}
+            let ws_packet={"event":"user_join","username":username,"roomsid":roomsid}
             socket.send(JSON.stringify(ws_packet));
             document.getElementById("bye_button").checked = true;
             document.getElementById("bye_button").disabled = false;
@@ -35,6 +35,9 @@ const connectWebSocket=()=>{
             break;
           case "createRoomCanvas":
             ws_createRoomCanvas(data);
+            break;
+          case "createRoomCanvasDatabase":
+            ws_createRoomCanvasDatabase(data);
             break;
           case "updateImg":
             ws_updateImg(data);
@@ -119,10 +122,17 @@ const connectWebSocket=()=>{
         }
         updateCanvas();
     }
+    const ws_createRoomCanvasDatabase= async (data)=>{
+      let response=await fetch("api/layers",{
+        method:"POST"
+      });
+      let result=await response.json();
+      init_layer_database(result);
+    }
     const ws_updateImg=(data)=>{
       // var img=document.getElementById("update_img");
       // img.src=data["updateimg"];
-      var img = new Image();
+      let img = new Image();
       img.src = data["imgdata"];
       img.onload = function () {
         ctx_others = document.getElementById(data["sid"]).getContext("2d");
@@ -202,5 +212,5 @@ function sendMessage() {
 }
 
 
-
+  
 let {socket,ws_sendCursorPos}=connectWebSocket();

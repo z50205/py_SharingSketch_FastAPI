@@ -1,60 +1,54 @@
 from sqlmodel import Field, Session, SQLModel,select,insert,update
-from fastapi import UploadFile
 import datetime
 from typing import Optional
-from . import engine,client,BUCKET_NAME
+from . import engine
 import uuid
 
 class RoomData(SQLModel, table=True):
     id: str = Field(default=None, primary_key=True)
+    roomname:str=Field(nullable=False)
     description: Optional[str] = None
     creator_id: str = Field(default=None, foreign_key="userdata.id",ondelete="CASCADE")
     create_time: str = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
+    is_display:bool= Field(default=True)
 
-    def set_pw(self,password):
-        return pbkdf2_sha256.hash(password)
-    def check_pw(self,password):
-        return pbkdf2_sha256.verify(password, self.password_hash)
-    
     @classmethod
-    def query_name(self,username:str):
+    def query_rooms(self,creator_id:str):
         with Session(engine) as session:
-            statement = select(UserData).where(UserData.username == username)
-            users = session.exec(statement)
-            return users.first()
+            statement = select(RoomData).where(RoomData.creator_id == creator_id).order_by(RoomData.create_time.desc())
+            rooms = session.exec(statement).fetchall()
+            return rooms
+        
     @classmethod
-    def create_account(self,username:str,password:str):
+    def query_room(self,id:str):
+        with Session(engine) as session:
+            statement = select(RoomData).where(RoomData.id == id)
+            room = session.exec(statement).one_or_none()
+            return room
+        
+    @classmethod
+    def create_room(self,roomname:str,creator_id:str,description:Optional[str] = None):
         dt = datetime.datetime.now(datetime.timezone.utc)
         dt_sec = dt.isoformat(timespec='seconds') 
         dt_iso = dt_sec.replace("+00:00", "Z")
-        u=UserData(id=uuid.uuid4(),username=username,password_hash=self.set_pw(self,password),create_time=dt_iso)
-        with Session(engine) as session:
-            session.add(u)
-            session.commit()
-    @classmethod
-    def upload_profile(self,username:str,about_me:str,avatar:UploadFile):
+        room=RoomData(id=str(uuid.uuid4()),roomname=roomname,creator_id=creator_id,description=description,create_time=dt_iso)
         try:
-            update_info={}
-            if avatar !='':
-                if (avatar.content_type =="image/png" or avatar.content_type =="image/jpeg" or avatar.content_type =="image/jpg") and avatar.size<=2000000:
-                    filename="avatars/avatar-"+username+"."+str.split(avatar.filename,".")[1]
-                    contents=avatar.file.read()
-                    response = client.put_object(Body=contents,Bucket=BUCKET_NAME,Key=filename)
-                    update_info["src_avatar"]=filename
-                    avatar.file.close()
-            if about_me !='':
-                update_info["about_me"]=about_me
             with Session(engine) as session:
-                statement = update(UserData).where(UserData.username == username).values(update_info)
-                result=session.exec(statement)
+                session.add(room)
                 session.commit()
-                return {"message":"upload success!"}
-        except:
-            return {"message":"upload failed!"}
+                return  room.id
+        except Exception as e:
+            return {"message": "Create failed!", "error": str(e)}
     @classmethod
-    def query_avatar(self,src_avatar:str):
-        response = client.get_object(Bucket=BUCKET_NAME,Key=src_avatar)
-        return response['Body'].read()
+    def delete_room(self,id:str):
+        try:
+            with Session(engine) as session:
+                room =session.exec(select(RoomData).where(RoomData.id == id)).one_or_none()
+                session.delete(room)
+                session.commit()
+                return {"message":"Delete success!"}
+        except Exception as e:
+            return {"message": "Delete failed!", "error": str(e)}
         
     
 SQLModel.metadata.create_all(engine)

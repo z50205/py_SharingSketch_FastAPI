@@ -95,6 +95,49 @@ input {
     background-color: rgb(168, 168, 168);
 }
 
+.draw-colorpickerdiv{
+    position: relative;
+    border: 2px solid white;
+    cursor: crosshair;
+}
+
+.draw-colorpicker-img{
+    position: absolute;
+    width:100%;
+    pointer-events: none;
+}
+.draw-colorpicker-bg{
+    background-color: red;
+    width: 100%;
+    aspect-ratio: 1;
+}
+.draw-colorpicker-icon{
+    position: absolute;
+    width: 10px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid white;
+    pointer-events: none;
+}
+
+.draw-colorpickerdiv-hue{
+    position: relative;
+    margin: 1rem;
+}
+
+.draw-colorpicker-hue{
+    height: 20px;
+    border-radius: 5px 5px 0px 0px;
+    border: 2px solid white;
+    background: linear-gradient(90deg, hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%), hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%), hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%));
+}
+.draw-colorpicker-hue-icon{
+    position: relative;
+    width: 3px;
+    height: 10px;
+    border: 2px solid white;
+    pointer-events: none;
+}
 
 
 @media(max-width:600px){

@@ -229,6 +229,7 @@ function writedown() {
     revise_range.value=1;
     document.getElementById('revise_range_div').style.display="none";
     document.getElementById('revise-tool').style.display="none";
+    Updatethumbnail();
     updateCanvas();
 }
 function change_to_local(curr, scale_orgin, scale, scale_xy, offset) {

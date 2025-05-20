@@ -34,7 +34,7 @@
     showUserForm(false);}
     });
 
-const postRoomForm=(roomname)=>{
-    let roomForm=document.getElementById("roomForm-"+roomname);
+const postRoomForm=(roomid)=>{
+    let roomForm=document.getElementById("roomForm-"+roomid);
     roomForm.submit();
   }

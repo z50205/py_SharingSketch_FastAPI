@@ -7,7 +7,7 @@
     <div class="closeicondiv">
       <img class="closeicon" src="/static/icons/close.svg" onclick="showUserForm(false)"/>
     </div>
-    <form id="createroom-form" class="createroom-form" method="post" action="/chooseroom">
+    <form id="createroom-form" class="createroom-form" method="post" action="/createroom">
       <div class="form-title">Create New Room</div>
       <div class="form-item-label">Room Name</div>
       <input type="text" class="form-item" name="roomname" placeholder="roomname" required/>
@@ -50,10 +50,10 @@
                   <div class="room-title">Create Live Room</div>
                 </div>
               </div>
-              {% if roominfo%}
-              {% for room,roomdata in roominfo.items() %}
+              {% if roominfolive%}
+              {% for room,roomdata in roominfolive.items() %}
               <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id="roomForm-{{room}}">
-                <input type="hidden" name="roomname" value="{{room}}">
+                <input type="hidden" name="roomsid" value="{{room}}">
                 <div class="main-roominfo" onclick="postRoomForm('{{room}}')">
                   <img src="{{roomdata['thumbnail']}}">
                   <div class="main-roominfo-banner">
@@ -62,7 +62,7 @@
                     {{roomdata["member"]|length}}
                   </div>
                   <div class="main-roominfo-information">
-                    <div class="room-title">{{room}}</div>
+                    <div class="room-title">{{roomdata["roomname"]}}</div>
                   </div>
                 </div>
               </form>
@@ -73,6 +73,22 @@
           <div class="sub-title">
             <img class="main-title-icon" src="static/icons/history.svg"/>
             <div>Your Former Rooms</div>
+          </div>
+          <div class="main-room-scroll">
+            <div class="main-roomdiv">
+              {% if roominfo%}
+              {% for room in roominfo %}
+              <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id="roomForm-{{room.id}}">
+                <input type="hidden" name="roomsid" value="{{room.id}}">
+                <div class="main-roominfo" onclick="postRoomForm('{{room.id}}')">
+                  <div class="main-roominfo-information">
+                    <div class="room-title">{{room.roomname}}</div>
+                  </div>
+                </div>
+              </form>
+              {% endfor %}
+              {% endif%}
+            </div>
           </div>
         </div>
         <div class="right-sidebar">

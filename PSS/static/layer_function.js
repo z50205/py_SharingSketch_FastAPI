@@ -50,16 +50,16 @@ function add_minelayer_existed(delete_canvas_pivot, restore_id) {
 
 function li_template(thumbnailsParentNode, thumbnail_active, minelayer_count_record) {
     var minelayers = document.getElementsByClassName('minelayer');
-    li = document.createElement("li");
+    let li = document.createElement("li");
     li.setAttribute("id", "thumbnail_" + minelayer_count_record);
     li.setAttribute("onclick", "change_minelayer_active(this)");
-    a_ele = document.createElement("a");
+    let a_ele = document.createElement("a");
     a_ele.style.margin = "10px";
     a_ele.setAttribute("id", "visibility_" + minelayer_count_record);
     a_ele.setAttribute("onclick", "change_minelayer_visibility(this)");
-    svg = document.createElement("img");
+    let svg = document.createElement("img");
     svg.src="/static/icons/eye.svg";
-    img = document.createElement("img");
+    let img = document.createElement("img");
     img.setAttribute("class", "mx-2");
     img.width = 75;
     img.height = 75;
@@ -67,6 +67,7 @@ function li_template(thumbnailsParentNode, thumbnail_active, minelayer_count_rec
     a_ele.appendChild(svg);
     li.appendChild(a_ele);
     li.appendChild(img);
+    set_minelayer_visibility(a_ele);
     thumbnailsParentNode.insertBefore(li, thumbnail_active);
     return li;
 }
@@ -117,6 +118,97 @@ function change_minelayer_active(obj) {
     opacity_range.value=can_active.style.opacity;
 }
 
+async function save_layer_database() {
+    let minelayers = document.getElementsByClassName("minelayer");
+    for (let i = 0; i < minelayers.length; i++) {
+        minelayers[i].toBlob(
+            async(blob)=>{
+                if (blob) {
+                    const formData = new FormData();
+                    formData.append("image", blob, "image.png");
+                    formData.append("layername", minelayers[i].id);
+                    formData.append("opacity", minelayers[i].style.opacity);
+                    formData.append("is_display",minelayers[i].style.visibility=="visible");
+                    formData.append("z_index",i);
+                    try {
+                        const response = await fetch("/api/layer", {
+                        method: "PATCH",
+                        body: formData,
+                        });
+
+                        if (!response.ok) {
+                        throw new Error("File upload failed");
+                        }
+
+                        const result = await response.json();
+                        console.log("File uploaded successfully:", result);
+                    } catch (error) {
+                        console.error("Error uploading file:", error);
+                    }
+                }
+            }, 'image/webp');
+    }
+}
+
+async function init_layer_database(layerinfo) {
+    let canvasParentNode = document.getElementById('painting-area');
+    let thumbnailsParentNode = document.getElementById('layer_thumbnail');
+    const formData = new FormData();
+    const layerInfoResponse =await fetch("/api/layers/",{
+        method:"POST"
+    })
+    for(let i=0;i<layerinfo.length;i++){
+        try{
+            let exist_canvas=document.getElementById(layerinfo[i]["layername"]);
+            let update_canvas;
+            if(exist_canvas){
+                update_canvas=exist_canvas;
+            }else{
+                update_canvas = document.createElement("canvas");
+            }
+                update_canvas.style = "position:absolute;border:0px solid; touch-action: none;z-index: 10;";
+                update_canvas.style.top = top_key;
+                update_canvas.style.left = left_key;
+                update_canvas.height = h;
+                update_canvas.width = w;
+                update_canvas.className = "minelayer";
+                update_canvas.style.transform = scaleKey;
+                update_canvas.id = layerinfo[i]["layername"];
+                update_canvas.style.opacity = layerinfo[i]["opacity"];
+                if(layerinfo[i]["is_display"]){
+                    update_canvas.style.visibility =  "visible";
+                }else{
+                    update_canvas.style.visibility =  "hidden"
+                }
+                let minelayer1 = document.getElementById(('minelayer1'));
+                canvasParentNode.insertBefore(update_canvas, minelayer1.nextElementSibling);
+
+            const layerResponse =await fetch("/api/layer/"+layerinfo[i]["layername"])
+            if (!layerResponse.ok) throw new Error("Failed to fetch layer");
+
+            const blob = await layerResponse.blob();
+            let img = new Image();
+            const imgURL = URL.createObjectURL(blob);
+            img.src = imgURL;
+            img.onload = function () {
+                update_ctx=update_canvas.getContext("2d");
+                update_ctx.globalCompositeOperation = "source-over";
+                update_ctx.drawImage(img, 0, 0);
+                //add layer_thumbnail
+                if (!exist_canvas){
+                    let thumbnail_active = document.getElementById(('thumbnail_1'));
+                    li_template(thumbnailsParentNode, thumbnail_active, update_canvas.id.slice(9));
+                }
+                can_active=update_canvas;
+                Updatethumbnail();
+            };
+        }catch (error) {
+            console.error("Error downloading image:", error);
+        }
+    }
+    updateCanvas()
+}
+
 function change_minelayer_visibility(obj) {
     let id = 'minelayer' + obj.id.slice(11);
     let can_set_vis = document.getElementById(id);//active layer (can be modified) 
@@ -128,7 +220,18 @@ function change_minelayer_visibility(obj) {
         can_set_vis.style.visibility="hidden";
         obj.children[0].src="/static/icons/eye-slash.svg"
     }
-    updateCanvas()
+    updateCanvas();
+}
+
+function set_minelayer_visibility(obj) {
+    let id = 'minelayer' + obj.id.slice(11);
+    let can_set_vis = document.getElementById(id);//active layer (can be modified) 
+    let visset=can_set_vis.style.visibility;
+    if (visset=="hidden"){
+        obj.children[0].src="/static/icons/eye-slash.svg"
+    }else{
+        obj.children[0].src="/static/icons/eye.svg"
+    }
 }
 //Update canvas algorithm(have to combine in one canvas and send)
 //Have to add aria in html for interaction for minelayer(add/delete/opacity/order)
