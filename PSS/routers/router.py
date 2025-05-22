@@ -64,7 +64,13 @@ async def roomlist(request:Request):
     avatar=None
     if u.src_avatar:
         avatar="/image/"+u.src_avatar
-    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfolive":ws_manager.rooms,"roominfo":rooms,"user":u,"avatar":avatar})
+    roominfo_dict=[]
+    for room in rooms:
+        live_memeber_len=0
+        if room.id in ws_manager.rooms:
+            live_memeber_len=len(ws_manager.rooms[room.id]["member"])
+        roominfo_dict.append({"roomname":room.roomname,"id":room.id,"live_memeber_len":live_memeber_len})
+    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfolive":ws_manager.rooms,"roominfo":roominfo_dict,"user":u,"avatar":avatar})
 
 @router.post("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["chooseroom"])
 async def chooseroom(request:Request,roomsid:str=Form(...)):

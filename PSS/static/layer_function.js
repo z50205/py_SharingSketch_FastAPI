@@ -120,8 +120,11 @@ function change_minelayer_active(obj) {
 
 async function save_layer_database() {
     let minelayers = document.getElementsByClassName("minelayer");
+    const deleteLayersResponse = await fetch("/api/layers", {method: "DELETE"});
+    const uploadPromises = [];
     for (let i = 0; i < minelayers.length; i++) {
-        minelayers[i].toBlob(
+        const promise=new Promise((resolve)=>{
+            minelayers[i].toBlob(
             async(blob)=>{
                 if (blob) {
                     const formData = new FormData();
@@ -142,12 +145,20 @@ async function save_layer_database() {
 
                         const result = await response.json();
                         console.log("File uploaded successfully:", result);
+                        resolve();
                     } catch (error) {
                         console.error("Error uploading file:", error);
+                        resolve();
                     }
+                }else{
+                    resolve();
                 }
             }, 'image/webp');
+        })
+        uploadPromises.push(promise);
     }
+    await Promise.all(uploadPromises);
+    const createThumbnailResponse = await fetch("/api/room/thumbnail", {method: "POST"});
 }
 
 async function init_layer_database(layerinfo) {

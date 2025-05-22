@@ -13,18 +13,28 @@ from . import login_required
 
 roomrouter = APIRouter()
 
-@roomrouter.post("/api/rooms",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["roomlist"])
-async def createRoom(request:Request):
-    username = request.session.get('username')
-    u=UserData.query_name(username)
 
+@roomrouter.post("/api/room/thumbnail",response_class=HTMLResponse, tags=["resources"])
+async def uploadLayer(request:Request):
+    username = request.session.get('username')
+    roomsid = request.session.get('roomsid')
+    jsonRes=LayerData.create_room_thumbnail(roomsid)
+    return JSONResponse(status_code=200,content=jsonRes)
 
 @roomrouter.post("/api/layers",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["getDatabaselayers"])
-async def getlayers(request:Request):
+async def getLayers(request:Request):
     username = request.session.get('username')
     roomsid = request.session.get('roomsid')
     u=UserData.query_name(username)
-    jsonRes=LayerData.query_layers(roomsid,u.id)
+    jsonRes=LayerData.query_room_self_layers(roomsid,u.id)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@roomrouter.delete("/api/layers",response_class=HTMLResponse, tags=["resources"])
+async def deleteLayers(request:Request):
+    username = request.session.get('username')
+    roomsid = request.session.get('roomsid')
+    u=UserData.query_name(username)
+    jsonRes=LayerData.delete_room_layers(roomsid,u.id)
     return JSONResponse(status_code=200,content=jsonRes)
 
 @roomrouter.patch("/api/layer",response_class=HTMLResponse, tags=["resources"])
@@ -35,12 +45,24 @@ async def uploadLayer(request:Request,image=Form(...),layername:str=Form(...),op
     jsonRes=LayerData.create_layer(image,roomsid,layername,u.id,opacity,is_display,z_index)
     return JSONResponse(status_code=200,content=jsonRes)
 
+
 @roomrouter.get("/api/layer/{layername}",response_class=HTMLResponse, tags=["resources"])
-async def getlayer(request:Request,layername:str):
+async def getLayer(request:Request,layername:str):
     username = request.session.get('username')
     roomsid = request.session.get('roomsid')
     u=UserData.query_name(username)
     file=LayerData.query_layer(roomsid,u.id,layername)
+    if file:
+        return StreamingResponse(BytesIO(file), media_type="image/webp")
+    else:
+        return JSONResponse(status_code=404,content={
+            'status': 'error',
+            'message': 'Not found'
+            })
+    
+@roomrouter.get("/thumbnail/{roomsid}",response_class=HTMLResponse, tags=["resources"])
+async def getLayer(request:Request,roomsid:str):
+    file=LayerData.query_thumbnail(roomsid)
     if file:
         return StreamingResponse(BytesIO(file), media_type="image/webp")
     else:

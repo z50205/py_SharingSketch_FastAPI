@@ -27,6 +27,7 @@ markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 mdurl==0.1.2
 passlib==1.7.4
+pillow==11.2.1
 pycparser==2.22
 pydantic==2.10.6
 pydantic_core==2.27.2
@@ -47,7 +48,7 @@ sqlmodel==0.0.22
 starlette==0.45.3
 typer==0.15.1
 typing_extensions==4.12.2
-urllib3==1.26
+urllib3==1.26.0
 uvicorn==0.34.0
 watchfiles==1.0.4
-websockets==14.
+websockets==14.0

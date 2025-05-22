@@ -3,7 +3,8 @@ from fastapi import UploadFile
 import datetime
 from typing import Optional
 from . import engine,client,BUCKET_NAME
-import uuid
+from PIL import Image
+import io,uuid
 
 class LayerData(SQLModel, table=True):
     id: str = Field(default=None, primary_key=True)
@@ -16,7 +17,7 @@ class LayerData(SQLModel, table=True):
     z_index:int=Field(nullable=False)                     
 
     @classmethod
-    def query_layers(self,room_id:str,creator_id:str):
+    def query_room_self_layers(self,room_id:str,creator_id:str):
         with Session(engine) as session:
             statement = select(LayerData).where(LayerData.room_id == room_id).where(LayerData.creator_id == creator_id).order_by(LayerData.z_index.desc())
             results = session.exec(statement).fetchall()
@@ -24,7 +25,7 @@ class LayerData(SQLModel, table=True):
             for layer in results:
                 layers_dict.append({"id":layer.id,"layername":layer.layername,"opacity":layer.opacity,"is_display":layer.is_display})
             return layers_dict
-        
+
     @classmethod
     def query_layer(self,room_id:str,creator_id:str,layername:str):
         try:
@@ -35,56 +36,70 @@ class LayerData(SQLModel, table=True):
             return {"message":"get layer failed!"}
         
     @classmethod
-    def update_layer_image(self,image:UploadFile,id:str):
-        with Session(engine) as session:
-            layer =session.exec(select(LayerData).where(LayerData.id == id)).one_or_none()
-            filename="rooms/"+layer.room_id+"/"+creator_id+"/"+layer.layername
-            try:
-                contents=image.file.read()
-                response = client.put_object(Body=contents,Bucket=BUCKET_NAME,Key=filename)
-                return {"message":"upload success!"}
-            except:
-                return {"message":"upload failed!"}
+    def query_thumbnail(self,room_id:str):
+        try:
+            filename="rooms/"+room_id+"/"+"thumbnail.webp"
+            response = client.get_object(Bucket=BUCKET_NAME,Key=filename)
+            return response['Body'].read()
+        except Exception as e:
+            return {"message":"get layer failed!"}
+
+    @classmethod
+    def delete_room_layers(self,roomsid:str,id:str):
+        try:
+            with Session(engine) as session:
+                statement=select(LayerData).where(LayerData.room_id == roomsid).where(LayerData.creator_id == id)
+                layers =session.exec(statement).fetchall()
+                for layer in layers:
+                    session.delete(layer)
+                session.commit()
+            return {"message":"delete room success!"}
+        except:
+            return {"message":"delete room failed!"}
 
     @classmethod
     def create_layer(self,image:UploadFile,room_id:str,layername:str,creator_id:str,opacity:str,is_display:str,z_index:str):
         dt = datetime.datetime.now(datetime.timezone.utc)
         dt_sec = dt.isoformat(timespec='seconds')
         dt_iso = dt_sec.replace("+00:00", "Z")
-        statement = select(LayerData).where(LayerData.room_id==room_id).where(LayerData.layername==layername).where(LayerData.creator_id == creator_id)
         try:
             with Session(engine) as session:
-                exist_layer = session.exec(statement).one_or_none()
-                if exist_layer:
-                    new_layer=LayerData(id=str(uuid.uuid4()),room_id=room_id,layername=layername,creator_id=creator_id,create_time=dt_iso,opacity=opacity,is_display=is_display,z_index=z_index)
-                    session.delete(exist_layer)
-                    session.add(new_layer)
-                    session.commit()
-                    contents=image.file.read()
-                    filename="rooms/"+exist_layer.room_id+"/"+creator_id+"/"+exist_layer.layername
-                    response = client.put_object(Body=contents,Bucket=BUCKET_NAME,Key=filename)
-                    return {"message":"upload success!"}
-                else:
-                    new_layer=LayerData(id=str(uuid.uuid4()),room_id=room_id,layername=layername,creator_id=creator_id,create_time=dt_iso,opacity=opacity,is_display=is_display,z_index=z_index)
-                    session.add(new_layer)
-                    session.commit()
-                    contents=image.file.read()
-                    filename="rooms/"+new_layer.room_id+"/"+creator_id+"/"+new_layer.layername
-                    response = client.put_object(Body=contents,Bucket=BUCKET_NAME,Key=filename)
-                    return {"message":"upload success!"}
+                new_layer=LayerData(id=str(uuid.uuid4()),room_id=room_id,layername=layername,creator_id=creator_id,create_time=dt_iso,opacity=opacity,is_display=is_display,z_index=z_index)
+                session.add(new_layer)
+                session.commit()
+                contents=image.file.read()
+                filename="rooms/"+new_layer.room_id+"/"+creator_id+"/"+new_layer.layername
+                response = client.put_object(Body=contents,Bucket=BUCKET_NAME,Key=filename)
+                return {"message":"upload success!"}
         except Exception as e:
             return {"message":"upload failed!"}
-            
+        
     @classmethod
-    def delete_layer(self,id:str):
+    def create_room_thumbnail(self,room_id:str):
         try:
             with Session(engine) as session:
-                layer =session.exec(select(LayerData).where(LayerData.id == id)).one_or_none()
-                session.delete(layer)
-                session.commit()
-            return {"message":"delete success!"}
-        except:
-            return {"message":"delete failed!"}
-        
-    
+                statement = select(LayerData).where(LayerData.room_id == room_id).order_by(LayerData.z_index.asc())
+                results = session.exec(statement).fetchall()
+                base_image= None
+                for layer in results:
+                    if layer.is_display:
+                        filename="rooms/"+layer.room_id+"/"+layer.creator_id+"/"+layer.layername
+                        response = client.get_object(Bucket=BUCKET_NAME,Key=filename)
+                        image_data=response['Body'].read()
+                        current_image =Image.open(io.BytesIO(image_data)).convert("RGBA")
+                        if base_image == None:
+                            base_image=current_image
+                        else:
+                            base_image = Image.alpha_composite(base_image, current_image)
+                
+                webp_bytes = io.BytesIO()
+                base_image.save(webp_bytes, format="WEBP", lossless=True)
+                webp_bytes.seek(0)
+
+                filename="rooms/"+layer.room_id+"/"+"thumbnail.webp"
+                response = client.put_object(Body=webp_bytes,Bucket=BUCKET_NAME,Key=filename)
+                return {"message":"create room thumbnail failed!"}
+        except Exception as e:
+            return {"message":"create room thumbnail failed!"}
+
 SQLModel.metadata.create_all(engine)

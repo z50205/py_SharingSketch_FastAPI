@@ -1,3 +1,7 @@
+div{
+    user-select:none;
+    touch-action: none;
+}
 #can{
     cursor: none;
 }
@@ -97,13 +101,13 @@ input {
 
 .draw-colorpickerdiv{
     position: relative;
-    border: 2px solid white;
     cursor: crosshair;
 }
 
 .draw-colorpicker-img{
     position: absolute;
     width:100%;
+    border: 2px solid white;
     pointer-events: none;
 }
 .draw-colorpicker-bg{
@@ -117,6 +121,7 @@ input {
     aspect-ratio: 1;
     border-radius: 50%;
     border: 1px solid white;
+    transform: translate(-50%,-50%);
     pointer-events: none;
 }
 
