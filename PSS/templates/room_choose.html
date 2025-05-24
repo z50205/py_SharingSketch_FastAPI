@@ -81,8 +81,10 @@
               <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id='roomForm-{{room["id"]}}'>
                 <input type="hidden" name="roomsid" value='{{room["id"]}}'>
                 <div class="main-roominfo" onclick='postRoomForm("{{room["id"]}}")'>
-                  <img src='/thumbnail/{{room["id"]}}'>
-                  {% if room["live_memeber_len"]>0%}
+                  {% for creator in room["creators"] %}
+                  <img src='/thumbnail/room/{{room["id"]}}/{{creator}}'>
+                  {% endfor %}
+                  {% if room["live_memeber_len"]>0 %}
                   <div class="main-roominfo-banner">
                     LIVE&nbsp;
                     <img src="static/icons/user.svg"/>&nbsp;

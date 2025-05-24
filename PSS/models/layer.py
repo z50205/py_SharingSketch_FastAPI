@@ -19,7 +19,7 @@ class LayerData(SQLModel, table=True):
     @classmethod
     def query_room_self_layers(self,room_id:str,creator_id:str):
         with Session(engine) as session:
-            statement = select(LayerData).where(LayerData.room_id == room_id).where(LayerData.creator_id == creator_id).order_by(LayerData.z_index.desc())
+            statement = select(LayerData).where(LayerData.room_id == room_id).where(LayerData.creator_id == creator_id).order_by(LayerData.z_index.asc())
             results = session.exec(statement).fetchall()
             layers_dict=[]
             for layer in results:
@@ -34,15 +34,23 @@ class LayerData(SQLModel, table=True):
             return response['Body'].read()
         except Exception as e:
             return {"message":"get layer failed!"}
-        
+
     @classmethod
-    def query_thumbnail(self,room_id:str):
+    def query_room_creator(self,room_id:str):
+        with Session(engine) as session:
+            statement = select(LayerData.creator_id).where(LayerData.room_id == room_id).distinct()
+            results = session.exec(statement).fetchall()
+            return results
+
+    @classmethod
+    def query_thumbnail(self,room_id:str,creator_id:str):
         try:
-            filename="rooms/"+room_id+"/"+"thumbnail.webp"
+            filename="rooms/"+room_id+"/"+creator_id+"/"+"thumbnail.webp"
             response = client.get_object(Bucket=BUCKET_NAME,Key=filename)
             return response['Body'].read()
         except Exception as e:
             return {"message":"get layer failed!"}
+        
 
     @classmethod
     def delete_room_layers(self,roomsid:str,id:str):
@@ -73,12 +81,12 @@ class LayerData(SQLModel, table=True):
                 return {"message":"upload success!"}
         except Exception as e:
             return {"message":"upload failed!"}
-        
+
     @classmethod
-    def create_room_thumbnail(self,room_id:str):
+    def create_room_self_thumbnail(self,room_id:str,creator_id:str):
         try:
             with Session(engine) as session:
-                statement = select(LayerData).where(LayerData.room_id == room_id).order_by(LayerData.z_index.asc())
+                statement = select(LayerData).where(LayerData.room_id == room_id).where(LayerData.creator_id == creator_id).order_by(LayerData.z_index.asc())
                 results = session.exec(statement).fetchall()
                 base_image= None
                 for layer in results:
@@ -96,7 +104,7 @@ class LayerData(SQLModel, table=True):
                 base_image.save(webp_bytes, format="WEBP", lossless=True)
                 webp_bytes.seek(0)
 
-                filename="rooms/"+layer.room_id+"/"+"thumbnail.webp"
+                filename="rooms/"+layer.room_id+"/"+layer.creator_id+"/"+"thumbnail.webp"
                 response = client.put_object(Body=webp_bytes,Bucket=BUCKET_NAME,Key=filename)
                 return {"message":"create room thumbnail failed!"}
         except Exception as e:

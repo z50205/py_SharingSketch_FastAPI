@@ -172,9 +172,15 @@
     cursor: pointer;
 }
 .main-roominfo > img{
-    background-color: white;
     width: 100%;
     border-radius: 10px;
+    position: absolute;
+}
+.main-roominfo > img:first-of-type {
+    background-color: white;
+}
+.main-roominfo > img:last-of-type {
+  position: relative;
 }
 .main-roominfo > .main-roominfo-create{
     width: 100%;

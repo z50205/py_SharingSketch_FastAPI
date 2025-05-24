@@ -18,7 +18,8 @@ roomrouter = APIRouter()
 async def uploadLayer(request:Request):
     username = request.session.get('username')
     roomsid = request.session.get('roomsid')
-    jsonRes=LayerData.create_room_thumbnail(roomsid)
+    u=UserData.query_name(username)
+    jsonRes=LayerData.create_room_self_thumbnail(roomsid,u.id)
     return JSONResponse(status_code=200,content=jsonRes)
 
 @roomrouter.post("/api/layers",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["getDatabaselayers"])
@@ -59,10 +60,11 @@ async def getLayer(request:Request,layername:str):
             'status': 'error',
             'message': 'Not found'
             })
-    
-@roomrouter.get("/thumbnail/{roomsid}",response_class=HTMLResponse, tags=["resources"])
-async def getLayer(request:Request,roomsid:str):
-    file=LayerData.query_thumbnail(roomsid)
+
+
+@roomrouter.get("/thumbnail/room/{room_id}/{creator_id}",response_class=HTMLResponse, tags=["resources"])
+async def getLayer(request:Request,room_id:str,creator_id:str):
+    file=LayerData.query_thumbnail(room_id,creator_id)
     if file:
         return StreamingResponse(BytesIO(file), media_type="image/webp")
     else:

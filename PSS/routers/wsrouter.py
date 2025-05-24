@@ -71,6 +71,8 @@ class ConnectionManager:
         # Verify whether the room exists in the database
         room=RoomData.query_room(roomsid)
         # Case1: roomsid is live
+        # 改成直接取所有database的所有layer放到room_memberlist，未上線的就有一個規則可以取用database圖層資料(前端主動發出特定用戶的圖層請求)、已上線的就用過去的newImg方法同步
+        # 未上線改為已上線需要重新將database圖層刪除再次調用過去的newImg方法同步；已上線改為未上線需要刪除圖層並調用database圖層。
         if roomsid in self.rooms.keys():
             self.rooms[roomsid]["member"].append(sid)
             room_memberlist=[]

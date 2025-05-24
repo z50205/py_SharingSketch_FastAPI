@@ -7,7 +7,7 @@ from starlette.templating import Jinja2Templates
 from functools import wraps
 import os
 from io import BytesIO
-from models import UserData,ImageData,TagData,RoomData
+from models import UserData,ImageData,TagData,RoomData,LayerData
 from typing import Optional
 
 
@@ -69,7 +69,8 @@ async def roomlist(request:Request):
         live_memeber_len=0
         if room.id in ws_manager.rooms:
             live_memeber_len=len(ws_manager.rooms[room.id]["member"])
-        roominfo_dict.append({"roomname":room.roomname,"id":room.id,"live_memeber_len":live_memeber_len})
+        creators=LayerData.query_room_creator(room.id)
+        roominfo_dict.append({"roomname":room.roomname,"id":room.id,"live_memeber_len":live_memeber_len,"creators":creators})
     return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfolive":ws_manager.rooms,"roominfo":roominfo_dict,"user":u,"avatar":avatar})
 
 @router.post("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["chooseroom"])

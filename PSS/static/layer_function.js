@@ -68,7 +68,11 @@ function li_template(thumbnailsParentNode, thumbnail_active, minelayer_count_rec
     li.appendChild(a_ele);
     li.appendChild(img);
     set_minelayer_visibility(a_ele);
-    thumbnailsParentNode.insertBefore(li, thumbnail_active);
+    if(thumbnail_active){
+        thumbnailsParentNode.insertBefore(li, thumbnail_active);
+    }else{
+        thumbnailsParentNode.appendChild(li);
+    }
     return li;
 }
 
@@ -172,11 +176,11 @@ async function init_layer_database(layerinfo) {
         try{
             let exist_canvas=document.getElementById(layerinfo[i]["layername"]);
             let update_canvas;
+            let exist_thumbnail=document.getElementById("thumbnail_"+layerinfo[i]["layername"].slice(9));
             if(exist_canvas){
-                update_canvas=exist_canvas;
-            }else{
-                update_canvas = document.createElement("canvas");
+                exist_canvas.remove();
             }
+                update_canvas = document.createElement("canvas");
                 update_canvas.style = "position:absolute;border:0px solid; touch-action: none;z-index: 10;";
                 update_canvas.style.top = top_key;
                 update_canvas.style.left = left_key;
@@ -191,8 +195,8 @@ async function init_layer_database(layerinfo) {
                 }else{
                     update_canvas.style.visibility =  "hidden"
                 }
-                let minelayer1 = document.getElementById(('minelayer1'));
-                canvasParentNode.insertBefore(update_canvas, minelayer1.nextElementSibling);
+                let projection = document.getElementById(('projection'));
+                canvasParentNode.insertBefore(update_canvas,projection);
 
             const layerResponse =await fetch("/api/layer/"+layerinfo[i]["layername"])
             if (!layerResponse.ok) throw new Error("Failed to fetch layer");
@@ -206,10 +210,11 @@ async function init_layer_database(layerinfo) {
                 update_ctx.globalCompositeOperation = "source-over";
                 update_ctx.drawImage(img, 0, 0);
                 //add layer_thumbnail
-                if (!exist_canvas){
-                    let thumbnail_active = document.getElementById(('thumbnail_1'));
+            if(exist_thumbnail){
+                exist_thumbnail.remove();
+            }
+                    let thumbnail_active = document.getElementById(('layer_thumbnail')).firstChild;
                     li_template(thumbnailsParentNode, thumbnail_active, update_canvas.id.slice(9));
-                }
                 can_active=update_canvas;
                 Updatethumbnail();
             };
