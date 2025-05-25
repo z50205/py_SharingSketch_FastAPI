@@ -1,19 +1,19 @@
 var max_minelayer = 5;
-var minelayer_count_record = 1;
 //zindex will be assign zindex=10
 function add_minelayer() {
     //add layer canvas
-    var minelayers = document.getElementsByClassName('minelayer');
-    if (minelayers.length <= max_minelayer) {
-        var canvaseParentNode = document.getElementById('painting-area');
-        var minenewcanvas = document.createElement("canvas");
+    let minelayers = document.getElementsByClassName('minelayer');
+    const ids = [...minelayers].map(el => Number(el.id.slice(9))).filter(id => Number.isInteger(id) && id > 0).sort((a, b) => a - b);
+    const nextId = ids.reduce((acc, id) => id === acc ? acc + 1 : acc, 1);
+    if (minelayers.length < max_minelayer) {
+        let canvaseParentNode = document.getElementById('painting-area');
+        let minenewcanvas = document.createElement("canvas");
         minenewcanvas.style = "position:absolute;border:0px solid; touch-action: none;z-index: 10;";
         minenewcanvas.style.top = top_key;
         minenewcanvas.style.left = left_key;
         minenewcanvas.style.opacity = 1;
         minenewcanvas.style.visibility = "visible";
-        minelayer_count_record = minelayer_count_record + 1;
-        minenewcanvas.id = "minelayer" + minelayer_count_record;
+        minenewcanvas.id = "minelayer" +nextId;
         minenewcanvas.height = h;
         minenewcanvas.width = w;
         minenewcanvas.className = "minelayer";
@@ -21,9 +21,9 @@ function add_minelayer() {
         canvaseParentNode.insertBefore(minenewcanvas, can_active.nextElementSibling);
         opacity_range.value=1;
         //add layer_thumbnail
-        var thumbnailsParentNode = document.getElementById('layer_thumbnail');
-        var thumbnail_active = document.getElementById(('thumbnail_' + can_active.id.slice(9)));
-        var li_add = li_template(thumbnailsParentNode, thumbnail_active, minenewcanvas.id.slice(9));
+        let thumbnailsParentNode = document.getElementById('layer_thumbnail');
+        let thumbnail_active = document.getElementById(('thumbnail_' + can_active.id.slice(9)));
+        let li_add = li_template(thumbnailsParentNode, thumbnail_active, minenewcanvas.id.slice(9));
         change_minelayer_active(li_add);
     }
 }
@@ -48,14 +48,14 @@ function add_minelayer_existed(delete_canvas_pivot, restore_id) {
     li_template(thumbnailsParentNode, thumbnail_active, minenewcanvas.id.slice(9));
 }
 
-function li_template(thumbnailsParentNode, thumbnail_active, minelayer_count_record) {
+function li_template(thumbnailsParentNode, thumbnail_active, nextId) {
     var minelayers = document.getElementsByClassName('minelayer');
     let li = document.createElement("li");
-    li.setAttribute("id", "thumbnail_" + minelayer_count_record);
+    li.setAttribute("id", "thumbnail_" + nextId);
     li.setAttribute("onclick", "change_minelayer_active(this)");
     let a_ele = document.createElement("a");
     a_ele.style.margin = "10px";
-    a_ele.setAttribute("id", "visibility_" + minelayer_count_record);
+    a_ele.setAttribute("id", "visibility_" + nextId);
     a_ele.setAttribute("onclick", "change_minelayer_visibility(this)");
     let svg = document.createElement("img");
     svg.src="/static/icons/eye.svg";
