@@ -213,16 +213,18 @@ async function init_layer_database(layerinfo) {
             if(exist_thumbnail){
                 exist_thumbnail.remove();
             }
-                    let thumbnail_active = document.getElementById(('layer_thumbnail')).firstChild;
-                    li_template(thumbnailsParentNode, thumbnail_active, update_canvas.id.slice(9));
-                can_active=update_canvas;
+                let thumbnail_active = document.getElementById(('layer_thumbnail')).firstChild;
+                let thumbnail=li_template(thumbnailsParentNode, thumbnail_active, update_canvas.id.slice(9));
+                change_minelayer_active(thumbnail);
                 Updatethumbnail();
+                if (can_active.id==layerinfo[layerinfo.length - 1]["layername"]){
+                    updateCanvas();
+                }
             };
         }catch (error) {
             console.error("Error downloading image:", error);
         }
     }
-    updateCanvas()
 }
 
 function change_minelayer_visibility(obj) {

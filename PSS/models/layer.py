@@ -36,9 +36,16 @@ class LayerData(SQLModel, table=True):
             return {"message":"get layer failed!"}
 
     @classmethod
-    def query_room_creator(self,room_id:str):
+    def query_room_participants(self,room_id:str):
         with Session(engine) as session:
             statement = select(LayerData.creator_id).where(LayerData.room_id == room_id).distinct()
+            results = session.exec(statement).fetchall()
+            return results
+        
+    @classmethod
+    def query_user_rooms(self,user_id:str):
+        with Session(engine) as session:
+            statement = select(LayerData.room_id).where(LayerData.creator_id == user_id).distinct()
             results = session.exec(statement).fetchall()
             return results
 

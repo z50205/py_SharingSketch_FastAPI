@@ -92,17 +92,58 @@ const connectWebSocket=()=>{
           ul.appendChild(li);
         }
     }
-    const ws_createRoomCanvas=(data)=>{
-        canvassids = data["canvassids"];
-        console.log("canvassids" + canvassids);
-        console.log("self_sid" + self_sid);
-        var allcanvases = document.getElementsByTagName("canvas");
-        var allcanvaseslength = allcanvases.length;
-        var canvaseParentNode = document.getElementById("painting-area");
+    const ws_createRoomCanvas= async (data)=>{
+      let canvassids = data["canvassids"];
+      let canvasParentNode = document.getElementById("painting-area");
+      // 1.取得此房間所有參與者
+      let response=await fetch("/api/room/"+roomsid+"/participants",{
+        method:"GET"
+      });
+      let participants=await response.json();
+      // 2.分離在線及離線使用者
+      const onlineCanvassIds = canvassids.map(item => item[1]);
+      const offlineParticipants = participants.filter(participant => !onlineCanvassIds.includes(participant));
+      // 3.製作離線使用者thumbnail的canvas
+      for(let i =0;i<offlineParticipants.length;i++){
+        let newThumbnailCanvas = document.createElement("canvas");
+            newThumbnailCanvas.style =
+              "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
+            newThumbnailCanvas.style.top = top_key;
+            newThumbnailCanvas.style.left = left_key;
+            newThumbnailCanvas.id = offlineParticipants[i];
+            newThumbnailCanvas.height = h;
+            newThumbnailCanvas.width = w;
+            newThumbnailCanvas.className = "thumbnailcanvases";
+            newThumbnailCanvas.style.transform = scaleKey;
+            canvasParentNode.insertBefore(newThumbnailCanvas, canvas);
+        const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+offlineParticipants[i],{
+          method:"GET"
+        });
+        const blob = await thumbnailResponse.blob();
+        let img = new Image();
+            const imgURL = URL.createObjectURL(blob);
+            img.src = imgURL;
+            img.onload = function () {
+                let newThumbnailCtx=newThumbnailCanvas.getContext("2d");
+                newThumbnailCtx.globalCompositeOperation = "source-over";
+                newThumbnailCtx.drawImage(img, 0, 0);
+            }
+      }
+      // 3.移除已上線使用者的thumbnail canvas
+      for(let i =0;i<onlineCanvassIds.length;i++){
+        let removeThumbnailCanvas=document.getElementById(onlineCanvassIds[i])
+        if (removeThumbnailCanvas){
+          removeThumbnailCanvas.remove();
+        }
+      }
+
+      // 4.製作上線使用者的canvas以供同步
+        let allcanvases = document.getElementsByTagName("canvas");
+        let allcanvaseslength = allcanvases.length;
         for (i = 0; i < canvassids.length; i++) {
           var newone_pivot = true;
           for (ii = 0; ii < allcanvaseslength; ii++) {
-            if (allcanvases[ii].id == canvassids[i] || self_sid == canvassids[i]) {
+            if (allcanvases[ii].id == canvassids[i][0] || self_sid == canvassids[i][0]) {
               newone_pivot = false;
             }
           }
@@ -112,15 +153,23 @@ const connectWebSocket=()=>{
               "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
             newcanvas.style.top = top_key;
             newcanvas.style.left = left_key;
-            newcanvas.id = canvassids[i];
+            newcanvas.id = canvassids[i][0];
             newcanvas.height = h;
             newcanvas.width = w;
             newcanvas.className = "othermembercanvases";
             newcanvas.style.transform = scaleKey;
-            canvaseParentNode.insertBefore(newcanvas, canvas);
+            canvasParentNode.insertBefore(newcanvas, canvas);
           }
         }
-        updateCanvas();
+      // 5.取得過去自己的畫布資訊
+      if(data["sid"]==self_sid){
+        let selfLayerResponse=await fetch("api/layers",{
+          method:"POST"
+        });
+        let selfLayerResult=await selfLayerResponse.json();
+        init_layer_database(selfLayerResult);
+      }
+      updateCanvas();
     }
     const ws_createRoomCanvasDatabase= async (data)=>{
       let response=await fetch("api/layers",{
@@ -142,11 +191,36 @@ const connectWebSocket=()=>{
       };
       // canvas.getContext("2d").drawImage(img, 0, 0);
     };
-    const ws_removeLeaveCanvas=(data)=>{
-      leave_sid = data["sid"];
+    const ws_removeLeaveCanvas=async (data)=>{
+      let leave_sid = data["sid"];
       console.log("leave_sid :" + leave_sid);
       console.log("self_sid :" + self_sid);
       document.getElementById(leave_sid).remove();
+      let canvasParentNode = document.getElementById("painting-area");
+      let leave_user_id = data["user_id"];
+              let newThumbnailCanvas = document.createElement("canvas");
+            newThumbnailCanvas.style =
+              "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
+            newThumbnailCanvas.style.top = top_key;
+            newThumbnailCanvas.style.left = left_key;
+            newThumbnailCanvas.id = leave_user_id;
+            newThumbnailCanvas.height = h;
+            newThumbnailCanvas.width = w;
+            newThumbnailCanvas.className = "thumbnailcanvases";
+            newThumbnailCanvas.style.transform = scaleKey;
+            canvasParentNode.insertBefore(newThumbnailCanvas, canvas);
+        const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+leave_user_id,{
+          method:"GET"
+        });
+        const blob = await thumbnailResponse.blob();
+        let img = new Image();
+            const imgURL = URL.createObjectURL(blob);
+            img.src = imgURL;
+            img.onload = function () {
+                let newThumbnailCtx=newThumbnailCanvas.getContext("2d");
+                newThumbnailCtx.globalCompositeOperation = "source-over";
+                newThumbnailCtx.drawImage(img, 0, 0);
+            }
     };
     const ws_removeRoomCanvas=(data)=>{
       leave_sid = data["sid"];

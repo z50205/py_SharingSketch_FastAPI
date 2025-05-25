@@ -1,11 +1,11 @@
 from fastapi import APIRouter,Request,Form,Depends,HTTPException,WebSocket,WebSocketDisconnect
 import uuid,asyncio
-from models import RoomData
+from models import RoomData,UserData
 
 class ConnectionManager:
     def __init__(self):
-        # active_connections dict k:v="sid":[roomsid,username,websocket instance]
-        self.active_connections: dict[str,list[str,str,WebSocket]] = {}
+        # active_connections dict k:v="sid":[roomsid,username,websocket instance,user_id]
+        self.active_connections: dict[str,list[str,str,WebSocket,str]] = {}
         # rooms dict k:v="roomsid":[roomname,[member],room img thumbnail]
         self.rooms: dict[str,str,list[str],str] = {}
 
@@ -26,7 +26,7 @@ class ConnectionManager:
             room_memberlist.append(self.active_connections[membersid][1])
             room_canvassids.append(membersid)
         await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},leave_roomsid)
-        await ws_manager.event_send_filter(websocket,{"event":"removeLeaveCanvas","sid":sid},leave_roomsid)
+        await ws_manager.event_send_filter(websocket,{"event":"removeLeaveCanvas","user_id":self.active_connections[sid][3],"sid":sid},leave_roomsid)
         if not self.rooms[leave_roomsid]["member"]:
             del self.rooms[leave_roomsid]
         del self.active_connections[sid]
@@ -66,35 +66,31 @@ class ConnectionManager:
         sid=str(uuid.uuid4())
         roomsid=ws_data["roomsid"]
         username=ws_data["username"]
-        self.active_connections[sid]=[roomsid,username,websocket]
+        u=UserData.query_name(username)
+        self.active_connections[sid]=[roomsid,username,websocket,u.id]
+        # 改成把可見的canvas都繪在layer裡面，因此在「createRoomCanvasDatabase」中先渲染出房間中未在線的用戶thumbnail，再來是已在線的用戶，最後是database的圖層紀錄
+        # 用戶進入時將thumbnail刪除，並製作已在線用戶畫布，然後同步；用戶離開刪除在線用戶畫布並重新製作用戶thumbnail
 
+        # 1.因此當用戶進入房間時{"event":"createRoomCanvas","canvassids":room_canvassids([{canvassid:userID}]),"sid":sid}(傳給房間所有人)
+        # 2.新用戶1.判斷哪些要取thumbnail，利用roomID+userID->取得thumbnail，製作離線畫布2.利用canvassids製作在線用戶畫布3.製作自己圖層紀錄的畫布
+        #   原用戶1.找出新加入用戶的離線畫布並刪除2.利用canvassids製作在線用戶畫布
         # Verify whether the room exists in the database
-        room=RoomData.query_room(roomsid)
         # Case1: roomsid is live
-        # 改成直接取所有database的所有layer放到room_memberlist，未上線的就有一個規則可以取用database圖層資料(前端主動發出特定用戶的圖層請求)、已上線的就用過去的newImg方法同步
-        # 未上線改為已上線需要重新將database圖層刪除再次調用過去的newImg方法同步；已上線改為未上線需要刪除圖層並調用database圖層。
         if roomsid in self.rooms.keys():
             self.rooms[roomsid]["member"].append(sid)
-            room_memberlist=[]
-            room_canvassids=[]
-            for membersid in self.rooms[roomsid]["member"]:
-                room_memberlist.append(self.active_connections[membersid][1])
-                room_canvassids.append(membersid)
-            await ws_manager.event_send_filter(websocket,{"event":"join","sid":sid})
-            await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},roomsid)
-            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvasDatabase","sid":sid},roomsid)
-            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvas","canvassids":room_canvassids,"sid":sid},roomsid)
-        # Case2: roomsid is in database
-        elif room:
+        else:
+            room=RoomData.query_room(roomsid)
             self.rooms[roomsid] = {"roomname":room.roomname,"member": [sid]}
-            room_memberlist=[]
-            for membersid in self.rooms[roomsid]["member"]:
-                room_memberlist.append(self.active_connections[membersid][1])
-            await ws_manager.event_send_filter(websocket,{"event":"join","sid":sid})
-            await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},roomsid)
-            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvasDatabase","sid":sid},roomsid)
-            await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvas","canvassids":room_canvassids,"sid":sid},roomsid)
+        room_memberlist=[]
+        room_canvassids=[]
+        for membersid in self.rooms[roomsid]["member"]:
+            room_memberlist.append(self.active_connections[membersid][1])
+            room_canvassids.append([membersid,self.active_connections[membersid][3]])
+        await ws_manager.event_send_filter(websocket,{"event":"join","sid":sid})
+        await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},roomsid)
+        await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvas","canvassids":room_canvassids,"sid":sid},roomsid)
 
+        
     async def newImg(self, websocket: WebSocket,ws_data:dict[str:str]):
         img=ws_data['imgdata']
         roomsid=ws_data['roomsid']

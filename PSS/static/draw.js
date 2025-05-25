@@ -117,6 +117,12 @@ function init() {
       othercanvasessetting[i].style.top = top_key;
       othercanvasessetting[i].style.left = left_key;
     }
+    let thumbnailcanvases = document.getElementsByClassName(
+        "thumbnailcanvases"
+      );
+      for (let i = 0; i < thumbnailcanvases.length; i++) {
+        thumbnailcanvases[i].style.transform = scaleKey;
+      }
     var minelayers = document.getElementsByClassName("minelayer");
     for (let i = 0; i < minelayers.length; i++) {
       minelayers[i].style.top = top_key;
@@ -384,6 +390,12 @@ function zoom_in(scale) {
   for (let i = 0; i < othercanvasessetting.length; i++) {
     othercanvasessetting[i].style.transform = scaleKey;
   }
+  let thumbnailcanvases = document.getElementsByClassName(
+        "thumbnailcanvases"
+      );
+      for (let i = 0; i < thumbnailcanvases.length; i++) {
+        thumbnailcanvases[i].style.transform = scaleKey;
+      }
   can_proj.style.transform = scaleKey;
   var minelayers = document.getElementsByClassName("minelayer");
   for (let i = 0; i < minelayers.length; i++) {
@@ -437,6 +449,12 @@ function mirror() {
   for (let i = 0; i < othercanvasessetting.length; i++) {
     othercanvasessetting[i].style.transform = scaleKey;
   }
+  let thumbnailcanvases = document.getElementsByClassName(
+        "thumbnailcanvases"
+      );
+      for (let i = 0; i < thumbnailcanvases.length; i++) {
+        thumbnailcanvases[i].style.transform = scaleKey;
+      }
   can_proj.style.transform = scaleKey;
   var minelayers = document.getElementsByClassName("minelayer");
   for (let i = 0; i < minelayers.length; i++) {
@@ -567,7 +585,14 @@ function panCanvas(res, e) {
         "othermembercanvases"
       );
       for (let i = 0; i < othercanvasessetting.length; i++) {
-        othercanvasessetting[i].style.transform = scaleKey;
+        othercanvasessetting[i].style.t
+        ransform = scaleKey;
+      }
+      let thumbnailcanvases = document.getElementsByClassName(
+        "thumbnailcanvases"
+      );
+      for (let i = 0; i < thumbnailcanvases.length; i++) {
+        thumbnailcanvases[i].style.transform = scaleKey;
       }
       can_proj.style.transform = scaleKey;
       var minelayers = document.getElementsByClassName("minelayer");
@@ -600,6 +625,12 @@ function panCanvas(res, e) {
       );
       for (let i = 0; i < othercanvasessetting.length; i++) {
         othercanvasessetting[i].style.transform = scaleKey;
+      }
+      let thumbnailcanvases = document.getElementsByClassName(
+        "thumbnailcanvases"
+      );
+      for (let i = 0; i < thumbnailcanvases.length; i++) {
+        thumbnailcanvases[i].style.transform = scaleKey;
       }
       can_proj.style.transform = scaleKey;
       var minelayers = document.getElementsByClassName("minelayer");

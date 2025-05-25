@@ -84,13 +84,6 @@
                   {% for creator in room["creators"] %}
                   <img src='/thumbnail/room/{{room["id"]}}/{{creator}}'>
                   {% endfor %}
-                  {% if room["live_memeber_len"]>0 %}
-                  <div class="main-roominfo-banner">
-                    LIVE&nbsp;
-                    <img src="static/icons/user.svg"/>&nbsp;
-                    {{room["live_memeber_len"]}}
-                  </div>
-                  {% endif%}
                   <div class="main-roominfo-information">
                     <div class="room-title">{{room["roomname"]}}</div>
                   </div>

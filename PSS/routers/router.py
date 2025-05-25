@@ -60,17 +60,17 @@ async def logout(request:Request):
 async def roomlist(request:Request):
     username=request.session["username"]
     u=UserData.query_name(username)
-    rooms=RoomData.query_rooms(u.id)
+    rooms_id=LayerData.query_user_rooms(u.id)
     avatar=None
     if u.src_avatar:
         avatar="/image/"+u.src_avatar
     roominfo_dict=[]
-    for room in rooms:
+    for room_id in rooms_id:
+        room=RoomData.query_room(room_id)
         live_memeber_len=0
-        if room.id in ws_manager.rooms:
-            live_memeber_len=len(ws_manager.rooms[room.id]["member"])
-        creators=LayerData.query_room_creator(room.id)
-        roominfo_dict.append({"roomname":room.roomname,"id":room.id,"live_memeber_len":live_memeber_len,"creators":creators})
+        if room.id not in ws_manager.rooms:
+            creators=LayerData.query_room_participants(room.id)
+            roominfo_dict.append({"roomname":room.roomname,"id":room.id,"creators":creators})
     return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfolive":ws_manager.rooms,"roominfo":roominfo_dict,"user":u,"avatar":avatar})
 
 @router.post("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["chooseroom"])
