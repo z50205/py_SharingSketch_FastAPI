@@ -559,14 +559,14 @@ function panCanvas(res, e) {
   if (res == "down") {
     x_old_origin = e.clientX;
     y_old_origin = e.clientY;
+    currX = e.clientX - canvas.offsetLeft;
+    currY = e.clientY - canvas.offsetTop;
     x_offset_origin = x_offset;
     y_offset_origin = y_offset;
     pan_flag = true;
   }
   if (res == "up" || res == "out") {
     if (pan_flag) {
-      x_offset = x_offset_origin + x_offset / (scale * scale_xy[0]);
-      y_offset = y_offset_origin + y_offset / (scale * scale_xy[1]);
       scaleKey =
         "scale(" +
         (scale * scale_xy[0]).toString() +
@@ -604,8 +604,10 @@ function panCanvas(res, e) {
   }
   if (res == "move") {
     if (pan_flag) {
-      x_offset = e.clientX - x_old_origin;
-      y_offset = e.clientY - y_old_origin;
+      x_offset = x_offset_origin + (e.clientX - x_old_origin) / (scale * scale_xy[0]);
+      y_offset = y_offset_origin + (e.clientY - y_old_origin) / (scale * scale_xy[1]);
+      currX = e.clientX - canvas.offsetLeft;
+      currY = e.clientY - canvas.offsetTop;
       scaleKey =
         "scale(" +
         (scale * scale_xy[0]).toString() +
@@ -613,9 +615,9 @@ function panCanvas(res, e) {
         (scale * scale_xy[1]).toString() +
         ") " +
         "translate(" +
-        (x_offset_origin + x_offset / (scale * scale_xy[0])).toString() +
+        (x_offset).toString() +
         "px," +
-        (y_offset_origin + y_offset / (scale * scale_xy[1])).toString() +
+        (y_offset).toString() +
         "px)";
       canvas.style.transform = scaleKey;
       can_mid.style.transform = scaleKey;
