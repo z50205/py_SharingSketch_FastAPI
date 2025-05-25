@@ -80,7 +80,7 @@
               {% for room in roominfo %}
               <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id='roomForm-{{room["id"]}}'>
                 <input type="hidden" name="roomsid" value='{{room["id"]}}'>
-                <div class="main-roominfo" onclick='postRoomForm("{{room["id"]}}")'>
+                <div class="main-roominfo" onclick='postRoomForm("{{room.id}}")'>
                   {% for creator in room["creators"] %}
                   <img src='/thumbnail/room/{{room["id"]}}/{{creator}}'>
                   {% endfor %}
