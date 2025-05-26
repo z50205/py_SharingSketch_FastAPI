@@ -219,6 +219,11 @@ async function init_layer_database(layerinfo) {
                 Updatethumbnail();
                 if (can_active.id==layerinfo[layerinfo.length - 1]["layername"]){
                     updateCanvas();
+                    let imgSrc=cookie_value("src")
+                    if (imgSrc){
+                        add_minelayer();
+                        loadimage_gallery(imgSrc);
+                    }
                 }
             };
         }catch (error) {

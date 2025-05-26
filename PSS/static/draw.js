@@ -275,7 +275,6 @@ function init() {
     false
   );
   updateToolInfo();
-  loadimage_gallery();
   //Tool load eventlistener
   fileUploader.addEventListener("change", (event) => {
     loadimage(event);
@@ -500,28 +499,25 @@ async function reroomlist() {
   window.location.href = "/";
 }
 //Tool Load image from gallery
-async function loadimage_gallery() {
-  const cookieValue = cookie_value("src");
-  if(cookieValue){
-    try {
-      const imageResponse = await fetch(`/image/${cookieValue}`);
-      if (!imageResponse.ok) throw new Error("Failed to fetch image");
+async function loadimage_gallery(cookieValue) {
+  try {
+    const imageResponse = await fetch(`/image/${cookieValue}`);
+    if (!imageResponse.ok) throw new Error("Failed to fetch image");
 
-      const blob = await imageResponse.blob();
-      console.log(blob);
-      var img = new Image();
-      const imgURL = URL.createObjectURL(blob);
-      img.src = imgURL;
-      img.onload = function () {
-        ctx_active.globalCompositeOperation = "source-over";
-        ctx_active.clearRect(0, 0, w, h);
-        ctx_active.drawImage(img, 0, 0);
-        restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
-        restore_active[restore_active.length] = can_active.id;
-      };
-    } catch (error) {
-      console.error("Error downloading image:", error);
-    }
+    const blob = await imageResponse.blob();
+    console.log(blob);
+    var img = new Image();
+    const imgURL = URL.createObjectURL(blob);
+    img.src = imgURL;
+    img.onload = function () {
+      ctx_active.globalCompositeOperation = "source-over";
+      ctx_active.clearRect(0, 0, w, h);
+      ctx_active.drawImage(img, 0, 0);
+      restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
+      restore_active[restore_active.length] = can_active.id;
+    };
+  } catch (error) {
+    console.error("Error downloading image:", error);
   }
 }
 function cookie_value(cookname) {
