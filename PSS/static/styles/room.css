@@ -97,6 +97,7 @@ input {
 
 .tool_name:hover{
     background-color: rgb(168, 168, 168);
+    border-radius: 3px;
 }
 
 .draw-colorpickerdiv{
@@ -144,6 +145,70 @@ input {
     pointer-events: none;
 }
 
+
+.toobar-container{
+    width: 100%;
+    max-width: 100%;
+}
+
+.toolbar{
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 100vh;
+    background-color: rgb(80, 80, 80);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 100;
+    
+}
+.hompage-icon-href{
+    display: flex;
+    align-items: center;
+    margin: 4px;
+    padding: 3px;
+    border-radius: 3px;
+    line-height: 0;
+    cursor: pointer;
+    background-color: rgb(109, 109, 109);
+    border:1px solid black;
+    border-radius: 3px;
+}
+.hompage-icon-href:hover{
+    background-color: rgb(168, 168, 168);
+}
+.nav-tool-li{
+    margin: 4px;
+    border:1px solid black;
+    border-radius: 3px;
+    background-color: rgb(109, 109, 109);
+}
+.tool-icon-href{
+    margin: 4px;
+    padding: 3px;
+    border-radius: 3px;
+    line-height: 0;
+    cursor: pointer;
+}
+
+.tool-zoom-div{
+    display: flex;
+    position: fixed;
+    z-index: 101;
+    padding: 5px;
+    line-height: 0;
+    bottom: 0px;
+    left: 30px;
+}
+#zoom_range{
+    margin: 5px;
+}
+#zoom_range::-webkit-slider-runnable-track{
+    background: #989898;
+
+}
 
 @media(max-width:600px){
     h1{

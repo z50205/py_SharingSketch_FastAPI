@@ -5,7 +5,7 @@ let self_sid;
 
 
 const connectWebSocket=()=>{
-    const socket = new WebSocket("https://bizara.link/ws");
+    const socket = new WebSocket("http://localhost/ws");
     socket.onopen=(ev)=>{
         if (socket.readyState!=1){
             reconnect();
@@ -105,7 +105,8 @@ const connectWebSocket=()=>{
       const offlineParticipants = participants.filter(participant => !onlineCanvassIds.includes(participant));
       // 3.製作離線使用者thumbnail的canvas
       for(let i =0;i<offlineParticipants.length;i++){
-        let newThumbnailCanvas = document.createElement("canvas");
+        if (!document.getElementById(offlineParticipants[i])){
+            let newThumbnailCanvas = document.createElement("canvas");
             newThumbnailCanvas.style =
               "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
             newThumbnailCanvas.style.top = top_key;
@@ -116,11 +117,11 @@ const connectWebSocket=()=>{
             newThumbnailCanvas.className = "thumbnailcanvases";
             newThumbnailCanvas.style.transform = scaleKey;
             canvasParentNode.insertBefore(newThumbnailCanvas, canvas);
-        const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+offlineParticipants[i],{
-          method:"GET"
-        });
-        const blob = await thumbnailResponse.blob();
-        let img = new Image();
+            const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+offlineParticipants[i],{
+              method:"GET"
+            });
+            const blob = await thumbnailResponse.blob();
+            let img = new Image();
             const imgURL = URL.createObjectURL(blob);
             img.src = imgURL;
             img.onload = function () {
@@ -128,7 +129,8 @@ const connectWebSocket=()=>{
                 newThumbnailCtx.globalCompositeOperation = "source-over";
                 newThumbnailCtx.drawImage(img, 0, 0);
             }
-      }
+          }
+        }
       // 3.移除已上線使用者的thumbnail canvas
       for(let i =0;i<onlineCanvassIds.length;i++){
         let removeThumbnailCanvas=document.getElementById(onlineCanvassIds[i])

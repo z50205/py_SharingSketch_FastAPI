@@ -121,7 +121,8 @@ function init() {
         "thumbnailcanvases"
       );
       for (let i = 0; i < thumbnailcanvases.length; i++) {
-        thumbnailcanvases[i].style.transform = scaleKey;
+        thumbnailcanvases[i].style.top = top_key;
+        thumbnailcanvases[i].style.left = left_key;
       }
     var minelayers = document.getElementsByClassName("minelayer");
     for (let i = 0; i < minelayers.length; i++) {
@@ -139,6 +140,7 @@ function init() {
       mouse_position = [e.clientX, e.clientY];
       if (space_pivot)panCanvas("move", e);
       // else if(Object.keys(pointers).length == 2)panCanvas("move", e);
+      else if(color_pivot){}
       else findxy("move", e, draw_flag);
     },
     false
@@ -147,6 +149,7 @@ function init() {
     "pointerdown",
     function (e) {
       if (space_pivot) panCanvas("down", e);
+      else if(color_pivot){}
       else findxy("down", e, draw_flag);
     },
     false
@@ -227,9 +230,7 @@ function init() {
       }
       //keycode-Q
       if (e.keyCode == 81) {
-        if(document.getElementById("revise_hide").style.display=="flex"){
           mirror();
-        }
       }
       //keycode-[
       if (e.keyCode == 219) {
