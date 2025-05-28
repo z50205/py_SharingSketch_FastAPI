@@ -1,3 +1,6 @@
+html,body{
+    height: 100%;
+}
 div{
     user-select:none;
     touch-action: none;
@@ -35,8 +38,9 @@ ul {
 
 }
 .item{
-    max-width:200px;
+    width:150px;
     background-color: rgb(80, 80, 80);
+    border-radius: 0px 0px 5px 5px;
 }
 h1{
     margin:1rem;
@@ -51,6 +55,7 @@ h1{
     display: flex;
     flex-direction: column;
     min-height: 0;
+    font-size: 10px;
 }
 
 #members{
@@ -63,9 +68,10 @@ h1{
 .bottom-tool-div{
     position: absolute;
     bottom: 0px;
-    height: 300px;
+    height: 250px;
     display: flex;
     flex-direction: column;
+    background-color: rgb(80, 80, 80);
 }
 .message-title{
     margin-left: 5px;
@@ -73,6 +79,13 @@ h1{
     color:rgb(184, 184, 184);
     justify-content: space-between;
 }
+.bottom-tool-close-icon{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 30px;
+}
+
 
 .layer-tool-container{
     min-height: 0;
@@ -112,6 +125,10 @@ input {
     width: 1%;
     background-color: transparent;
     color: #ffffff;
+  }
+.form-control{
+    padding: 3px;
+    font-size: 10px;
   }
 .form-control::placeholder {
     color: rgb(184, 184, 184);
@@ -219,8 +236,7 @@ input {
 
 
 .toobar-container{
-    width: 100%;
-    max-width: 100%;
+    flex:1;
 }
 
 .toolbar{
@@ -228,7 +244,6 @@ input {
     top: 0;
     left: 0;
     width: 30px;
-    height: 100vh;
     background-color: rgb(80, 80, 80);
     display: flex;
     flex-direction: column;

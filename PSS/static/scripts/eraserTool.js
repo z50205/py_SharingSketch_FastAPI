@@ -9,6 +9,7 @@ function eraserTool(){
         updateTool();
         tool_pivot="eraser";
         eraserPivot.style.backgroundColor = "rgb(184, 184, 184)";
+        eraser.style.display="block";
         canvas.addEventListener("pointerdown", addEraser);
         canvas.addEventListener("pointerup", stopEraser);
         canvas.addEventListener("pointermove", eraserPack);

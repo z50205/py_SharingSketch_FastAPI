@@ -9,6 +9,7 @@ function brushTool(){
         updateTool();
         tool_pivot="brush";
         brushPivot.style.backgroundColor = "rgb(184, 184, 184)";
+        brush.style.display="block";
         canvas.addEventListener("pointerdown", addBrush);
         canvas.addEventListener("pointerup", stopBrush);
         canvas.addEventListener("pointermove", brushPack);

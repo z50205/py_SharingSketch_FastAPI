@@ -181,8 +181,6 @@ function init() {
         //keycode-E
         if (e.keyCode == 69) {
           changeTool('eraser');
-          document.getElementById("draw").classList.remove("active");
-          document.getElementById("draw").classList.remove("show");
         }
         //keycode-M
         if (e.keyCode == 77) {
@@ -191,8 +189,6 @@ function init() {
         //keycode-P
         if (e.keyCode == 80) {
           changeTool('brush');
-          document.getElementById("eraser").classList.remove("active");
-          document.getElementById("eraser").classList.remove("show");
         }
         //keycode-Q
         if (e.keyCode == 81) {

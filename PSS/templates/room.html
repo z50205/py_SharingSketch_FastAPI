@@ -1,143 +1,147 @@
 {% extends "nav.html" %} {% block content %}
   <link rel="stylesheet" type="text/css" href="static/styles/room.css"/>
   <div class="toobar-container">
-    <div style="display: flex;justify-content:space-between;">
-      <div>
-        <div class="toolbar">
-          <a class="tool-icon-href" id="pan_pivot" onclick="changeTool('pan')">
-            <img src="static/icons/move.svg">
-          </a>
-          <a class="tool-icon-href" id="mirror_pivot" onclick="mirror()">
-            <img src="static/icons/mirror.svg">
-          </a>
-          <a class="tool-icon-href" id="colorPicker_pivot" onclick="changeTool('colorpicker')">
-            <img src="static/icons/color-picker.svg"> 
-          </a>
-          <a class="tool-icon-href" id="draw-tab" onclick="changeTool('brush');clickHidden('draw');">
-            <img src="static/icons/draw.svg">
-          </a>
-          <a class="tool-icon-href" id="eraser-tab" onclick="changeTool('eraser');clickHidden('eraser');">
-            <img src="static/icons/eraser.svg">
-          </a>
-        </div>
-        <div class="tool-zoom-div">
-          <img src="static/icons/zoom.svg">
-          <input type="range" class="form-range" id="zoom_range" min="-1.30" max="0.4771" step="0.001" value="1"/>
-        </div>
+    <div style="display: flex;justify-content:space-between;height: 100%;">
+      <div class="toolbar">
+        <a class="tool-icon-href" id="pan_pivot" onclick="changeTool('pan')">
+          <img src="static/icons/move.svg">
+        </a>
+        <a class="tool-icon-href" id="mirror_pivot" onclick="mirror()">
+          <img src="static/icons/mirror.svg">
+        </a>
+        <a class="tool-icon-href" id="colorPicker_pivot" onclick="changeTool('colorpicker')">
+          <img src="static/icons/color-picker.svg"> 
+        </a>
+        <a class="tool-icon-href" id="draw-tab" onclick="changeTool('brush')">
+          <img src="static/icons/draw.svg">
+        </a>
+        <a class="tool-icon-href" id="eraser-tab" onclick="changeTool('eraser')">
+          <img src="static/icons/eraser.svg">
+        </a>
       </div>
-    <div class="item" style="z-index: 100;;">
-      <div class="message-title" id="landing">
-        <div class="form-group row">
-          <div class="col-sm-12">
-            <button class="btn btn-outline-secondary" type="button" id="join-btn" style="width: 100%" onclick="reconnect()">
-              Connect
-            </button>
+      <div class="tool-zoom-div">
+        <img src="static/icons/zoom.svg">
+        <input type="range" class="form-range" id="zoom_range" min="-1.30" max="0.4771" step="0.001" value="1"/>
+      </div>
+      <div class="item" id="right-toolbar" style="z-index: 100;;">
+        <div class="message-title" id="landing">
+          <div class="form-group row">
+            <div class="col-sm-12">
+              <button class="btn btn-outline-secondary" type="button" id="join-btn" style="width: 100%" onclick="reconnect()">
+                Connect
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <!-- ColorPicker Tool Code -->
-      <div class="message-title" style="display: flex">
-        <div class="draw-colorpickerdiv-hue">
-          <div class="draw-colorpicker-hue" id="colorpicker-hue"></div>
-          <div class="draw-colorpicker-hue-icon" id="colorpicker-hue-icon"></div>
+        <!-- ColorPicker Tool Code -->
+        <div class="message-title" style="display: flex">
+          <div class="draw-colorpickerdiv-hue">
+            <div class="draw-colorpicker-hue" id="colorpicker-hue"></div>
+            <div class="draw-colorpicker-hue-icon" id="colorpicker-hue-icon"></div>
+          </div>
+          <div class="draw-colorpickerdiv" id="colorpickerdiv">
+            <img class="draw-colorpicker-img" src="static/bg_colorpicker.png" id="colorpicker-img"/>
+            <div class="draw-colorpicker-bg" id="colorpicker-bg"></div>
+            <div class="draw-colorpicker-icon" id="colorpicker-icon"></div>
+          </div>
         </div>
-        <div class="draw-colorpickerdiv" id="colorpickerdiv">
-          <img class="draw-colorpicker-img" src="static/bg_colorpicker.png" id="colorpicker-img"/>
-          <div class="draw-colorpicker-bg" id="colorpicker-bg"></div>
-          <div class="draw-colorpicker-icon" id="colorpicker-icon"></div>
+        <!-- Brush Tool Code -->
+        <div id="brush" style="display: none;">
+          <div class="message-title" style="color: white;">
+            <img src="static/icons/tool-down.svg">
+            Brush Tool
+          </div>
+          <div class="message-title" style="position: relative; z-index: 100;display: flex">
+            <label style="font-size:small;margin-right: 10px;">Size:</label>
+            <input type="range" class="form-range" id="width_range" />
+          </div>
         </div>
-      </div>
-      <!-- Brush Tool Code -->
-      <div class="message-title" style="color: white;">
-        <img src="static/icons/tool-down.svg">
-        Brush Tool
-      </div>
-      <div class="message-title" style="position: relative; z-index: 100;display: flex">
-        <label style="font-size:small;margin-right: 10px;">Size:</label>
-        <input type="range" class="form-range" id="width_range" />
-      </div>
-
-      <!-- Eraser Tool Code -->
-      <div class="message-title" style="color: white;">
-        <img src="static/icons/tool-down.svg">
-        Eraser Tool
-      </div>
-      <div class="message-title" style="position: relative; z-index: 100;display: flex">
-        <label style="font-size:small;margin-right: 10px;">Size:</label>
-          <input type="range" class="form-range" id="eraser_width_range" />
-      </div>
-      <!-- Revise Tool Code -->
-      <div class="message-title row" id="revise-tool" style="position: relative; z-index: 100;display: none;">
-        <div class="col" id="revise_range_div"  style="position: relative; z-index: 100;display:none">
-          <label for="customRange1" class="form-label">Revise Scale</label>
-          <input type="range" class="form-range" id="revise_range" min="0.5" max="3" step="0.001" value="1"/>
+        <!-- Eraser Tool Code -->
+        <div id="eraser" style="display: none;">
+          <div class="message-title" style="color: white;">
+            <img src="static/icons/tool-down.svg">
+            Eraser Tool
+          </div>
+          <div class="message-title" style="position: relative; z-index: 100;display: flex">
+            <label style="font-size:small;margin-right: 10px;">Size:</label>
+              <input type="range" class="form-range" id="eraser_width_range" />
+          </div>
         </div>
-        <button class="btn btn-outline-light" id="revise_button" onclick="revise_start()" style="width: 100%">
-          revise
-        </button>
-      </div>
-      <!-- Tools Panel Code -->
-      <div class="bottom-tool-div">
-        <ul class="nav nav-tabs" id="myTab" role="tablist" data-bs-auto-close="false"  style="display:flex;justify-content: center;align-items: center;--bs-nav-tabs-link-active-bg:rgb(128, 128, 128);--bs-nav-tabs-link-active-border-color:var(--bs-border-color) var(--bs-border-color) rgb(128, 128, 128);">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="layer-tab" data-bs-toggle="tab" data-bs-target="#layer" type="button" role="tab" aria-controls="layer" aria-selected="false" onclick="clickHidden('layer')">
-              <img src="static/icons/layer.svg">
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="chatroom-tab" data-bs-toggle="tab" data-bs-target="#chatroom" type="button" role="tab" aria-controls="chatroom" aria-selected="false" onclick="clickHidden('chatroom')">
-              <img src="static/icons/chat.svg">
-            </button>
-          </li>
-        </ul>
-        <!-- Layer Tool Code -->
-        <div class="layer-tool-container">
-          <div class="message-title" style="position: relative; z-index: 100;display: flex;padding: 5px 0px;">
-              <label for="customRange1" style="margin-right: 10px;font-size: small;">opacity</label>
-              <input type="range" class="form-range" id="opacity_range" min="0" max="1" step ="0.01"/>
-            </div>
-            <div class="layer-tooldiv">
-              <a class="layer-tool-icon" onclick="add_minelayer()">
-                <img src="static/icons/plus.svg">
-              </a>
-              <a class="layer-tool-icon" onclick="delete_minelayer()">
-                <img src="static/icons/minus.svg">
-              </a>
-              <a class="layer-tool-icon" onclick="change_minelayer_order(1)">
-                <img src="static/icons/up.svg">
-              </a>
-              <a class="layer-tool-icon" onclick="change_minelayer_order(-1)">
-                <img src="static/icons/down.svg">
-              </a>
-            </div>
-            <ul class="layer-ul" id="layer_thumbnail" >
-              <li id="thumbnail_1" style="background-color: rgb(95, 103, 255)" onclick="change_minelayer_active(this)"><a style="margin: 10px;"id="visibility_1" onclick="change_minelayer_visibility(this)">
-                  <img src="static/icons/eye.svg"
-                  ><span class="visually-hidden">Button</span></a><img class="mx-2" width="75" height="75"
-                /></li>
-            </ul>
+        <!-- Revise Tool Code -->
+        <div class="message-title row" id="revise-tool" style="position: relative; z-index: 100;display: none;">
+          <div class="col" id="revise_range_div"  style="position: relative; z-index: 100;display:none">
+            <label for="customRange1" class="form-label">Revise Scale</label>
+            <input type="range" class="form-range" id="revise_range" min="0.5" max="3" step="0.001" value="1"/>
+          </div>
+          <button class="btn btn-outline-light" id="revise_button" onclick="revise_start()" style="width: 100%">
+            revise
+          </button>
         </div>
-        <!-- Message Tool Code -->
-        <div class="message-tool-container" id="chatroom" style="padding:2px;font-size: small;display: none;">
-          <div class="message-title" id="room-info" ></div>
-          <div class="message-title" style="text-align: start;">Message:</div>
-          <div class="rounded-3 border p-1 message-title" id="chat">
-              <ul id="chat-messages" class="overflow-auto"style="max-height: 200px;"></ul>
-              <div class="input-group">
-                <input type="text" class="form-control" id="message" placeholder="Enter a Message" style="background-color: transparent;color: rgb(255, 255, 255);" autocomplete="off" />
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="sendMessage()">Send</button>
+        <!-- Tools Panel Code -->
+        <div class="bottom-tool-div" id="bottom-tool">
+          <img class="bottom-tool-close-icon" src="static/icons/close-white.svg" id="bottom-tool-close-icon"/>
+          <div style="width: 100%; border: 0.5px solid white;"></div>
+          <ul class="nav nav-tabs" id="bottom-tool-Tab" role="tablist" data-bs-auto-close="false"  style="--bs-nav-tabs-link-active-bg:rgb(128, 128, 128);--bs-nav-tabs-link-active-border-color:var(--bs-border-color) var(--bs-border-color) rgb(128, 128, 128);">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="layer-tab" data-bs-toggle="tab" data-bs-target="#layer" type="button" role="tab" aria-controls="layer" aria-selected="false">
+                <img src="static/icons/layer.svg">
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="chatroom-tab" data-bs-toggle="tab" data-bs-target="#chatroom" type="button" role="tab" aria-controls="chatroom" aria-selected="false">
+                <img src="static/icons/chat.svg">
+              </button>
+            </li>
+          </ul>
+          <!-- Layer Tool Code -->
+          <div class="layer-tool-container" id="layer">
+            <div class="message-title" style="position: relative; z-index: 100;display: flex;padding: 5px 0px;">
+                <label for="customRange1" style="margin-right: 10px;font-size: small;">opacity</label>
+                <input type="range" class="form-range" id="opacity_range" min="0" max="1" step ="0.01"/>
               </div>
-            <input type="checkbox" class="btn-check" id="bye_button" autocomplete="off" onclick="bye()"/>
-            <label class="btn btn-outline-warning" style="width: 100%" for="bye_button" >Disconnect</label>
+              <div class="layer-tooldiv">
+                <a class="layer-tool-icon" onclick="add_minelayer()">
+                  <img src="static/icons/plus.svg">
+                </a>
+                <a class="layer-tool-icon" onclick="delete_minelayer()">
+                  <img src="static/icons/minus.svg">
+                </a>
+                <a class="layer-tool-icon" onclick="change_minelayer_order(1)">
+                  <img src="static/icons/up.svg">
+                </a>
+                <a class="layer-tool-icon" onclick="change_minelayer_order(-1)">
+                  <img src="static/icons/down.svg">
+                </a>
+              </div>
+              <ul class="layer-ul" id="layer_thumbnail" >
+                <li id="thumbnail_1" style="background-color: rgb(95, 103, 255)" onclick="change_minelayer_active(this)"><a style="margin: 10px;"id="visibility_1" onclick="change_minelayer_visibility(this)">
+                    <img src="static/icons/eye.svg"
+                    ><span class="visually-hidden">Button</span></a><img class="mx-2" width="75" height="75"
+                  /></li>
+              </ul>
           </div>
-          <div class="message-title" style="text-align: start;">Member:</div>
-          <div class="rounded-3 border p-1 message-title" id="members">
-            <ul id="members-list"  class="overflow-auto"></ul>
+          <!-- Message Tool Code -->
+          <div class="message-tool-container" id="chatroom" style="padding:2px;font-size: small;display: none;">
+            <div class="message-title" id="room-info" ></div>
+            <!-- <div class="message-title" style="text-align: start;">Message:</div> -->
+            <div class="rounded-3 border p-1 message-title" id="chat">
+                <ul id="chat-messages" class="overflow-auto"style="max-height: 200px;"></ul>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="message" placeholder="Enter a Message" style="background-color: transparent;color: rgb(255, 255, 255);" autocomplete="off" />
+                  <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="sendMessage()">Send</button>
+                </div>
+              <input type="checkbox" class="btn-check" id="bye_button" autocomplete="off" onclick="bye()"/>
+              <label class="btn btn-outline-warning" style="width: 100%" for="bye_button" >Disconnect</label>
+            </div>
+            <!-- <div class="message-title" style="text-align: start;">Member:</div> -->
+            <div class="rounded-3 border p-1 message-title" id="members">
+              <ul id="members-list"  class="overflow-auto"></ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+    </div>
       <div class="item" id="painting-area">
       <canvas
         id="middle"
@@ -204,6 +208,7 @@
     >
     </div>
   <!-- Client Render Code -->
+  <script src="static/scripts/uiTool.js"></script>
   <script src="static/scripts/brushTool.js"></script>
   <script src="static/scripts/panTool.js"></script>
   <script src="static/scripts/eraserTool.js"></script>
@@ -222,22 +227,6 @@
     const roomsid = "{{ roomsid }}";
     let toolShow="";
     window.onload=init();
-    function clickHidden(eleName){
-      if (toolShow==eleName){
-        if (toolShow!="eraser" && toolShow!="draw"){
-          document.getElementById(eleName+"-tab").classList.remove("active");
-        }
-        document.getElementById(eleName).classList.remove("active");
-        document.getElementById(eleName).classList.remove("show");
-        toolShow="";
-      }else{
-        if (toolShow!="eraser" && toolShow!="draw"){
-          document.getElementById(eleName).classList.add("active");
-          document.getElementById(eleName).classList.add("show");
-          document.getElementById(eleName+"-tab").style.borderColor="";
-        }
-        toolShow=eleName;}
-    }
     function show_revise_tool(){
       if (document.getElementById('revise-tool').style.display=="none")
         {

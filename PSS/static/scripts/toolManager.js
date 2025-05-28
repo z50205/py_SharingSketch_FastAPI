@@ -27,6 +27,7 @@ function changeTool(toolname){
 }
 
 function updateTool(){
+    updateToolConfig();
     canvas.removeEventListener("pointermove", defaultMove);
     switch(tool_pivot){
         case "colorpicker":
