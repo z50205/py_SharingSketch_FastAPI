@@ -21,9 +21,13 @@
             <div class="tool_name px-3" style="width: fit-content;color: rgb(255, 255, 255);">Edit</div>
         </a>
         <ul class="dropdown-menu dropdown-menu-dark" style="background-color:  rgb(64, 64, 64);border:0px;">
-            <li><div class="dropdown-item" onclick="backLastStep()">Undo</div></li>
             <li><div class="dropdown-item" onclick="show_revise_tool()">Adjust selection</div></li>
             <li><div class="dropdown-item" onclick="erase_all()">Clear layer</div></li>
         </ul>
+    </li>
+    <li class="nav-tool-li" style="list-style-type: none;">
+        <a class="nav-too-href tool_name" onclick="backLastStep()">
+            <img class="" src="static/icons/back-step.svg"> 
+        </a>
     </li>
 </div>

@@ -1,8 +1,8 @@
 //Sketch sub draw function
-const CURSORREFRESHRATE=100;
-function drawWidth(draw_flag) {
+const CURSORREFRESHRATE=33;
+function drawWidth() {
   ctx.clearRect(0, 0, w, h);
-  if (draw_flag) {
+  if (tool_pivot=="brush") {
     ctx.globalCompositeOperation = "source-over";
     ctx.strokeStyle = 'red';
     ctx.beginPath();
@@ -65,5 +65,5 @@ function drawWidth(draw_flag) {
 }
 
     const sendCursorPos = setInterval(() => {
-        drawWidth(draw_flag);
+        drawWidth();
     }, CURSORREFRESHRATE);

@@ -61,8 +61,8 @@ function li_template(thumbnailsParentNode, thumbnail_active, nextId) {
     svg.src="/static/icons/eye.svg";
     let img = document.createElement("img");
     img.setAttribute("class", "mx-2");
-    img.width = 75;
-    img.height = 75;
+    img.width = 50;
+    img.height = 50;
     img.style.backgroundColor = "white";
     a_ele.appendChild(svg);
     li.appendChild(a_ele);

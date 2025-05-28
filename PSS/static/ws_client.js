@@ -12,8 +12,6 @@ const connectWebSocket=()=>{
         }
         else{
             console.log("Already connected");
-            document.getElementById("chat").style.display = "block";
-            document.getElementById("members").style.display = "block";
             document.getElementById("landing").style.display = "none";
             let ws_packet={"event":"user_join","username":username,"roomsid":roomsid}
             socket.send(JSON.stringify(ws_packet));
@@ -67,8 +65,6 @@ const connectWebSocket=()=>{
       // disconnect
       document.getElementById("bye_button").checked = false;
       document.getElementById("bye_button").disabled = true;
-      document.getElementById("chat").style.display = "none";
-      document.getElementById("members").style.display = "none";
       document.getElementById("landing").style.display = "block";
   }
     const ws_join=(data)=>{

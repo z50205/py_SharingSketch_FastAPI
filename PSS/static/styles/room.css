@@ -13,10 +13,21 @@ ul {
     padding: 0px;
 }
 
+.layer-ul{
+    margin-left: 5px;
+    margin-right: 5px;
+    color:rgb(184, 184, 184);
+    text-decoration: none;
+    overflow: auto;
+    border-radius: 0px 0px 10px 10px;
+    border: 1px solid white;
+    background-color:rgb(184, 184, 184);
+}
+
 .mx-2{
     background: url('../trans_bg.png');
     border:0px solid;
-    
+    background-size: 30px;
 }
 
 .container-fluid{
@@ -24,19 +35,77 @@ ul {
 
 }
 .item{
-    max-width:250px;
+    max-width:200px;
+    background-color: rgb(80, 80, 80);
 }
 h1{
     margin:1rem;
 }
 #room-info{
-    margin-left:1rem;;
+    margin-left:5px;
+    color:white;
+    text-align: center;
+}
+#chat{
+    color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
+#members{
+    color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.bottom-tool-div{
+    position: absolute;
+    bottom: 0px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+}
 .message-title{
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin-left: 5px;
+    margin-right: 5px;
     color:rgb(184, 184, 184);
+    justify-content: space-between;
+}
+
+.layer-tool-container{
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.layer-tooldiv{
+    display: flex;
+    margin-left: 5px;
+    margin-right: 5px;
+    border: 1px solid white;
+    border-radius: 10px 10px 0px 0px;
+    overflow: hidden;
+    flex: 1 0 25px;
+}
+
+.layer-tool-icon{
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    padding: 3px;
+}
+
+
+.message-tool-container{
+    padding:2px;
+    font-size: small;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+.layer-tool-icon:hover{
+    background-color: rgb(168, 168, 168);
 }
 input {
     flex: 1 1 auto;
@@ -103,6 +172,7 @@ input {
 .draw-colorpickerdiv{
     position: relative;
     cursor: crosshair;
+    flex:1;
 }
 
 .draw-colorpicker-img{
@@ -128,21 +198,23 @@ input {
 
 .draw-colorpickerdiv-hue{
     position: relative;
-    margin: 1rem;
+    display: flex;
 }
 
 .draw-colorpicker-hue{
-    height: 20px;
-    border-radius: 5px 5px 0px 0px;
+    width: 20px;
+    height: 100%;
+    border-radius: 5px 0px 0px 5px;
     border: 2px solid white;
-    background: linear-gradient(90deg, hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%), hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%), hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%));
+    background: linear-gradient(180deg, hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%), hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%), hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%));
 }
 .draw-colorpicker-hue-icon{
-    position: relative;
-    width: 3px;
-    height: 10px;
-    border: 2px solid white;
+    position: absolute;
+    width: 20px;
+    height: 3px;
+    border: 1px solid black;
     pointer-events: none;
+    background: rgb(255 255 255);
 }
 
 
@@ -184,6 +256,11 @@ input {
     border:1px solid black;
     border-radius: 3px;
     background-color: rgb(109, 109, 109);
+}
+
+.nav-too-href{
+    padding: 4px 10px;
+    display: flex;
 }
 .tool-icon-href{
     margin: 4px;

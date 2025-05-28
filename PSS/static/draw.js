@@ -10,7 +10,6 @@ var canvas,
   dot_flag = false;
 var first_choose = true;
 const worker = new Worker("/static/scripts/worker.js");
-draw_flag = true; //pen or eraser
 var canvas = document.getElementById("can"); //main canvas
 var ctx = canvas.getContext("2d"); //canvas content
 var can_mid = document.getElementById("middle"); //For modify tool using a middle layer
@@ -39,6 +38,7 @@ const CURSORSTAYTIME=10000;
 //Drawtool variables
 line_widths = [2, 10, 0]; //Set tools linewidth 1.pen；2.eraser 3.other(no _use)
 line_widths_max = [100, 200, 0]; //Set tools linewidth Maximum 1.pen；2.eraser 3.other(no _use)
+let tool_pivot='draw';//Tools have to be a unique 1.draw, eraser, pan ,colorpicker
 pan_flag = false;
 mirror_flag = false;
 restore_max = 20;
@@ -134,42 +134,7 @@ function init() {
   //Canvas Sketch/Pan eventlistener(pointer)
   const pointers = {};
 
-  canvas.addEventListener(
-    "pointermove",
-    function (e) {
-      mouse_position = [e.clientX, e.clientY];
-      if (space_pivot)panCanvas("move", e);
-      // else if(Object.keys(pointers).length == 2)panCanvas("move", e);
-      else if(color_pivot){}
-      else findxy("move", e, draw_flag);
-    },
-    false
-  );
-  canvas.addEventListener(
-    "pointerdown",
-    function (e) {
-      if (space_pivot) panCanvas("down", e);
-      else if(color_pivot){}
-      else findxy("down", e, draw_flag);
-    },
-    false
-  );
-  canvas.addEventListener(
-    "pointerup",
-    function (e) {
-      if (space_pivot) panCanvas("up", e);
-      else findxy("up", e, draw_flag);
-    },
-    false
-  );
-  canvas.addEventListener(
-    "pointerout",
-    function (e) {
-      if (space_pivot) panCanvas("out", e);
-      else findxy("out", e, draw_flag);
-    },
-    false
-  );
+  canvas.addEventListener("pointermove", defaultMove);
   canvas.addEventListener(
     "contextmenu", (e) => {
       e.preventDefault();}
@@ -198,39 +163,42 @@ function init() {
     },
     false
   );
+  let keydown=false;
   //Tool Undo/PAN eventlistener
   document.addEventListener(
     "keydown",
     function (e) {
       e.preventDefault;
-      if (e.ctrlKey && e.keyCode == 90) backLastStep();
-      //keycode-space
-      if (e.keyCode == 32) {
-        e.preventDefault;
-        space_pivot = true;
-        document.getElementById("pan_pivot").style.backgroundColor = "rgb(184, 184, 184)";
-      }
-      //keycode-E
-      if (e.keyCode == 69) {
-        color(document.getElementById("eraser-tab"));
-        document.getElementById("draw").classList.remove("active");
-        document.getElementById("draw").classList.remove("show");
-        document.getElementById("draw-tab").style.borderColor="transparent";
-      }
-      //keycode-M
-      if (e.keyCode == 77) {
-        mirror();
-      }
-      //keycode-P
-      if (e.keyCode == 80) {
-        document.getElementById("eraser").classList.remove("active");
-        document.getElementById("eraser").classList.remove("show");
-        document.getElementById("eraser-tab").style.borderColor="transparent";
-        color("draw");
-      }
-      //keycode-Q
-      if (e.keyCode == 81) {
+
+      if(!keydown){
+        if (e.ctrlKey && e.keyCode == 90) backLastStep();
+        //keycode-space
+        if (e.keyCode == 32) {
+          if (tool_pivot!="pan"){
+            changeTool('pan');
+          }
+        }
+        //keycode-E
+        if (e.keyCode == 69) {
+          changeTool('eraser');
+          document.getElementById("draw").classList.remove("active");
+          document.getElementById("draw").classList.remove("show");
+        }
+        //keycode-M
+        if (e.keyCode == 77) {
           mirror();
+        }
+        //keycode-P
+        if (e.keyCode == 80) {
+          changeTool('brush');
+          document.getElementById("eraser").classList.remove("active");
+          document.getElementById("eraser").classList.remove("show");
+        }
+        //keycode-Q
+        if (e.keyCode == 81) {
+            mirror();
+        }
+        keydown=true;
       }
       //keycode-[
       if (e.keyCode == 219) {
@@ -240,7 +208,6 @@ function init() {
       if (e.keyCode == 221) {
         line_width_change(1);
       }
-      // console.log(space_pivot);
     },
     false
   );
@@ -249,13 +216,9 @@ function init() {
     "keyup",
     function (e) {
       if (e.keyCode == 32) {
-        e.preventDefault;
-        space_pivot = false;
-        flag = false;
-        panCanvas("out", e);
-        document.getElementById("pan_pivot").style.backgroundColor = "";
+        changeTool('pan');
       }
-      // console.log(space_pivot);
+      keydown=false;
     },
     false
   );
@@ -283,14 +246,14 @@ function init() {
 }
 //Tool change linewidth
 function line_width_change(pivot) {
-  if (draw_flag) {
+  if (tool_pivot=="brush") {
     line_widths[0] = parseInt(width_range.value) + pivot;
-  } else if (!draw_flag) {
+  } else if (tool_pivot=="eraser") {
     line_widths[1] = parseInt(eraser_width_range.value) + pivot;
   }
   updateToolInfo();
   ws_sendCursorPos();
-  drawWidth(draw_flag);
+  drawWidth();
 }
 //Tool Undo
 function backLastStep() {
@@ -460,18 +423,9 @@ function mirror() {
   for (let i = 0; i < minelayers.length; i++) {
     minelayers[i].style.transform = scaleKey;
   }
-  drawWidth(draw_flag);
+  drawWidth();
 }
 
-function pan() {
-  if (!space_pivot) {
-    space_pivot=true;
-    document.getElementById("pan_pivot").style.backgroundColor = "rgb(184, 184, 184)";
-  } else if (space_pivot) {
-    space_pivot=false;
-    document.getElementById("pan_pivot").style.backgroundColor = "";
-  }
-}
 //Tool Save image by default name
 async function saveimage() {
   var link = document.createElement("a");
@@ -551,205 +505,7 @@ async function loadimage(event) {
     };
   };
 }
-//Tool Pan
-function panCanvas(res, e) {
-  if (res == "down") {
-    x_old_origin = e.clientX;
-    y_old_origin = e.clientY;
-    currX = e.clientX - canvas.offsetLeft;
-    currY = e.clientY - canvas.offsetTop;
-    x_offset_origin = x_offset;
-    y_offset_origin = y_offset;
-    pan_flag = true;
-  }
-  if (res == "up" || res == "out") {
-    if (pan_flag) {
-      scaleKey =
-        "scale(" +
-        (scale * scale_xy[0]).toString() +
-        "," +
-        (scale * scale_xy[1]).toString() +
-        ") " +
-        "translate(" +
-        x_offset.toString() +
-        "px," +
-        y_offset.toString() +
-        "px)";
-      canvas.style.transform = scaleKey;
-      can_mid.style.transform = scaleKey;
-      background.style.transform = scaleKey;
-      var othercanvasessetting = document.getElementsByClassName(
-        "othermembercanvases"
-      );
-      for (let i = 0; i < othercanvasessetting.length; i++) {
-        othercanvasessetting[i].style.t
-        ransform = scaleKey;
-      }
-      let thumbnailcanvases = document.getElementsByClassName(
-        "thumbnailcanvases"
-      );
-      for (let i = 0; i < thumbnailcanvases.length; i++) {
-        thumbnailcanvases[i].style.transform = scaleKey;
-      }
-      can_proj.style.transform = scaleKey;
-      var minelayers = document.getElementsByClassName("minelayer");
-      for (let i = 0; i < minelayers.length; i++) {
-        minelayers[i].style.transform = scaleKey;
-      }
-      pan_flag = false;
-    }
-  }
-  if (res == "move") {
-    if (pan_flag) {
-      x_offset = x_offset_origin + (e.clientX - x_old_origin) / (scale * scale_xy[0]);
-      y_offset = y_offset_origin + (e.clientY - y_old_origin) / (scale * scale_xy[1]);
-      currX = e.clientX - canvas.offsetLeft;
-      currY = e.clientY - canvas.offsetTop;
-      scaleKey =
-        "scale(" +
-        (scale * scale_xy[0]).toString() +
-        "," +
-        (scale * scale_xy[1]).toString() +
-        ") " +
-        "translate(" +
-        (x_offset).toString() +
-        "px," +
-        (y_offset).toString() +
-        "px)";
-      canvas.style.transform = scaleKey;
-      can_mid.style.transform = scaleKey;
-      background.style.transform = scaleKey;
-      var othercanvasessetting = document.getElementsByClassName(
-        "othermembercanvases"
-      );
-      for (let i = 0; i < othercanvasessetting.length; i++) {
-        othercanvasessetting[i].style.transform = scaleKey;
-      }
-      let thumbnailcanvases = document.getElementsByClassName(
-        "thumbnailcanvases"
-      );
-      for (let i = 0; i < thumbnailcanvases.length; i++) {
-        thumbnailcanvases[i].style.transform = scaleKey;
-      }
-      can_proj.style.transform = scaleKey;
-      var minelayers = document.getElementsByClassName("minelayer");
-      for (let i = 0; i < minelayers.length; i++) {
-        minelayers[i].style.transform = scaleKey;
-      }
-    }
-  }
-}
-//Tool Color Change
-function color(obj) {
-  draw_flag = true;
-  document.getElementById("eraser-tab").classList.remove("active");
-  if (obj=="draw"){
-    obj=document.getElementById(x);
-    document.getElementById("draw-tab").classList.add("active");
-    document.getElementById("draw-tab").style.borderColor="";
-  }else{
-    switch (obj.id) {
-      case "eraser-tab":
-        draw_flag = false;
-        document.getElementById("draw-tab").classList.remove("active");
-        document.getElementById("draw-tab").classList.remove("show");
-        document.getElementById("eraser-tab").classList.add("active");
-        document.getElementById("eraser-tab").style.borderColor="";
-        break;
-    }
-  }
-  updateToolInfo();
-}
-//Tool Change pointwidth(Pen/Eraser)
-function updateToolInfo() {
-  if (draw_flag) width_range.value = line_widths[0];
-  else if (!draw_flag) eraser_width_range.value = line_widths[1];
-}
-//Sketch
-function findxy(res, e, draw_flag) {
-  if (res == "down") {
-    prevX = currX;
-    prevY = currY;
-    currX = e.clientX - canvas.offsetLeft;
-    currY = e.clientY - canvas.offsetTop;
-    flag = true;
-    dot_flag = true;
-    if (dot_flag) {
-      ctx_active.beginPath();
-      ctx_active.fillStyle = x;
-      ctx_active.fillRect(
-        currX * scale,
-        currY * scale,
-        2 * e.pressure,
-        2 * e.pressure
-      );
-      ctx_active.closePath();
-      dot_flag = false;
-    }
-  }
-  if (res == "up" || res == "out") {
-    if (flag) {
-      if (restore.length >= restore_max) {
-        restore.shift();
-        restore_active.shift();
-      }
-      restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
-      restore_active[restore_active.length] = can_active.id;
-      Updatethumbnail();
-      updateCanvas();
-    }
-    flag = false;
-  }
-  if (res == "move") {
-    if (flag) {
-      prevX = currX;
-      prevY = currY;
-      currX = e.clientX - canvas.offsetLeft;
-      currY = e.clientY - canvas.offsetTop;
-      draw(e.pressure, draw_flag);
-      ws_sendCursorPos();
-      drawWidth(draw_flag);
-    }
-    else{
-      prevX = currX;
-      prevY = currY;
-      currX = e.clientX - canvas.offsetLeft;
-      currY = e.clientY - canvas.offsetTop;
-      ws_sendCursorPos();
-      drawWidth(draw_flag);
-    }
-  }
-}
-//Sketch sub draw function
-function draw(pressure, draw_flag) {
-  if (draw_flag) {
-    ctx_active.globalCompositeOperation = "source-over";
-    ctx_active.strokeStyle = x;
-    ctx_active.lineCap = "round";
-    ctx_active.lineWidth = line_widths[0] * pressure;
-  } else {
-    // ctx.strokeStyle = rgba(0,0,0,0.0);
-    ctx_active.globalCompositeOperation = "destination-out";
-    ctx_active.lineWidth = line_widths[1];
-  }
-  ctx_active.beginPath();
-  ctx_active.moveTo(
-    (prevX - scale_orgin[0]) / (scale * scale_xy[0]) +
-      scale_orgin[0] -
-      x_offset,
-    (prevY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset
-  );
-  ctx_active.lineTo(
-    (currX - scale_orgin[0]) / (scale * scale_xy[0]) +
-      scale_orgin[0] -
-      x_offset,
-    (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset
-  );
-  // ctx.moveTo((prevX) / (scale * scale_xy[0]) - x_offset, (prevY) / (scale * scale_xy[1]) - y_offset);
-  // ctx.lineTo((currX) / (scale * scale_xy[0]) - x_offset, (currY) / (scale * scale_xy[1]) - y_offset);
-  ctx_active.stroke();
-  ctx_active.closePath();
-}
+
 function erase_all() {
   var m = confirm("Want to clear");
   if (m) {
