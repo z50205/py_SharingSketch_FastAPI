@@ -40,7 +40,7 @@ ul {
 .item{
     width:150px;
     background-color: rgb(80, 80, 80);
-    border-radius: 0px 0px 5px 5px;
+    border-radius: 0px 0px 0px 5px;
 }
 h1{
     margin:1rem;
@@ -72,10 +72,12 @@ h1{
     display: flex;
     flex-direction: column;
     background-color: rgb(80, 80, 80);
+    border-radius: 5px 0px 0px 0px;
 }
 .message-title{
     margin-left: 5px;
     margin-right: 5px;
+    margin-bottom: 5px;
     color:rgb(184, 184, 184);
     justify-content: space-between;
 }
@@ -302,6 +304,79 @@ input {
 
 }
 
+
+ /* The switch - the box around the slider */
+.online-switch-div{
+    position: absolute;
+    right: 0px;
+    display: flex;
+    align-items: center;
+}
+
+.switch {
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+    position: relative;
+    margin: 5px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    position: relative;
+    opacity: 0;
+    width:  0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    right: 3px;
+    bottom: 3px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:not(:checked) + .slider {
+    background-color: #ccc;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(-14px);
+    -ms-transform: translateX(-14px);
+    transform: translateX(-14px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 20px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+} 
+
 @media(max-width:600px){
     h1{
     font-size: 5vw;
@@ -310,11 +385,4 @@ input {
     h3{
         font-size:4vw;
         }
-    #room-info{
-        margin-left:2vw;
-    }
-    .message-title{
-        margin-left: 2vw;
-        margin-right: 2vw;
-    }
 }

@@ -1,4 +1,4 @@
-<div style="display: flex">
+<div style="display: flex;position: relative;align-items: center;">
     <a class="hompage-icon-href" href="/">
         <img src="static/icons/home.svg"/>
     </a>
@@ -30,4 +30,12 @@
             <img class="" src="static/icons/back-step.svg"> 
         </a>
     </li>
+    <div class="online-switch-div">
+        <img id="online-switch-img" src="static/icons/offline.svg">
+        <div id="online-switch-text" style="margin: 5px;color:white;font-weight: bold;">OFFLINE</div>
+        <label class="switch">
+            <input type="checkbox" id="online-switch-input">
+            <span id="online-switch-label" class="slider round"></span>
+        </label>
+    </div>
 </div>

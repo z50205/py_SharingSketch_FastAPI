@@ -2,6 +2,10 @@ let layerTab=document.getElementById("layer-tab");
 let chatTab=document.getElementById("chatroom-tab");
 let bottomToolCloseIcon=document.getElementById("bottom-tool-close-icon");
 let bottomToolTab=document.getElementById("bottom-tool-Tab");
+let onlineSwitchImg=document.getElementById("online-switch-img");
+let onlineSwitchText=document.getElementById("online-switch-text");
+let onlineSwitchInput=document.getElementById("online-switch-input");
+let onlineSwitchLabel=document.getElementById("online-switch-label");
 
 let layer=document.getElementById("layer");
 let chat=document.getElementById("chatroom");
@@ -51,4 +55,26 @@ function updateTab(){
 function updateToolConfig(){
     brush.style.display="none";
     eraser.style.display="none";
+}
+
+onlineSwitchLabel.addEventListener("click",()=>{
+    if(online){
+        bye();
+    }
+    else{
+        reconnect();
+    }
+})
+
+function onlineState(){
+    if(online){
+        onlineSwitchImg.src="static/icons/record.svg";
+        onlineSwitchText.textContent="ONLINE";
+        onlineSwitchText.style.color="red";
+    }
+    else{
+        onlineSwitchImg.src="static/icons/offline.svg";
+        onlineSwitchText.textContent="OFFLINE";
+        onlineSwitchText.style.color="white";
+    }
 }

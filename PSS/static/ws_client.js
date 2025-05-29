@@ -2,21 +2,23 @@ const roomInfo = document.getElementById("room-info");
 roomInfo.textContent = `Room: ${room} | User: ${username}`;
 
 let self_sid;
+let online;
+let selfLayerPivot=false;
 
 
 const connectWebSocket=()=>{
-    const socket = new WebSocket("https://bizara.link/ws");
+    const socket = new WebSocket("http://localhost/ws");
     socket.onopen=(ev)=>{
         if (socket.readyState!=1){
             reconnect();
         }
         else{
             console.log("Already connected");
-            document.getElementById("landing").style.display = "none";
             let ws_packet={"event":"user_join","username":username,"roomsid":roomsid}
             socket.send(JSON.stringify(ws_packet));
-            document.getElementById("bye_button").checked = true;
-            document.getElementById("bye_button").disabled = false;
+            online=true;
+            onlineSwitchInput.checked=true;
+            onlineState();
         }
     }
     socket.onmessage=(ev)=>{
@@ -62,10 +64,6 @@ const connectWebSocket=()=>{
       while (othercanvasessetting.length > 0) {
         othercanvasessetting[0].remove();
       }
-      // disconnect
-      document.getElementById("bye_button").checked = false;
-      document.getElementById("bye_button").disabled = true;
-      document.getElementById("landing").style.display = "block";
   }
     const ws_join=(data)=>{
         self_sid = data["sid"];
@@ -160,12 +158,15 @@ const connectWebSocket=()=>{
           }
         }
       // 5.取得過去自己的畫布資訊
-      if(data["sid"]==self_sid){
-        let selfLayerResponse=await fetch("api/layers",{
-          method:"POST"
-        });
-        let selfLayerResult=await selfLayerResponse.json();
-        init_layer_database(selfLayerResult);
+      if (selfLayerPivot!=true){
+        if(data["sid"]==self_sid){
+          let selfLayerResponse=await fetch("api/layers",{
+            method:"POST"
+          });
+          let selfLayerResult=await selfLayerResponse.json();
+          init_layer_database(selfLayerResult);
+        }
+        selfLayerPivot=true;
       }
       updateCanvas();
     }
@@ -265,6 +266,8 @@ const connectWebSocket=()=>{
 function bye() {
   let ws_packet={"event":"leave_room","sid":self_sid};
   socket.send(JSON.stringify(ws_packet));
+  online=false;
+  onlineState();
 }
 
 function reconnect(){
