@@ -72,7 +72,7 @@ h1{
     display: flex;
     flex-direction: column;
     background-color: rgb(80, 80, 80);
-    border-radius: 5px 0px 0px 0px;
+    border-radius: 10px 0px 0px 0px;
 }
 .message-title{
     margin-left: 5px;
@@ -188,6 +188,27 @@ input {
     border-radius: 3px;
 }
 
+.draw-colorpickerdiv-hue{
+    position: relative;
+    display: flex;
+}
+
+.draw-colorpicker-hue{
+    width: 20px;
+    height: 100%;
+    border-radius: 5px 0px 0px 5px;
+    border: 2px solid white;
+    background: linear-gradient(180deg, hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%), hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%), hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%));
+}
+.draw-colorpicker-hue-icon{
+    position: absolute;
+    width: 20px;
+    height: 3px;
+    border: 1px solid black;
+    pointer-events: none;
+    background: rgb(255 255 255);
+}
+
 .draw-colorpickerdiv{
     position: relative;
     cursor: crosshair;
@@ -215,27 +236,24 @@ input {
     pointer-events: none;
 }
 
-.draw-colorpickerdiv-hue{
-    position: relative;
+.draw-colorpicker-show{
+    width: 30px;
+    aspect-ratio: 1;
+    margin: 10px 10px 0px 0px;
+    border: 1px solid white;
+    background-color: black;
+}
+.draw-colorpicker-samplediv{
     display: flex;
+    align-items: end;
 }
-
-.draw-colorpicker-hue{
-    width: 20px;
-    height: 100%;
-    border-radius: 5px 0px 0px 5px;
-    border: 2px solid white;
-    background: linear-gradient(180deg, hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%), hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%), hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%));
+.draw-colorpicker-sample{
+    height: 20px;
+    aspect-ratio: 1;
+    background: url('../trans_bg.png');
+    border: 1px solid white;
+    background-size: contain; 
 }
-.draw-colorpicker-hue-icon{
-    position: absolute;
-    width: 20px;
-    height: 3px;
-    border: 1px solid black;
-    pointer-events: none;
-    background: rgb(255 255 255);
-}
-
 
 .toobar-container{
     flex:1;

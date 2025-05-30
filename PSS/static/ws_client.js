@@ -7,7 +7,7 @@ let selfLayerPivot=false;
 
 
 const connectWebSocket=()=>{
-    const socket = new WebSocket("https://bizara.link/ws");
+    const socket = new WebSocket("http://localhost/ws");
     socket.onopen=(ev)=>{
         if (socket.readyState!=1){
             reconnect();
@@ -64,6 +64,9 @@ const connectWebSocket=()=>{
       while (othercanvasessetting.length > 0) {
         othercanvasessetting[0].remove();
       }
+      onlineSwitchInput.checked=false;
+      online=false;
+      onlineState();
   }
     const ws_join=(data)=>{
         self_sid = data["sid"];
@@ -266,8 +269,6 @@ const connectWebSocket=()=>{
 function bye() {
   let ws_packet={"event":"leave_room","sid":self_sid};
   socket.send(JSON.stringify(ws_packet));
-  online=false;
-  onlineState();
 }
 
 function reconnect(){

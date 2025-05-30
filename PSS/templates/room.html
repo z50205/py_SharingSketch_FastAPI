@@ -25,7 +25,7 @@
       </div>
       <div class="item" id="right-toolbar" style="z-index: 100;;">
         <!-- ColorPicker Tool Code -->
-        <div class="message-title" style="display: flex">
+        <div class="message-title" style="display: flex;flex-wrap: wrap;">
           <div class="draw-colorpickerdiv-hue">
             <div class="draw-colorpicker-hue" id="colorpicker-hue"></div>
             <div class="draw-colorpicker-hue-icon" id="colorpicker-hue-icon"></div>
@@ -35,6 +35,16 @@
             <div class="draw-colorpicker-bg" id="colorpicker-bg"></div>
             <div class="draw-colorpicker-icon" id="colorpicker-icon"></div>
           </div>
+          <div style="flex-basis: 100%;"></div>
+          <div class="draw-colorpicker-show" id="colorpicker-show">
+          </div>
+          <div class="draw-colorpicker-samplediv" id="colorpicker-sample">
+            <div class="draw-colorpicker-sample"></div>
+            <div class="draw-colorpicker-sample"></div>
+            <div class="draw-colorpicker-sample"></div>
+            <div class="draw-colorpicker-sample"></div>
+            <div class="draw-colorpicker-sample"></div>
+          </div>
         </div>
         <!-- Brush Tool Code -->
         <div id="brush" style="display: none;">
@@ -42,9 +52,9 @@
             <img src="static/icons/tool-down.svg">
             Brush Tool
           </div>
-          <div class="message-title" style="position: relative; z-index: 100;display: flex">
+          <div class="message-title" style="position: relative; display: flex">
             <label style="font-size:small;margin-right: 10px;">Size:</label>
-            <input type="range" class="form-range" id="width_range" />
+            <input type="range" class="form-range" id="width_range" min="1" />
           </div>
         </div>
         <!-- Eraser Tool Code -->
@@ -53,14 +63,14 @@
             <img src="static/icons/tool-down.svg">
             Eraser Tool
           </div>
-          <div class="message-title" style="position: relative; z-index: 100;display: flex">
+          <div class="message-title" style="position: relative; display: flex">
             <label style="font-size:small;margin-right: 10px;">Size:</label>
-              <input type="range" class="form-range" id="eraser_width_range" />
+              <input type="range" class="form-range" id="eraser_width_range" min="1" />
           </div>
         </div>
         <!-- Revise Tool Code -->
-        <div class="message-title row" id="revise-tool" style="position: relative; z-index: 100;display: none;">
-          <div class="col" id="revise_range_div"  style="position: relative; z-index: 100;display:none">
+        <div class="message-title row" id="revise-tool" style="position: relative; display: none;">
+          <div class="col" id="revise_range_div"  style="position: relative;display:none">
             <label for="customRange1" class="form-label">Revise Scale</label>
             <input type="range" class="form-range" id="revise_range" min="0.5" max="3" step="0.001" value="1"/>
           </div>

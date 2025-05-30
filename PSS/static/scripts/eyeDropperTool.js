@@ -41,6 +41,7 @@ function getPixelColor(e){
             let hsv=rgbToHsv(ColorInfo);
             console.log("p="+hsv);
             x=hsvToHsl(hsv[0],hsv[1]/100,hsv[2]/100);
+            colorpickerShow.style.backgroundColor=x;
             colorIcon.style.left=`${hsv[1]}%`;
             colorIcon.style.top=`${100-hsv[2]}%`;
             colorHueIcon.style.top=hsv[0]/360*colorHue.offsetHeight+"px";
