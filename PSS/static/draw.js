@@ -431,6 +431,19 @@ async function saveimage() {
 }
 
 async function exportimage() {
+  ctx_proj.clearRect(0, 0, w, h);
+  let minelayers = document.getElementsByClassName("minelayer");
+  if (minelayers.length == 0) can_proj = can_active;
+  else {
+    for (let i = 0; i < minelayers.length; i++) {
+      if (minelayers[i].style.visibility=="visible"){
+        let opacity=minelayers[i].style.opacity;
+        ctx_proj.globalAlpha=opacity;
+        ctx_proj.drawImage(minelayers[i], 0, 0);
+        ctx_proj.globalAlpha=1;
+      }
+    }
+  }
   const input = document.getElementById("fileInput");
   const file = document.getElementById("projection").toDataURL("image/png");
   const blob = await fetch(file).then((res) => res.blob());

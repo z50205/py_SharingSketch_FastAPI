@@ -200,29 +200,33 @@ const connectWebSocket=()=>{
       document.getElementById(leave_sid).remove();
       let canvasParentNode = document.getElementById("painting-area");
       let leave_user_id = data["user_id"];
-              let newThumbnailCanvas = document.createElement("canvas");
-            newThumbnailCanvas.style =
-              "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
-            newThumbnailCanvas.style.top = top_key;
-            newThumbnailCanvas.style.left = left_key;
-            newThumbnailCanvas.id = leave_user_id;
-            newThumbnailCanvas.height = h;
-            newThumbnailCanvas.width = w;
-            newThumbnailCanvas.className = "thumbnailcanvases";
-            newThumbnailCanvas.style.transform = scaleKey;
-            canvasParentNode.insertBefore(newThumbnailCanvas, canvas);
-        const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+leave_user_id,{
-          method:"GET"
-        });
-        const blob = await thumbnailResponse.blob();
-        let img = new Image();
-            const imgURL = URL.createObjectURL(blob);
-            img.src = imgURL;
-            img.onload = function () {
-                let newThumbnailCtx=newThumbnailCanvas.getContext("2d");
-                newThumbnailCtx.globalCompositeOperation = "source-over";
-                newThumbnailCtx.drawImage(img, 0, 0);
-            }
+      const leave_user_thumbnail = document.getElementById(leave_user_id);
+      if (leave_user_thumbnail) {
+        leave_user_thumbnail.remove();
+      }
+      let newThumbnailCanvas = document.createElement("canvas");
+      newThumbnailCanvas.style =
+        "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
+      newThumbnailCanvas.style.top = top_key;
+      newThumbnailCanvas.style.left = left_key;
+      newThumbnailCanvas.id = leave_user_id;
+      newThumbnailCanvas.height = h;
+      newThumbnailCanvas.width = w;
+      newThumbnailCanvas.className = "thumbnailcanvases";
+      newThumbnailCanvas.style.transform = scaleKey;
+      canvasParentNode.insertBefore(newThumbnailCanvas, canvas);
+      const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+leave_user_id,{
+        method:"GET"
+      });
+      const blob = await thumbnailResponse.blob();
+      let img = new Image();
+          const imgURL = URL.createObjectURL(blob);
+          img.src = imgURL;
+          img.onload = function () {
+              let newThumbnailCtx=newThumbnailCanvas.getContext("2d");
+              newThumbnailCtx.globalCompositeOperation = "source-over";
+              newThumbnailCtx.drawImage(img, 0, 0);
+          }
     };
     const ws_removeRoomCanvas=(data)=>{
       leave_sid = data["sid"];
