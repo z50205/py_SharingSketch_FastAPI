@@ -1,32 +1,87 @@
-{% extends "nav.html" %} {% block content %}
+{% extends "base.html" %} {% block index %}
 <link rel="stylesheet" type="text/css" href="static/styles/index.css"/>
-<div class="row">
-  <div class="title">Sharing Sketch</div>
-  <div class="col">
-    <div class="sub-title">A Sketch,Chat,Share</div>
-    <div class="sub-title">Integrated application.</div>
-    <div class="content">Providing basic sketch tools, sketch with others in a synchronization canvas.</div>
-    <div style="display:flex">
-      <form class="loginform" style="flex:4 0 0" action="" method="post">
-          <div class="form-group">
-            <input type="text" id="inputEmail3" placeholder="username" name="username" style="width:100%"/>
-          </div>
-          <div class="form-group" style="display: flex;">
-            <input class="col" type="password" id="inputPassword3" placeholder="password" name="password" style="flex:9 0 0"/>
-            <button class="col" style="border-radius:3px;margin: 5px;margin-right: 0px;flex:1 0 0">SignIn</button>
-          </div>
-          <b><p style="color: red;text-align: center;margin: 1px;font-size: 20px;">{{message}}</p></b>
-      </form>
-      <div class="loginform row" style="flex:1 0 0;margin-left: 10px;">
-        <div style="display: grid;justify-content: start;align-items: end;margin-bottom: 10px;padding-left: 0px;"><a href="/register" style="color:rgb(255, 255, 255)"><b>New User?</b></a></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.9/build/dat.gui.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link href="https://db.onlinewebfonts.com/c/952bab25f6798d6bb1937d67e9bee4dd?family=Sans" rel="stylesheet" type="text/css"/>
+<div class="overlay" id="overlay">
+  <form id="login-form" class="login-form" action="" method="post">
+    <img class="login-form-close-icon" id="login-close" src="static/icons/close.svg"/>
+    <div class="login-form-title">Welcome</div>
+    <input type="text" id="login-email" value="123" class="login-form-item" name="username" placeholder="username" required/>
+    <input type="password" id="login-pw" value="123123" class="login-form-item" name="password" placeholder="password" required/>
+    <button class="login-form-button">SignIn</button>
+    <div id="login-log" class="form-log"></div>
+    <div class="form-text" onclick="toggleUserForm('signup')">Don’t have an account? → <a href="/register">Sign Up</a></div>
+  </form>
+</div>
+<div class="main-container">
+
+  <div class="top-main-container">
+    <div>
+      <div class="top-main-title">Sharing Sketch</div>
+      <div class="top-main-subtitle">A space built for collaborative creation and communication.</div>
+      <div class="top-main-subtitle">Real-time ideas. Real-time canvas.</div>
+      <div class="top-main-buttondiv">
+        <button class="top-main-button" id="login-show">Get Started</button>
       </div>
     </div>
   </div>
-  <div class="line-breaker"></div>
-  <div class="col" style="border:1px solid white">
+  <div class="tab-container">
     <div>
-      <img style="width: 100%;" src="static/pics/introduction.png"/>
+      <div class="tab-title" id="tab-title">Features</div>
+    </div>
+    <div  class="tab-item-list">
+      <div class="tab-item active">Features</div>
+      <!-- <div class="tab-item">About</div> -->
     </div>
   </div>
+  <div class="feature-main-container">
+    <div class="feature-main-column">
+      <div class="feature-main-itemdiv" style="aspect-ratio: 3.5/4;">
+        <div class="feature-main-item">
+          <div class="feature-main-title">Room Management</div>
+          <div class="feature-main-item-back">
+            <img src="static/pics/chooseroom.png"/>
+          </div>
+        </div>
+      </div>
+      <div class="feature-main-itemdiv" style="aspect-ratio: 5/4;">
+        <div class="feature-main-item">
+          <div class="feature-main-title">Drawing Tool</div>
+          <div class="feature-main-item-back">
+            <img src="static/pics/room.png"/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature-main-column">
+      <div class="feature-main-itemdiv" style="aspect-ratio: 3.2/4;">
+        <div class="feature-main-item">
+          <div class="feature-main-title">Communication</div>
+          <div class="feature-main-item-back">
+            <img id="communication" src="static/pics/chat.png"/>
+          </div>
+        </div>
+      </div>
+      <div class="feature-main-itemdiv" style="aspect-ratio: 3.8/4;">
+        <div class="feature-main-item">
+          <div class="feature-main-title">Gallery Management</div>
+          <div class="feature-main-item-back">
+            <img src="static/pics/gallery.png"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
 </div>
+<!-- <script src="static/scripts/index3D.js"></script> -->
+<script src="static/scripts/index.js"></script>
 {% endblock %}
