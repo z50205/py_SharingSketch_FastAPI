@@ -309,6 +309,15 @@ body{
   .feature-main-container{
     display: block;
   }
+  .top-main-title{
+    font-size: 50px;
+  }
+  .top-main-subtitle{
+    font-size: 20px;
+  }
+  .top-main-button{
+    width: unset;
+  }
 }
 @media (max-width:600px) {
   h1{

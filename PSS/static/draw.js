@@ -267,6 +267,10 @@ function redo() {
     thumbnail_img.src = document.getElementById(redoLayer).toDataURL("image/png");
     restore_active.push(redoLayer);
     restore.push(redoImg);
+    if(redoStack_active.at(-1)&&redoLayer!=redoStack_active.at(-1)){
+      let thumbnailId="thumbnail_"+redoStack_active.at(-1).slice(9);
+      change_minelayer_active(document.getElementById(thumbnailId));
+    }
     Updatethumbnail();
     updateCanvas();
   }
@@ -275,18 +279,21 @@ function redo() {
 //Tool Undo
 function undo() {
   if (restore.length > 1) {
-    if (document.getElementById(restore_active[restore_active.length - 2]) == null) {
+    let changedLayername=restore_active.at(-2);
+
+
+    if (document.getElementById(changedLayername) == null) {
       add_minelayer_existed(
-        delete_canvas_pivots[delete_canvas_pivots.length - 1],
-        restore_active[restore_active.length - 2]
+        delete_canvas_pivots.at(-1),
+        changedLayername
       );
             delete_canvas_pivots.length--;
-    } 
-    document.getElementById(restore_active[restore_active.length - 2]).getContext("2d").putImageData(restore[restore.length - 2], 0, 0);
-    let thumbnail_img = document.getElementById("thumbnail_" + restore_active[restore_active.length - 2].slice(9)).childNodes[1];
-    thumbnail_img.src = document.getElementById(restore_active[restore_active.length - 2]).toDataURL("image/png");
-    redoStack.push(restore[restore.length - 1]);
-    redoStack_active.push(restore_active[restore_active.length - 1]);
+    }
+    redoStack.push( document.getElementById(changedLayername).getContext("2d").getImageData(0, 0, w, h));
+    redoStack_active.push(changedLayername);
+    document.getElementById(changedLayername).getContext("2d").putImageData(restore.at(-2), 0, 0);
+    let thumbnail_img = document.getElementById("thumbnail_" + changedLayername.slice(9)).childNodes[1];
+    thumbnail_img.src = document.getElementById(changedLayername).toDataURL("image/png");
     restore_active.length--;
     restore.length--;
     Updatethumbnail();
