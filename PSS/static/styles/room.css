@@ -253,6 +253,26 @@ input {
     background: url('../trans_bg.png');
     border: 1px solid white;
     background-size: contain; 
+    position: relative;
+}
+.draw-colorpicker-sample-menu{
+    display: none;
+    position:absolute;
+    color:white;
+    background-color: rgb(80, 80, 80);
+    transform: translate(0%, 100%);
+    margin: -1px;
+    bottom: 0px;
+    right: 0px;
+    font-size: 10px;
+    white-space: nowrap;
+    border:1px solid black;
+    border-radius: 3px;
+}
+.draw-colorpicker-sample-menu:hover{
+    background-color: rgb(255, 255, 255);
+    color: black;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .toobar-container{

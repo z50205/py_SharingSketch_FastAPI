@@ -15,9 +15,6 @@ function eraserTool(){
         canvas.addEventListener("pointermove", eraserPack);
         canvas.addEventListener("pointerout", outCanvasEraser);
         canvas.addEventListener("pointerover", enterCanvasEraser);
-    }else{
-        updateTool();
-        canvas.addEventListener("pointermove", defaultMove);
     }
 }
 
@@ -36,6 +33,8 @@ function stopEraser(e) {
     restore_active[restore_active.length] = can_active.id;
     Updatethumbnail();
     updateCanvas();
+    redoStack=[];
+    redoStack_active=[];
     isActive = false;
 }
 function outCanvasEraser(e) {

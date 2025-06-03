@@ -35,14 +35,17 @@ let lastSendCursorPos=Date.now();
 const CURSORUPDATERATE=100;
 const CURSORSTAYTIME=10000;
 
+let redoStack = []; //Redo Img
+let redoStack_active = []; //Redo active layer name
+
 //Drawtool variables
 line_widths = [2, 10, 0]; //Set tools linewidth 1.pen；2.eraser 3.other(no _use)
 line_widths_max = [100, 200, 0]; //Set tools linewidth Maximum 1.pen；2.eraser 3.other(no _use)
-let tool_pivot='draw';//Tools have to be a unique 1.draw, eraser, pan ,colorpicker
 pan_flag = false;
 mirror_flag = false;
 restore_max = 20;
-var x = "black";
+var x = "hsl(0, 0%, 0%)";
+let tool_pivot;
 
 //Init
 function init() {
@@ -83,7 +86,9 @@ function init() {
   restore = [canvas.getContext("2d").getImageData(0, 0, w, h)]; //Undo record
   restore_active = ["minelayer1"]; //Undo record
   width_range = document.getElementById("width_range");
+  width_range.value=line_widths[0];
   eraser_width_range = document.getElementById("eraser_width_range");
+  eraser_width_range.value=line_widths[1];
   zoom_range = document.getElementById("zoom_range");
   revise_range = document.getElementById("revise_range");
   let opacity_range=document.getElementById("opacity_range");
@@ -94,7 +99,7 @@ function init() {
     passive: false,
   });
   window.addEventListener("keydown", function (e) {
-    if (e.keyCode == 32 && e.target == document.body) {
+    if (e.code === "Space" && e.target == document.body) {
       e.preventDefault();
     }
   });
@@ -134,7 +139,6 @@ function init() {
   //Canvas Sketch/Pan eventlistener(pointer)
   const pointers = {};
 
-  canvas.addEventListener("pointermove", defaultMove);
   canvas.addEventListener(
     "contextmenu", (e) => {
       e.preventDefault();}
@@ -171,37 +175,38 @@ function init() {
       e.preventDefault;
 
       if(!keydown){
-        if (e.ctrlKey && e.keyCode == 90) backLastStep();
         //keycode-space
-        if (e.keyCode == 32) {
+        if (e.code == "Space") {
           if (tool_pivot!="pan"){
             changeTool('pan');
           }
         }
         //keycode-E
-        if (e.keyCode == 69) {
+        if (e.code == "KeyE") {
           changeTool('eraser');
         }
         //keycode-M
-        if (e.keyCode == 77) {
+        if (e.code == "KeyM") {
           mirror();
         }
         //keycode-P
-        if (e.keyCode == 80) {
+        if (e.code == "KeyP") {
           changeTool('brush');
         }
         //keycode-Q
-        if (e.keyCode == 81) {
+        if (e.code == "KeyQ") {
             mirror();
         }
         keydown=true;
       }
+      if (e.ctrlKey && e.code == "KeyZ") undo();
+      if (e.ctrlKey && e.code == "KeyY") redo();
       //keycode-[
-      if (e.keyCode == 219) {
+      if (e.code == "BracketLeft") {
         line_width_change(-1);
       }
       //keycode-]
-      if (e.keyCode == 221) {
+      if (e.code == "BracketRight") {
         line_width_change(1);
       }
     },
@@ -211,7 +216,7 @@ function init() {
   document.addEventListener(
     "keyup",
     function (e) {
-      if (e.keyCode == 32) {
+      if (e.code == "Space") {
         changeTool('pan');
       }
       keydown=false;
@@ -239,6 +244,7 @@ function init() {
   fileUploader.addEventListener("change", (event) => {
     loadimage(event);
   });
+  initBrush();
 }
 //Tool change linewidth
 function line_width_change(pivot) {
@@ -251,49 +257,40 @@ function line_width_change(pivot) {
   ws_sendCursorPos();
   drawWidth();
 }
+//Tool Redo
+function redo() {
+  if(redoStack.length>0){
+    let redoLayer=redoStack_active.pop();
+    let redoImg=redoStack.pop();
+    document.getElementById(redoLayer).getContext("2d").putImageData(redoImg, 0, 0);
+    let thumbnail_img = document.getElementById("thumbnail_" + redoLayer.slice(9)).childNodes[1];
+    thumbnail_img.src = document.getElementById(redoLayer).toDataURL("image/png");
+    restore_active.push(redoLayer);
+    restore.push(redoImg);
+    Updatethumbnail();
+    updateCanvas();
+  }
+
+}
 //Tool Undo
-function backLastStep() {
+function undo() {
   if (restore.length > 1) {
-    if (
-      document.getElementById(restore_active[restore_active.length - 2]) == null
-    ) {
+    if (document.getElementById(restore_active[restore_active.length - 2]) == null) {
       add_minelayer_existed(
         delete_canvas_pivots[delete_canvas_pivots.length - 1],
         restore_active[restore_active.length - 2]
       );
-      document
-        .getElementById(restore_active[restore_active.length - 2])
-        .getContext("2d")
-        .putImageData(restore[restore.length - 2], 0, 0);
-      var thumbnail_img = document.getElementById(
-        "thumbnail_" + restore_active[restore_active.length - 2].slice(9)
-      ).childNodes[1];
-      thumbnail_img.src = document
-        .getElementById(restore_active[restore_active.length - 2])
-        .toDataURL("image/png");
-      restore_active.length--;
-      delete_canvas_pivots.length--;
-      restore.length--;
-      Updatethumbnail();
-      updateCanvas();
-    } else {
-      console.log(restore_active);
-      console.log(restore);
-      document
-        .getElementById(restore_active[restore_active.length - 2])
-        .getContext("2d")
-        .putImageData(restore[restore.length - 2], 0, 0);
-      var thumbnail_img = document.getElementById(
-        "thumbnail_" + restore_active[restore_active.length - 2].slice(9)
-      ).childNodes[1];
-      thumbnail_img.src = document
-        .getElementById(restore_active[restore_active.length - 2])
-        .toDataURL("image/png");
-      restore_active.length--;
-      restore.length--;
-      Updatethumbnail();
-      updateCanvas();
-    }
+            delete_canvas_pivots.length--;
+    } 
+    document.getElementById(restore_active[restore_active.length - 2]).getContext("2d").putImageData(restore[restore.length - 2], 0, 0);
+    let thumbnail_img = document.getElementById("thumbnail_" + restore_active[restore_active.length - 2].slice(9)).childNodes[1];
+    thumbnail_img.src = document.getElementById(restore_active[restore_active.length - 2]).toDataURL("image/png");
+    redoStack.push(restore[restore.length - 1]);
+    redoStack_active.push(restore_active[restore_active.length - 1]);
+    restore_active.length--;
+    restore.length--;
+    Updatethumbnail();
+    updateCanvas();
   }
 }
 //Tool Zoom
@@ -479,6 +476,8 @@ async function loadimage_gallery(cookieValue) {
       ctx_active.drawImage(img, 0, 0);
       restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
       restore_active[restore_active.length] = can_active.id;
+      Updatethumbnail();
+      updateCanvas();
     };
   } catch (error) {
     console.error("Error downloading image:", error);

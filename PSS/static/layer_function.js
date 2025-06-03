@@ -79,8 +79,6 @@ function li_template(thumbnailsParentNode, thumbnail_active, nextId) {
 
 function delete_minelayer() {
     if (can_active.previousElementSibling.className == "minelayer") {
-        restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
-        restore_active[restore_active.length] = can_active.id;
         delete_canvas_pivots[delete_canvas_pivots.length] = can_active.previousElementSibling.id;
         var can_active_new = can_active.previousElementSibling;
         can_active.remove();

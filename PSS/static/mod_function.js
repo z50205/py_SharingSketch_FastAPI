@@ -172,7 +172,6 @@ function revise_start() {
     revise_button.onclick = choose_area;
     revise_button.innerHTML = "choose area";
     choose_flag=true;
-    document.getElementById('revise_hide').style.display='none';
 }
 
 function choose_area() {
@@ -224,13 +223,14 @@ function writedown() {
     revise_button.onclick = revise_start
     revise_button.innerHTML = "revise";
     restore[restore.length] = ctx_active.getImageData(0, 0, w, h);
-    restore_active[restore_active.length] = ctx_active.id;
-    document.getElementById('revise_hide').style.display='flex';
+    restore_active[restore_active.length] = can_active.id;
     revise_range.value=1;
     document.getElementById('revise_range_div').style.display="none";
     document.getElementById('revise-tool').style.display="none";
     Updatethumbnail();
     updateCanvas();
+    redoStack=[];
+    redoStack_active=[];
 }
 function change_to_local(curr, scale_orgin, scale, scale_xy, offset) {
     return ((curr - scale_orgin) / (scale * scale_xy) + scale_orgin - offset);

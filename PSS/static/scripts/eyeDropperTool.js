@@ -12,9 +12,6 @@ function colorPicker() {
         colorPickerTimer=Date.now();
         canvas.addEventListener("pointermove", getPixelColor);
         canvas.addEventListener("pointerdown", addPixelColor);
-    }else{
-        updateTool();
-        canvas.addEventListener("pointermove", defaultMove);
     }
 }
 
@@ -36,9 +33,9 @@ function getPixelColor(e){
             let canvasX=(currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset;
             let canvasY=(currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset;
 
-            let ColorInfo=getPixelColorAt(canvasX,canvasY)
-            console.log("p="+ColorInfo);
-            let hsv=rgbToHsv(ColorInfo);
+            let colorInfo=getPixelColorAt(canvasX,canvasY)
+            console.log("p="+colorInfo);
+            let hsv=rgbToHsv(colorInfo);
             console.log("p="+hsv);
             x=hsvToHsl(hsv[0],hsv[1]/100,hsv[2]/100);
             colorpickerShow.style.backgroundColor=x;
@@ -49,6 +46,7 @@ function getPixelColor(e){
         }
         colorPickerTimer=Date.now();
     }
+    ws_sendCursorPos();
 }
 
 
@@ -79,10 +77,10 @@ function getPixelColorAt(x, y) {
     return tmpCtx.getImageData(0, 0, 1, 1).data;
 }
 
-function rgbToHsv(ColorInfo) {
-  let r = ColorInfo[0]/255;
-  let g = ColorInfo[1]/255;
-  let b = ColorInfo[2]/255;
+function rgbToHsv(colorInfo) {
+  let r = colorInfo[0]/255;
+  let g = colorInfo[1]/255;
+  let b = colorInfo[2]/255;
 
   const max = Math.max(r, g, b),
         min = Math.min(r, g, b);
@@ -108,4 +106,13 @@ function rgbToHsv(ColorInfo) {
     Math.round(s * 100),         // Saturation: 0 - 100
     Math.round(v * 100)          // Value: 0 - 100
   ];
+}
+function setPixelColor(colorInfoRGB){
+  let hsv=rgbToHsv(colorInfoRGB);
+  x=hsvToHsl(hsv[0],hsv[1]/100,hsv[2]/100);
+  colorpickerShow.style.backgroundColor=x;
+  colorIcon.style.left=`${hsv[1]}%`;
+  colorIcon.style.top=`${100-hsv[2]}%`;
+  colorHueIcon.style.top=hsv[0]/360*colorHue.offsetHeight+"px";
+  colorBg.style.backgroundColor=`hsl(${hsv[0]}, 100%, 50%)`;
 }

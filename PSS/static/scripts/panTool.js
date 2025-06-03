@@ -11,9 +11,6 @@ function panTool(){
         panPivot.style.backgroundColor = "rgb(184, 184, 184)";
         canvas.addEventListener("pointermove", panPack);
         canvas.addEventListener("pointerdown", addPan);
-    }else{
-        updateTool();
-        canvas.addEventListener("pointermove", defaultMove);
     }
 }
 
@@ -39,6 +36,7 @@ function panPack(e){
         y_offset = y_offset_origin + (e.clientY - y_old_origin) / (scale * scale_xy[1]);
         pan();
     }
+    ws_sendCursorPos();
 }
 
 //Sketch sub draw function

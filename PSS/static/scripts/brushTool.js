@@ -2,6 +2,16 @@
 // tool_pivot,isActive,updateTool
 // currX,currY,x
 // canvas,ctx_active,......
+function initBrush(){
+        tool_pivot="brush";
+        brushPivot.style.backgroundColor = "rgb(184, 184, 184)";
+        brush.style.display="block";
+        canvas.addEventListener("pointerdown", addBrush);
+        canvas.addEventListener("pointerup", stopBrush);
+        canvas.addEventListener("pointermove", brushPack);
+        canvas.addEventListener("pointerout", outCanvasBrush);
+        canvas.addEventListener("pointerover", enterCanvasBrush);
+}
 
 
 function brushTool(){
@@ -15,9 +25,6 @@ function brushTool(){
         canvas.addEventListener("pointermove", brushPack);
         canvas.addEventListener("pointerout", outCanvasBrush);
         canvas.addEventListener("pointerover", enterCanvasBrush);
-    }else{
-        updateTool();
-        canvas.addEventListener("pointermove", defaultMove);
     }
 }
 
@@ -36,6 +43,8 @@ function stopBrush(e) {
     restore_active[restore_active.length] = can_active.id;
     Updatethumbnail();
     updateCanvas();
+    redoStack=[];
+    redoStack_active=[];
     isActive = false;
 }
 

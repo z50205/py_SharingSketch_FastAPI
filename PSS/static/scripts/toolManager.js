@@ -6,8 +6,6 @@ let colorPickerPivot =document.getElementById("colorPicker_pivot");
 let panPivot=document.getElementById("pan_pivot");
 
 let colorPickerTimer;
-
-
 function changeTool(toolname){
     switch(toolname){
         case "colorpicker":

@@ -7,7 +7,8 @@ let selfLayerPivot=false;
 
 
 const connectWebSocket=()=>{
-    const socket = new WebSocket("https://bizara.link/ws");
+    const wsProtocol = location.protocol === "https:" ? "wss" : "ws";
+    const socket = new WebSocket(`${wsProtocol}://${location.host}/ws`);
     socket.onopen=(ev)=>{
         if (socket.readyState!=1){
             reconnect();
