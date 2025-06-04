@@ -3,6 +3,7 @@
 // currX,currY,x
 // colorPickerPivot,canvas,colorHueIcon,colorHueIcon,colorBg
 
+let eyeDropperContextmenuPivot=false;
 
 function colorPicker() {
     if(tool_pivot!="colorpicker"){
@@ -12,6 +13,8 @@ function colorPicker() {
         colorPickerTimer=Date.now();
         canvas.addEventListener("pointermove", getPixelColor);
         canvas.addEventListener("pointerdown", addPixelColor);
+    }else if(eyeDropperContextmenuPivot){
+      updateTool();
     }
 }
 

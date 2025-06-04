@@ -2,7 +2,8 @@
 // tool_pivot,isActive,updateTool
 // currX,currY,x
 // canvas,ctx_active,......
-
+let panKeyDownPivot=false;
+let temptToolName="";
 
 function panTool(){
     if(tool_pivot!="pan"){
@@ -11,6 +12,8 @@ function panTool(){
         panPivot.style.backgroundColor = "rgb(184, 184, 184)";
         canvas.addEventListener("pointermove", panPack);
         canvas.addEventListener("pointerdown", addPan);
+    }else if(panKeyDownPivot){
+        updateTool();
     }
 }
 

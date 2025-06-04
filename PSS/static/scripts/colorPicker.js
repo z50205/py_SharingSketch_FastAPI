@@ -33,9 +33,11 @@ colorHue.addEventListener("mousedown",(ev)=>{
 
 
 colorPickerDiv.addEventListener("mousedown",(ev)=>{
+    const match = x.match(/hsl\((\d+(\.\d+)?)/);
+    const hue = match ? parseFloat(match[1]) : null;
     colorXProp=ev.offsetX/colorPickerDiv.offsetWidth;
     colorYProp=ev.offsetY/colorPickerDiv.offsetHeight;
-    x=hsvToHsl(hueProp*360,colorXProp,1-colorYProp);
+    x=hsvToHsl(hue,colorXProp,1-colorYProp);
     colorpickerShow.style.backgroundColor=x;
     colorIcon.style.left=`${colorXProp*100}%`;
     colorIcon.style.top=`${colorYProp*100}%`;

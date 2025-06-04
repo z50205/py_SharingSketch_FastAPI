@@ -178,7 +178,9 @@ function init() {
         //keycode-space
         if (e.code == "Space") {
           if (tool_pivot!="pan"){
+            temptToolName=tool_pivot;
             changeTool('pan');
+            panKeyDownPivot=true;
           }
         }
         //keycode-E
@@ -218,11 +220,36 @@ function init() {
     function (e) {
       if (e.code == "Space") {
         changeTool('pan');
+        changeTool(temptToolName);
+        panKeyDownPivot=false;
+        temptToolName="";
       }
       keydown=false;
     },
     false
   );
+  //Tool eyedroper
+  canvas.addEventListener("pointerdown",function(e){
+    if(e.button==2){
+      temptToolName=tool_pivot;
+      updateTool();
+      tool_pivot="colorpicker";
+      colorPickerPivot.style.backgroundColor = "rgb(184, 184, 184)";
+      colorPickerTimer=Date.now();
+      canvas.addEventListener("pointermove", getPixelColor);
+      isActive = true;
+      getPixelColor(e);
+      eyeDropperContextmenuPivot=true;
+      canvas.addEventListener("pointerup",()=>{
+        isActive = false;
+        changeTool('colorpicker');
+        changeTool(temptToolName);
+        panKeyDownPivot=false;
+        temptToolName="";
+      }, { once: true })
+    }
+  }
+  )
   //Tool Zoom-in eventlistener
   canvas.addEventListener(
     "wheel",
