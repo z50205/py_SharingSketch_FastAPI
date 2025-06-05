@@ -55,7 +55,7 @@ function airBrushPack(e){
     currX = e.clientX - canvas.offsetLeft;
     currY = e.clientY - canvas.offsetTop;
     if (isActive) {
-        sprayBrushLine(prevX, prevY, currX, currY);
+        sprayBrushLine(prevX, prevY, currX, currY,e.pressure*2);
     }
     ws_sendCursorPos();
     drawWidth(true);
@@ -83,13 +83,14 @@ function createSprayStamp(radius) {
 
 
 // 將黑白貼圖著色成任意顏色
-function tintSprayStamp(stampCanvas, color) {
+function tintSprayStamp(stampCanvas, color,pressure) {
   const tinted = document.createElement("canvas");
   tinted.width = stampCanvas.width;
   tinted.height = stampCanvas.height;
   const ctx = tinted.getContext("2d");
 
   // Step 1: 填色
+  color=hslToHsla(color, pressure);
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, tinted.width, tinted.height);
 
@@ -101,7 +102,7 @@ function tintSprayStamp(stampCanvas, color) {
 }
 
 // 線段插值繪製
-function sprayBrushLine(prevX, prevY, currX, currY) {
+function sprayBrushLine(prevX, prevY, currX, currY,pressure) {
   const spacing = 2;
   const dx = currX - prevX;
   const dy = currY - prevY;
@@ -112,12 +113,12 @@ function sprayBrushLine(prevX, prevY, currX, currY) {
     const t = i / steps;
     const interX = prevX + dx * t;
     const interY = prevY + dy * t;
-    sprayStampAt(interX, interY);
+    sprayStampAt(interX, interY,pressure);
   }
 }
 
 // 噴刷一個 stamp（含縮放、偏移、著色）
-function sprayStampAt(interX, interY) {
+function sprayStampAt(interX, interY,pressure) {
     const size = line_widths[2];
 
     const drawX =
@@ -131,6 +132,10 @@ function sprayStampAt(interX, interY) {
         y_offset -
         size / 2;
     ctx_active.globalCompositeOperation = "source-over";
-    const tintedStamp = tintSprayStamp(sprayStamp,x);
+    const tintedStamp = tintSprayStamp(sprayStamp,x,pressure);
     ctx_active.drawImage(tintedStamp, drawX, drawY, size, size);
+}
+
+function hslToHsla(hsl, alpha) {
+  return hsl.replace(/^hsl\(([^)]+)\)/, `hsla($1, ${alpha})`);
 }
