@@ -113,6 +113,7 @@ function rgbToHsv(colorInfo) {
 function setPixelColor(colorInfoRGB){
   let hsv=rgbToHsv(colorInfoRGB);
   x=hsvToHsl(hsv[0],hsv[1]/100,hsv[2]/100);
+  hue=hsv[0];
   colorpickerShow.style.backgroundColor=x;
   colorIcon.style.left=`${hsv[1]}%`;
   colorIcon.style.top=`${100-hsv[2]}%`;

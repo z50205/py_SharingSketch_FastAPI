@@ -9,11 +9,18 @@ function drawWidth() {
     ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset, line_widths[0]/2, 0, Math.PI * 2, true);
     ctx.stroke();
     ctx.closePath();
-  } else {
+  } else if(tool_pivot=="eraser"){
     ctx.strokeStyle = 'blue';
     ctx.globalCompositeOperation = "source-over";
     ctx.beginPath();
     ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset,line_widths[1]/2, 0, Math.PI * 2, true);
+    ctx.stroke();
+    ctx.closePath();
+  } else if(tool_pivot=="airbrush"){
+    ctx.strokeStyle = 'orange';
+    ctx.globalCompositeOperation = "source-over";
+    ctx.beginPath();
+    ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset,line_widths[2]/2, 0, Math.PI * 2, true);
     ctx.stroke();
     ctx.closePath();
   }

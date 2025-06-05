@@ -4,6 +4,7 @@ let brushPivot=document.getElementById("draw-tab");
 let eraserPivot=document.getElementById("eraser-tab");
 let colorPickerPivot =document.getElementById("colorPicker_pivot");
 let panPivot=document.getElementById("pan_pivot");
+let airBrushPivot=document.getElementById("airbrush-tab");
 
 let colorPickerTimer;
 function changeTool(toolname){
@@ -19,6 +20,9 @@ function changeTool(toolname){
             break;
         case "pan":
             panTool();
+            break;
+        case "airbrush":
+            airBrushTool();
             break;
 
     }
@@ -49,6 +53,14 @@ function updateTool(){
             canvas.removeEventListener("pointerout", outCanvasEraser);
             canvas.removeEventListener("pointerover", enterCanvasEraser);
             break;
+        case "airbrush":
+            airBrushPivot.style.backgroundColor = "";
+            canvas.removeEventListener("pointerdown", addAirBrush);
+            canvas.removeEventListener("pointerup", stopAirBrush);
+            canvas.removeEventListener("pointermove", airBrushPack);
+            canvas.removeEventListener("pointerout", outCanvasAirBrush);
+            canvas.removeEventListener("pointerover", enterCanvasAirBrush);
+            break;
         case "pan":
             panPivot.style.backgroundColor = "";
             canvas.removeEventListener("pointermove", panPack);
@@ -56,6 +68,13 @@ function updateTool(){
             break;
     }
     tool_pivot = "";
+}
+
+//Tool Change pointwidth(Pen/Eraser)
+function updateToolInfo() {
+  if (tool_pivot=="brush") width_range.value = line_widths[0];
+  else if (tool_pivot=="eraser") eraser_width_range.value = line_widths[1];
+  else if (tool_pivot=="airbrush") airbrush_width_range.value = line_widths[2];
 }
 
 

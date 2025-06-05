@@ -18,6 +18,9 @@
         <a class="tool-icon-href" id="eraser-tab" onclick="changeTool('eraser')">
           <img src="static/icons/eraser.svg">
         </a>
+        <a class="tool-icon-href" id="airbrush-tab" onclick="changeTool('airbrush')">
+          <img src="static/icons/airbrush.svg">
+        </a>
       </div>
       <div class="tool-zoom-div">
         <img src="static/icons/zoom.svg">
@@ -55,7 +58,7 @@
           </div>
           <div class="message-title" style="position: relative; display: flex">
             <label style="font-size:small;margin-right: 10px;">Size:</label>
-            <input type="range" class="form-range" id="width_range" min="1" />
+            <input type="range" class="form-range" id="width_range" min="1" max="100"/>
           </div>
         </div>
         <!-- Eraser Tool Code -->
@@ -66,7 +69,18 @@
           </div>
           <div class="message-title" style="position: relative; display: flex">
             <label style="font-size:small;margin-right: 10px;">Size:</label>
-              <input type="range" class="form-range" id="eraser_width_range" min="1" />
+              <input type="range" class="form-range" id="eraser_width_range" min="1" max="200"/>
+          </div>
+        </div>
+        <!-- Eraser Tool Code -->
+        <div id="airbrush" style="display: none;">
+          <div class="message-title" style="color: white;">
+            <img src="static/icons/tool-down.svg">
+            AirBrush Tool
+          </div>
+          <div class="message-title" style="position: relative; display: flex">
+            <label style="font-size:small;margin-right: 10px;">Size:</label>
+              <input type="range" class="form-range" id="airbrush_width_range" min="1" max="500"/>
           </div>
         </div>
         <!-- Revise Tool Code -->
@@ -209,6 +223,7 @@
     </div>
   <!-- Client Render Code -->
   <script src="static/scripts/uiTool.js"></script>
+  <script src="static/scripts/airbrushTool.js"></script>
   <script src="static/scripts/brushTool.js"></script>
   <script src="static/scripts/panTool.js"></script>
   <script src="static/scripts/eraserTool.js"></script>

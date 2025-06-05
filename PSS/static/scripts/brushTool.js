@@ -77,11 +77,6 @@ function brushPack(e){
 function color(obj) {
   updateToolInfo();
 }
-//Tool Change pointwidth(Pen/Eraser)
-function updateToolInfo() {
-  if (tool_pivot=="brush") width_range.value = line_widths[0];
-  else if (tool_pivot=="eraser") eraser_width_range.value = line_widths[1];
-}
 
 //Sketch sub draw function
 function draw(pressure, draw_flag) {
@@ -93,6 +88,7 @@ function draw(pressure, draw_flag) {
   } else {
     // ctx.strokeStyle = rgba(0,0,0,0.0);
     ctx_active.globalCompositeOperation = "destination-out";
+    ctx_active.lineCap = "round";
     ctx_active.lineWidth = line_widths[1];
   }
   ctx_active.beginPath();

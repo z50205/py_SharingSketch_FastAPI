@@ -11,6 +11,7 @@ let layer=document.getElementById("layer");
 let chat=document.getElementById("chatroom");
 let brush=document.getElementById("brush");
 let eraser=document.getElementById("eraser");
+let airbrush=document.getElementById("airbrush");
 let bottomTool=document.getElementById("bottom-tool");
 let rightToolBar=document.getElementById("right-toolbar");
 
@@ -55,6 +56,7 @@ function updateTab(){
 function updateToolConfig(){
     brush.style.display="none";
     eraser.style.display="none";
+    airbrush.style.display="none";
 }
 
 onlineSwitchLabel.addEventListener("click",()=>{

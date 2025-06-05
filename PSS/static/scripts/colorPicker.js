@@ -4,60 +4,82 @@ let colorHueIcon =document.getElementById("colorpicker-hue-icon");
 let colorPickerDiv =document.getElementById("colorpickerdiv");
 let colorIcon =document.getElementById("colorpicker-icon");
 let colorpickerShow=document.getElementById("colorpicker-show");
-let hueProp=0;
+let hue=0;
 let colorXProp=1;
 let colorYProp=0;
+colorHue.addEventListener("pointerdown",colorHueDown);
+colorHue.addEventListener("pointermove",colorHueMove);
+colorHue.addEventListener("pointerover", colorHueDown);
 
-colorHue.addEventListener("mousedown",(ev)=>{
-    hueProp=ev.offsetY/colorHue.offsetHeight;
-    colorBg.style.backgroundColor=`hsl(${hueProp*360}, 100%, 50%)`;
-    colorHueIcon.style.top=`${hueProp*100}%`;
-    x=hsvToHsl(hueProp*360,colorXProp,1-colorYProp);
-    colorpickerShow.style.backgroundColor=x;
-    function mouseMove(ev){
-        let hueProp=ev.offsetY/colorHue.offsetHeight;
-        colorBg.style.backgroundColor=`hsl(${hueProp*360}, 100%, 50%)`;
-        colorHueIcon.style.top=`${hueProp*100}%`;
-        x=hsvToHsl(hueProp*360,colorXProp,1-colorYProp);
+function colorHueDown(ev){
+    if (ev.buttons === 1) {
+        hue=ev.offsetY/colorHue.offsetHeight*360;
+        colorBg.style.backgroundColor=`hsl(${hue}, 100%, 50%)`;
+        colorHueIcon.style.top=`${hue/360*100}%`;
+        x=hsvToHsl(hue,colorXProp,1-colorYProp);
         colorpickerShow.style.backgroundColor=x;
     }
-    function mouseLeave(){
-        colorHue.removeEventListener("mousemove",mouseMove);
-        colorHue.removeEventListener("mouseup",mouseLeave);
-        colorHue.removeEventListener("mouseleave",mouseLeave);
+}
+
+function colorHueMove(ev){
+    if (ev.buttons === 1) {
+        hue=ev.offsetY/colorHue.offsetHeight*360;
+        colorBg.style.backgroundColor=`hsl(${hue}, 100%, 50%)`;
+        colorHueIcon.style.top=`${hue/360*100}%`;
+        x=hsvToHsl(hue,colorXProp,1-colorYProp);
+        colorpickerShow.style.backgroundColor=x;
     }
-    colorHue.addEventListener("mousemove",mouseMove);
-    colorHue.addEventListener("mouseup",mouseLeave);
-    colorHue.addEventListener("mouseleave",mouseLeave);
-})
+}
 
+colorPickerDiv.addEventListener("pointerdown",colorPickerDown);
+colorPickerDiv.addEventListener("pointermove",colorPickerMove);
+colorPickerDiv.addEventListener("pointerover", colorPickerDown);
 
-colorPickerDiv.addEventListener("mousedown",(ev)=>{
-    const match = x.match(/hsl\((\d+(\.\d+)?)/);
-    const hue = match ? parseFloat(match[1]) : null;
-    colorXProp=ev.offsetX/colorPickerDiv.offsetWidth;
-    colorYProp=ev.offsetY/colorPickerDiv.offsetHeight;
-    x=hsvToHsl(hue,colorXProp,1-colorYProp);
-    colorpickerShow.style.backgroundColor=x;
-    colorIcon.style.left=`${colorXProp*100}%`;
-    colorIcon.style.top=`${colorYProp*100}%`;
-    function mouseMove(ev){
+function colorPickerDown(ev){
+    if (ev.buttons === 1) {
         colorXProp=ev.offsetX/colorPickerDiv.offsetWidth;
         colorYProp=ev.offsetY/colorPickerDiv.offsetHeight;
-        x=hsvToHsl(hueProp*360,colorXProp,1-colorYProp);
+        x=hsvToHsl(hue,colorXProp,1-colorYProp);
         colorpickerShow.style.backgroundColor=x;
         colorIcon.style.left=`${colorXProp*100}%`;
         colorIcon.style.top=`${colorYProp*100}%`;
     }
-    function mouseLeave(){
-        colorPickerDiv.removeEventListener("mousemove",mouseMove);
-        colorPickerDiv.removeEventListener("mouseup",mouseLeave);
-        colorPickerDiv.removeEventListener("mouseleave",mouseLeave);
+}
+
+function colorPickerMove(ev){
+    if (ev.buttons === 1) {
+        colorXProp=ev.offsetX/colorPickerDiv.offsetWidth;
+        colorYProp=ev.offsetY/colorPickerDiv.offsetHeight;
+        x=hsvToHsl(hue,colorXProp,1-colorYProp);
+        colorpickerShow.style.backgroundColor=x;
+        colorIcon.style.left=`${colorXProp*100}%`;
+        colorIcon.style.top=`${colorYProp*100}%`;
     }
-    colorPickerDiv.addEventListener("mousemove",mouseMove);
-    colorPickerDiv.addEventListener("mouseup",mouseLeave);
-    colorPickerDiv.addEventListener("mouseleave",mouseLeave);
-})
+}
+
+function colorPickerLeave(ev){
+    if (ev.buttons === 1) {
+        let lastX=ev.offsetX;
+        let lastY=ev.offsetY;
+        function outDivColorPicker(ev) {
+            colorXProp=(ev.clientX+lastX)/colorPickerDiv.offsetWidth;
+            colorYProp=(ev.clientY+lastY)/colorPickerDiv.offsetHeight;
+            colorXProp = Math.max(0, Math.min(1, colorXProp));
+            colorYProp = Math.max(0, Math.min(1, colorYProp));
+            x=hsvToHsl(hue,colorXProp,1-colorYProp);
+            colorpickerShow.style.backgroundColor=x;
+            colorIcon.style.left=`${colorXProp*100}%`;
+            colorIcon.style.top=`${colorYProp*100}%`;
+        }
+        function upColorPicker() {
+            document.addEventListener("pointermove",outDivColorPicker);
+            document.addEventListener("pointerup",upColorPicker);
+        }
+        document.addEventListener("pointermove",outDivColorPicker);
+        document.addEventListener("pointerup",upColorPicker);
+    }
+}
+
 function hsvToHsl(h,s,v){
     let l = v * (1 - s / 2);
     let sl = 0;

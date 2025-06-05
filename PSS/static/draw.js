@@ -39,8 +39,8 @@ let redoStack = []; //Redo Img
 let redoStack_active = []; //Redo active layer name
 
 //Drawtool variables
-line_widths = [2, 10, 0]; //Set tools linewidth 1.pen；2.eraser 3.other(no _use)
-line_widths_max = [100, 200, 0]; //Set tools linewidth Maximum 1.pen；2.eraser 3.other(no _use)
+line_widths = [2, 10, 40,0]; //Set tools linewidth 1.pen；2.eraser;3.airbrush;4.other(no _use)
+line_widths_max = [100, 200, 500]; //Set tools linewidth Maximum 1.pen；2.eraser 3.other(no _use)
 pan_flag = false;
 mirror_flag = false;
 restore_max = 20;
@@ -89,6 +89,8 @@ function init() {
   width_range.value=line_widths[0];
   eraser_width_range = document.getElementById("eraser_width_range");
   eraser_width_range.value=line_widths[1];
+  airbrush_width_range = document.getElementById("airbrush_width_range");
+  airbrush_width_range.value=line_widths[2];
   zoom_range = document.getElementById("zoom_range");
   revise_range = document.getElementById("revise_range");
   let opacity_range=document.getElementById("opacity_range");
@@ -156,6 +158,13 @@ function init() {
     "change",
     function (e) {
        line_widths[1] =  eraser_width_range.value;
+    },
+    false
+  );
+  airbrush_width_range.addEventListener(
+    "change",
+    function (e) {
+       line_widths[2] =  airbrush_width_range.value;
     },
     false
   );
@@ -275,10 +284,12 @@ function init() {
 }
 //Tool change linewidth
 function line_width_change(pivot) {
-  if (tool_pivot=="brush") {
+  if (tool_pivot=="brush"&&parseInt(width_range.value)+ pivot>=1) {
     line_widths[0] = parseInt(width_range.value) + pivot;
-  } else if (tool_pivot=="eraser") {
+  } else if (tool_pivot=="eraser"&&parseInt(eraser_width_range.value)+ pivot>=1) {
     line_widths[1] = parseInt(eraser_width_range.value) + pivot;
+  }else if(tool_pivot=="airbrush"&&parseInt(airbrush_width_range.value)+ pivot>=1){
+    line_widths[2] = parseInt(airbrush_width_range.value) + pivot;
   }
   updateToolInfo();
   ws_sendCursorPos();
