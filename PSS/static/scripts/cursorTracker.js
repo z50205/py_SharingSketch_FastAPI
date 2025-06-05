@@ -23,6 +23,13 @@ function drawWidth() {
     ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset,line_widths[2]/2, 0, Math.PI * 2, true);
     ctx.stroke();
     ctx.closePath();
+  }else{
+    ctx.strokeStyle = 'black';
+    ctx.globalCompositeOperation = "source-over";
+    ctx.beginPath();
+    ctx.arc((currX - scale_orgin[0]) / (scale * scale_xy[0]) +scale_orgin[0] -x_offset, (currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset,10, 0, Math.PI * 2, true);
+    ctx.stroke();
+    ctx.closePath();
   }
   for(key in room_cursors){
     cursor=room_cursors[key];

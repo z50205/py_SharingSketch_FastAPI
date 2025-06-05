@@ -1,6 +1,7 @@
 
 // 快取不同顏色的貼圖
 const sprayStamp = createSprayStamp(100);
+let tintedStamp;
 
 
 function airBrushTool(){
@@ -18,6 +19,9 @@ function airBrushTool(){
 }
 function addAirBrush(e) {
     isActive = true;
+    
+    prevX = currX;
+    prevY = currY;
     currX = e.clientX - canvas.offsetLeft;
     currY = e.clientY - canvas.offsetTop;
 }
@@ -50,12 +54,11 @@ function enterCanvasAirBrush(e) {
 
 
 function airBrushPack(e){
-    prevX = currX;
-    prevY = currY;
     currX = e.clientX - canvas.offsetLeft;
     currY = e.clientY - canvas.offsetTop;
     if (isActive) {
-        sprayBrushLine(prevX, prevY, currX, currY,e.pressure*2);
+        tintedStamp = tintSprayStamp(sprayStamp,x);
+        sprayBrushLine(currX, currY,e.pressure);
     }
     ws_sendCursorPos();
     drawWidth(true);
@@ -72,7 +75,7 @@ function createSprayStamp(radius) {
     canvas.height = radius * 2;
     const ctx = canvas.getContext("2d");
     const gradient = ctx.createRadialGradient(radius, radius, 0, radius, radius, radius);
-    gradient.addColorStop(0, 'rgba(0,0,0,0.5)');               // 中心：不透明
+    gradient.addColorStop(0, 'rgba(0,0,0,0.3)');               // 中心：不透明
     gradient.addColorStop(1, 'rgba(0,0,0,0)'); 
     ctx.fillStyle = gradient;
     ctx.beginPath();
@@ -83,14 +86,13 @@ function createSprayStamp(radius) {
 
 
 // 將黑白貼圖著色成任意顏色
-function tintSprayStamp(stampCanvas, color,pressure) {
+function tintSprayStamp(stampCanvas, color) {
   const tinted = document.createElement("canvas");
   tinted.width = stampCanvas.width;
   tinted.height = stampCanvas.height;
   const ctx = tinted.getContext("2d");
 
   // Step 1: 填色
-  color=hslToHsla(color, pressure);
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, tinted.width, tinted.height);
 
@@ -102,18 +104,23 @@ function tintSprayStamp(stampCanvas, color,pressure) {
 }
 
 // 線段插值繪製
-function sprayBrushLine(prevX, prevY, currX, currY,pressure) {
-  const spacing = 2;
+function sprayBrushLine(currX, currY,pressure) {
+  const spacing = line_widths[2]/9;
   const dx = currX - prevX;
   const dy = currY - prevY;
   const distance = Math.hypot(dx, dy);
-  const steps = Math.floor(distance / spacing);
+  if(distance>spacing){
+    const steps = Math.floor(distance / spacing);
 
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const interX = prevX + dx * t;
-    const interY = prevY + dy * t;
-    sprayStampAt(interX, interY,pressure);
+    for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const interX = prevX + dx * t;
+        const interY = prevY + dy * t;
+        sprayStampAt(interX, interY,pressure);
+    }
+
+    prevX = currX;
+    prevY = currY;
   }
 }
 
@@ -131,11 +138,9 @@ function sprayStampAt(interX, interY,pressure) {
         scale_orgin[1] -
         y_offset -
         size / 2;
+    ctx_active.save();
+    ctx_active.globalAlpha = pressure;
     ctx_active.globalCompositeOperation = "source-over";
-    const tintedStamp = tintSprayStamp(sprayStamp,x,pressure);
     ctx_active.drawImage(tintedStamp, drawX, drawY, size, size);
-}
-
-function hslToHsla(hsl, alpha) {
-  return hsl.replace(/^hsl\(([^)]+)\)/, `hsla($1, ${alpha})`);
+    ctx_active.restore();
 }
