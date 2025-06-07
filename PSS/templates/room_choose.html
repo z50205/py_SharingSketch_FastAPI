@@ -112,9 +112,9 @@
                   {% endfor %}
                   <div class="more-icondiv" id='showTool-{{room["id"]}}'>
                     {% if room["is_display"] %}
-                    <img class="eye-icon" id='displayicon-{{room["id"]}}' src="static/icons/eye_black.svg"/>
+                    <img class="eye-icon" id='displayicon-{{room["id"]}}' src="static/icons/eye_black.svg" onclick='showTool(event,"{{room.id}}")'/>
                     {% else %}
-                    <img class="eye-icon" id='displayicon-{{room["id"]}}' src="static/icons/eye-slash_black.svg"/>
+                    <img class="eye-icon" id='displayicon-{{room["id"]}}' src="static/icons/eye-slash_black.svg" onclick='showTool(event,"{{room.id}}")'/>
                     {% endif %}
                     <img class="more-icon" src="static/icons/more.svg" onclick='showTool(event,"{{room.id}}")'/>
                   </div>
