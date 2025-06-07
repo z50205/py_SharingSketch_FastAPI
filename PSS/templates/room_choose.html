@@ -51,18 +51,18 @@
                 </div>
               </div>
               {% if roominfolive%}
-              {% for room,roomdata in roominfolive.items() %}
-              <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id="roomForm-{{room}}">
-                <input type="hidden" name="roomsid" value="{{room}}">
-                <div class="main-roominfo" onclick="postRoomForm('{{room}}')">
-                  <img src="{{roomdata['thumbnail']}}">
+              {% for room in roominfolive %}
+              <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id='liveRoomForm-{{room["id"]}}'>
+                <input type="hidden" name="roomsid" value='{{room["id"]}}'>
+                <div class="main-roominfo" onclick='postLiveRoom("{{room.id}}")'>
+                  <img style="position: relative;width: 100%;aspect-ratio: 1;" src="{{room['thumbnail']}}">
                   <div class="main-roominfo-banner">
                     LIVE&nbsp;
                     <img src="static/icons/user.svg"/>&nbsp;
-                    {{roomdata["member"]|length}}
+                    {{room['members']}}
                   </div>
                   <div class="main-roominfo-information">
-                    <div class="room-title">{{roomdata["roomname"]}}</div>
+                    <div class="room-title">{{room["roomname"]}}</div>
                   </div>
                 </div>
               </form>
@@ -79,12 +79,13 @@
             <div class="main-roomdiv">
               {% if roominfo%}
               {% for room in roominfo %}
-              <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id='roomForm-{{room["id"]}}'>
+              <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id='formerRoomForm-{{room["id"]}}'>
                 <input type="hidden" name="roomsid" value='{{room["id"]}}'>
-                <div class="main-roominfo" onclick='postRoomForm("{{room.id}}")'>
-                  {% for creator in room["creators"] %}
-                  <img src='/thumbnail/room/{{room["id"]}}/{{creator}}'>
+                <div class="main-roominfo" onclick='postFormerRoom("{{room.id}}")'>
+                  {% for participant in room["participants"] %}
+                  <img src='/thumbnail/room/{{room["id"]}}/{{participant}}'>
                   {% endfor %}
+                  <div class="more-icondiv"></div>
                   <div class="main-roominfo-information">
                     <div class="room-title">{{room["roomname"]}}</div>
                   </div>
@@ -92,6 +93,48 @@
               </form>
               {% endfor %}
               {% endif%}
+            </div>
+          </div>
+          <div class="sub-title">
+            <img class="main-title-icon" src="static/icons/gear.svg"/>
+            <div>Your Own Rooms</div>
+          </div>
+          <div class="intros">Manage your rooms — show in lobby or delete.</div>
+          <div class="main-room-scroll">
+            <div class="main-roomdiv">
+              {% if self_roominfo%}
+              {% for room in self_roominfo %}
+              <form class="main-roominfo main-roomform" method="post" action="/chooseroom" id='selfRoomForm-{{room["id"]}}'>
+                <input type="hidden" name="roomsid" value='{{room["id"]}}'>
+                <div class="main-roominfo" onclick='postSelfRoom("{{room.id}}")'>
+                  {% for participant in room["participants"] %}
+                  <img src='/thumbnail/room/{{room["id"]}}/{{participant}}'>
+                  {% endfor %}
+                  <div class="more-icondiv" id='showTool-{{room["id"]}}'>
+                    {% if room["is_display"] %}
+                    <img class="eye-icon" id='displayicon-{{room["id"]}}' src="static/icons/eye_black.svg"/>
+                    {% else %}
+                    <img class="eye-icon" id='displayicon-{{room["id"]}}' src="static/icons/eye-slash_black.svg"/>
+                    {% endif %}
+                    <img class="more-icon" src="static/icons/more.svg" onclick='showTool(event,"{{room.id}}")'/>
+                  </div>
+                  <div class="main-roominfo-information">
+                    <div class="room-title">{{room["roomname"]}}</div>
+                  </div>
+                </div>
+              </form>
+              {% endfor %}
+              {% endif%}
+            </div>
+          </div>
+          <div class="roomTool" id="roomTool">
+            <div class="roomTool-item" onclick="reviseRoomDisplay(event)">
+              <img id="display-icon" src="static/icons/eye.svg" />
+              <div class="roomTool-item-text" id="display-text">Display</div>
+            </div>
+            <div class="roomTool-item" onclick="deleteRoom(event)">
+              <img src="static/icons/trash.svg" />
+              <div class="roomTool-item-text">Delete</div>
             </div>
           </div>
         </div>

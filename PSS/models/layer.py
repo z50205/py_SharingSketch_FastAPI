@@ -8,7 +8,7 @@ import io,uuid
 
 class LayerData(SQLModel, table=True):
     id: str = Field(default=None, primary_key=True)
-    room_id: str = Field(default=None, foreign_key="roomdata.id",ondelete="CASCADE")
+    room_id: str = Field(default=None, foreign_key="roomdata.id")
     layername:str=Field(nullable=False)
     creator_id: str = Field(default=None, foreign_key="userdata.id",ondelete="CASCADE")
     create_time: str = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
@@ -60,17 +60,23 @@ class LayerData(SQLModel, table=True):
         
 
     @classmethod
-    def delete_room_layers(self,roomsid:str,id:str):
+    def delete_room_layers(self,room_id:str,creator_id:str):
         try:
             with Session(engine) as session:
-                statement=select(LayerData).where(LayerData.room_id == roomsid).where(LayerData.creator_id == id)
+                statement=select(LayerData).where(LayerData.room_id == room_id).where(LayerData.creator_id == creator_id)
                 layers =session.exec(statement).fetchall()
+                delete_keys = []
+                for layer in layers:
+                    delete_keys.append({"Key": f"rooms/{layer.room_id}/{layer.creator_id}/{layer.layername}"})
+                    delete_keys.append({"Key": f"rooms/{layer.room_id}/{layer.creator_id}/thumbnail.webp"})
+                if delete_keys:
+                    client.delete_objects(Bucket=BUCKET_NAME,Delete={"Objects": delete_keys, "Quiet": True})
                 for layer in layers:
                     session.delete(layer)
                 session.commit()
-            return {"message":"delete room success!"}
-        except:
-            return {"message":"delete room failed!"}
+            return {"status":True,"message":"delete room all layer success!"}
+        except Exception as e:
+            return {"status":False,"message":"delete room all layer failed!","error": str(e)}
 
     @classmethod
     def create_layer(self,image:UploadFile,room_id:str,layername:str,creator_id:str,opacity:str,is_display:str,z_index:str):

@@ -176,11 +176,8 @@
     border-radius: 10px;
     position: absolute;
 }
-.main-roominfo > img:first-of-type {
+.main-roominfo > .main-roominfo > :first-child {
     background-color: white;
-}
-.main-roominfo > img:last-of-type {
-  position: relative;
 }
 .main-roominfo > .main-roominfo-create{
     width: 100%;
@@ -192,6 +189,62 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+
+.main-roominfo > .more-icondiv {
+    width: 100%;
+    border-radius: 10px;
+    position: relative;
+    aspect-ratio: 1;
+}
+
+.main-roominfo > .more-icondiv > .more-icon {
+    position: absolute;
+    right: 0px;
+    margin: 5px;
+    padding: 3px;
+    line-height: 0;
+    border-radius: 3px;
+}
+
+.main-roominfo > .more-icondiv > .eye-icon {
+    position: absolute;
+    left: 0px;
+    margin: 5px;
+    padding: 3px;
+    line-height: 0;
+    border-radius: 3px;
+}
+
+.roomTool{
+    display: none;
+    width: 100px;
+    background-color: rgb(91, 91, 91);
+    right: 30px;
+    position: absolute;
+    border-radius: 5px;
+    top: 5px;
+}
+
+.roomTool-item{
+    display: flex;
+    border-radius: 3px;
+    padding: 0px 5px;
+}
+
+.roomTool-item:hover{
+    background-color:rgb(200, 200, 200);
+}
+
+.roomTool-item-text{
+    color:white;
+    margin: 5px;
+    font-size: 12px;
+}
+
+.main-roominfo > .more-icondiv > img:hover {
+    background-color: rgb(200, 200, 200);
+}
+
 
 .main-roominfo > .main-roominfo-create >img{
     width: 3rem;

@@ -15,7 +15,7 @@ class RoomData(SQLModel, table=True):
     @classmethod
     def query_rooms(self,creator_id:str):
         with Session(engine) as session:
-            statement = select(RoomData).where(RoomData.creator_id == creator_id).order_by(RoomData.create_time.desc())
+            statement = select(RoomData.id).where(RoomData.creator_id == creator_id).order_by(RoomData.create_time.desc())
             rooms = session.exec(statement).fetchall()
             return rooms
         
@@ -40,15 +40,39 @@ class RoomData(SQLModel, table=True):
         except Exception as e:
             return {"message": "Create failed!", "error": str(e)}
     @classmethod
-    def delete_room(self,id:str):
+    def delete_room(self,id:str,creator_id:str):
         try:
             with Session(engine) as session:
-                room =session.exec(select(RoomData).where(RoomData.id == id)).one_or_none()
+                room =session.exec(select(RoomData).where(RoomData.id == id).where(RoomData.creator_id == creator_id)).one_or_none()
                 session.delete(room)
                 session.commit()
                 return {"message":"Delete success!"}
         except Exception as e:
             return {"message": "Delete failed!", "error": str(e)}
         
+    @classmethod
+    def toggle_room_display(self,id:str,creator_id:str):
+        try:
+            with Session(engine) as session:
+                result=session.exec(select(RoomData).where(RoomData.creator_id == creator_id).where(RoomData.id == id)).one_or_none()
+                if result:
+                    statement=update(RoomData).where(RoomData.id == id).values(is_display=not result.is_display)
+                    session.exec(statement)
+                    session.commit()
+                    return {"message":"Update display success!","room_id":result.id,"status":result.is_display}
+                else:
+                    return {"message":"Room not found!"}
+        except Exception as e:
+            return {"message":"Update display failed!", "error": str(e)}
+        
+    @classmethod
+    def query_room_display(self,id:str,creator_id:str):
+        try:
+            with Session(engine) as session:
+                result=session.exec(select(RoomData).where(RoomData.creator_id == creator_id).where(RoomData.id == id)).one_or_none()
+                return {"message":"Get display success!","status":result.is_display}
+        except Exception as e:
+            return {"message":"Get display failed!", "error": str(e)}
+                
     
 SQLModel.metadata.create_all(engine)

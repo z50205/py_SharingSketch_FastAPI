@@ -61,17 +61,28 @@ async def roomlist(request:Request):
     username=request.session["username"]
     u=UserData.query_name(username)
     rooms_id=LayerData.query_user_rooms(u.id)
+    self_rooms_id=RoomData.query_rooms(u.id)
     avatar=None
     if u.src_avatar:
         avatar="/image/"+u.src_avatar
-    roominfo_dict=[]
+    live_roominfo_dict=[]
+    former_roominfo_dict=[]
+    self_roominfo_dict=[]
+    for room_id in ws_manager.rooms:
+        room=RoomData.query_room(room_id)
+        if room.is_display:
+            live_roominfo_dict.append({"roomname":room.roomname,"id":room.id,"members":len(ws_manager.rooms[room_id]["member"]),"thumbnail":ws_manager.rooms[room_id]["thumbnail"]})
+    live_ids = {live["id"] for live in live_roominfo_dict}
     for room_id in rooms_id:
         room=RoomData.query_room(room_id)
-        live_memeber_len=0
-        if room.id not in ws_manager.rooms:
-            creators=LayerData.query_room_participants(room.id)
-            roominfo_dict.append({"roomname":room.roomname,"id":room.id,"creators":creators})
-    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfolive":ws_manager.rooms,"roominfo":roominfo_dict,"user":u,"avatar":avatar})
+        if room.id not in live_ids and room.is_display:
+            participants=LayerData.query_room_participants(room.id)
+            former_roominfo_dict.append({"roomname":room.roomname,"id":room.id,"participants":participants})
+    for self_room_id in self_rooms_id:
+        room=RoomData.query_room(self_room_id)
+        participants=LayerData.query_room_participants(room.id)
+        self_roominfo_dict.append({"roomname":room.roomname,"id":room.id,"participants":participants,"is_display":room.is_display})
+    return template.TemplateResponse(request=request,name="room_choose.html",context={"src":request.cookies.get('src'),"roominfolive":live_roominfo_dict,"roominfo":former_roominfo_dict,"self_roominfo":self_roominfo_dict,"user":u,"avatar":avatar})
 
 @router.post("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["chooseroom"])
 async def chooseroom(request:Request,roomsid:str=Form(...)):
@@ -100,7 +111,7 @@ async def room(request:Request):
     room=RoomData.query_room(roomsid)
     if not roomsid:
         return RedirectResponse(request.headers.get('referer'),status_code=303)
-    if u:
+    if (u and room.is_display) or (u.id==room.creator_id and not room.is_display):
         return template.TemplateResponse(request=request,name="room.html",context={"roomname":room.roomname,"roomsid":roomsid,"username":username,'avatar':u.src_avatar})
     else:
         return JSONResponse(status_code=401,content={
@@ -218,3 +229,26 @@ async def getImages(request:Request,src:str):
             'status': 'error',
             'message': 'Not found'
             })
+
+@router.patch("/api/room/{id}/display",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["patch_room_display"])
+async def patchRoomDisplay(request:Request,id:str):
+    username = request.session.get('username')
+    u=UserData.query_name(username)
+    jsonRes=RoomData.toggle_room_display(id,u.id)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@router.get("/api/room/{id}/display",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["patch_room_display"])
+async def patchRoomDisplay(request:Request,id:str):
+    username = request.session.get('username')
+    u=UserData.query_name(username)
+    jsonRes=RoomData.query_room_display(id,u.id)
+    return JSONResponse(status_code=200,content=jsonRes)
+
+@router.delete("/api/room/{id}",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["delete_room"])
+async def deleteRoom(request:Request,id:str):
+    username = request.session.get('username')
+    u=UserData.query_name(username)
+    jsonRes=LayerData.delete_room_layers(id,u.id)
+    if jsonRes["status"]:
+        jsonRes=RoomData.delete_room(id,u.id)
+    return JSONResponse(status_code=200,content=jsonRes)
