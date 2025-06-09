@@ -54,7 +54,9 @@ async def login(request:Request,username:str=Form(),password:str=Form()):
 async def logout(request:Request):
     if "username" in request.session:
         del request.session["username"]
-    return RedirectResponse(request.headers.get('referer'),status_code=303)
+    response=RedirectResponse(request.headers.get('referer'),status_code=303)
+    response.delete_cookie("src")
+    return response
 
 @router.get("/chooseroom",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["roomlist"])
 async def roomlist(request:Request):

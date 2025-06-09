@@ -39,7 +39,7 @@ const postLiveRoom=(roomid)=>{
   roomForm.submit();
 }
 const postFormerRoom=(roomid)=>{
-  let roomForm=document.getElementById("foremerRoomForm-"+roomid);
+  let roomForm=document.getElementById("formerRoomForm-"+roomid);
   roomForm.submit();
 }
 const postSelfRoom=(roomid)=>{

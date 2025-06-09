@@ -96,7 +96,11 @@
         <!-- Tools Panel Code -->
         <div class="bottom-tool-div" id="bottom-tool">
           <img class="bottom-tool-close-icon" src="static/icons/close-white.svg" id="bottom-tool-close-icon"/>
-          <div style="width: 100%; border: 0.5px solid white;"></div>
+          <div style="width: 100%; display: flex;align-items: center;">
+            <div style="flex:1; height: 1px;background-color: white;"></div>
+            <div style="flex:2; height: 2px;background-color: white;" id="bottom-tool-slide"></div>
+            <div style="flex:1; height: 1px;background-color: white;"></div>
+          </div>
           <ul class="nav nav-tabs" id="bottom-tool-Tab" role="tablist" data-bs-auto-close="false"  style="--bs-nav-tabs-link-active-bg:rgb(128, 128, 128);--bs-nav-tabs-link-active-border-color:var(--bs-border-color) var(--bs-border-color) rgb(128, 128, 128);">
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="layer-tab" data-bs-toggle="tab" data-bs-target="#layer" type="button" role="tab" aria-controls="layer" aria-selected="false">
