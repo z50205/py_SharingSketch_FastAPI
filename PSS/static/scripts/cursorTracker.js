@@ -40,7 +40,7 @@ function drawWidth() {
         ctx.font = fontSize+"px Arial";
         let text=cursor["username"];
         if(message){
-          if(Date.now()-message["updateTime"]<CURSORSTAYTIME){
+          if(Date.now()-message["updateTime"]<CURSORSTAYTIME*4){
             text=text+":"+message["message"];
           }else{
             delete room_messages[key];
