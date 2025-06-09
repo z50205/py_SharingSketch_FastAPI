@@ -23,14 +23,23 @@
   <div class="content">
     <div class="information">
       <div class="left-sidebar">
-        {% if avatar%}
-        <img class="left-sidebar-avatar" src="{{avatar}}">
-        {% else%}
-        <img class="left-sidebar-avatar" src="static/icons/user.svg">
-        {% endif%}
-        <div class="left-sidebar-name">{{user.username}}</div>
-        <div class="left-sidebar-aboutme">
-          {{user.about_me}}
+        <div class="left-sidebar-portofolio">
+          {% if avatar%}
+          <img class="left-sidebar-avatar" src="{{avatar}}">
+          {% else%}
+          <img class="left-sidebar-avatar" src="static/icons/user.svg">
+          {% endif%}
+          <div class="left-sidebar-name">{{user.username}}</div>
+        </div>
+        <div class="left-sidebardiv">
+          <div class="left-sidebar-item">
+            <img src="static/icons/people.svg"/>
+            <div class="left-sidebar-item-text">Room Lobby</div>
+          </div>
+          <div class="left-sidebar-item">
+            <img src="static/icons/stack.svg"/>
+            <div class="left-sidebar-item-text">Room Setting</div>
+          </div>
         </div>
       </div>
       <div class="main">

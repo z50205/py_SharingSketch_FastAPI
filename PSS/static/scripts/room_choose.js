@@ -116,3 +116,7 @@ async function deleteRoom(event){
     editRoom = null;  
   }
 }
+document.addEventListener("click",()=>{
+  let tool=document.getElementById("roomTool");
+  tool.style.display="none";
+})

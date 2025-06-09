@@ -37,10 +37,9 @@ function getPixelColor(e){
             let canvasY=(currY - scale_orgin[1]) / (scale * scale_xy[1]) + scale_orgin[1] - y_offset;
 
             let colorInfo=getPixelColorAt(canvasX,canvasY)
-            console.log("p="+colorInfo);
             let hsv=rgbToHsv(colorInfo);
-            console.log("p="+hsv);
             x=hsvToHsl(hsv[0],hsv[1]/100,hsv[2]/100);
+            hue=hsv[0];
             colorpickerShow.style.backgroundColor=x;
             colorIcon.style.left=`${hsv[1]}%`;
             colorIcon.style.top=`${100-hsv[2]}%`;

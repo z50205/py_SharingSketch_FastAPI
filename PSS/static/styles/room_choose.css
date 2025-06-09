@@ -126,16 +126,32 @@
     aspect-ratio: 1;
     margin-right:10px;
 }
-
-.left-sidebar > .left-sidebar-avatar{
-    width: 100%;
+.left-sidebar >.left-sidebar-portofolio{
+    display: flex;
+}
+.left-sidebar >.left-sidebar-portofolio > .left-sidebar-avatar{
+    width: 50%;
     border-radius: 100%;
     padding-top: 15px;
     padding-bottom: 15px;
 }
-.left-sidebar > .left-sidebar-aboutme{
-    font-size: 15px;
+.left-sidebar-name{
+    display: flex;
     color:white;
+    font-size: large;
+    align-items: end;
+}
+.left-sidebardiv{
+    margin: 5px;
+}
+.left-sidebar-item{
+    display: flex;
+    margin: 5px;
+}
+.left-sidebar-item-text{
+    color: white;
+    margin: 5px;
+    font-size: 16px;
 }
 .sub-title{
     font-size: 18px;
@@ -304,9 +320,9 @@
     }
 }
 
-@media (max-width:600px){
-    .left-sidebar > .left-sidebar-avatar{
-    max-width: 100px;
+@media (max-width:768px){
+    .left-sidebar > .left-sidebar-portofolio > .left-sidebar-avatar{
+    max-width: 40%;
     }
     .left-sidebar{
     flex:1 0 50%;

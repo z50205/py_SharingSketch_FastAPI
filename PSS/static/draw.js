@@ -204,6 +204,9 @@ function init() {
         if (e.code == "KeyP") {
           changeTool('brush');
         }
+        if (e.code == "KeyB") {
+          changeTool('airbrush');
+        }
         //keycode-Q
         if (e.code == "KeyQ") {
             mirror();
