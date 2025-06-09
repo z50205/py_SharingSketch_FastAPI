@@ -15,6 +15,9 @@ let airbrush=document.getElementById("airbrush");
 let bottomTool=document.getElementById("bottom-tool");
 let rightToolBar=document.getElementById("right-toolbar");
 
+let bottomToolHeightSlide=document.getElementById("bottom-tool-slide");
+let bottomToolHeightSlideDiv=document.getElementById("bottom-tool-slidediv");
+
 layerTab.addEventListener("click",()=>{
     updateTab();
     layer.style.display="flex";
@@ -32,14 +35,16 @@ bottomToolCloseIcon.addEventListener("click",()=>{
     rightToolBar.style.height="fit-content";
     bottomTool.style.height="fit-content";
     bottomTool.style.right="0px";
+    bottomToolHeightSlideDiv.style.display="none";
 })
 bottomToolTab.addEventListener("click",()=>{
     if (bottomTool.style.height=="fit-content")
     {
         rightToolBar.style.height="unset";
-        bottomTool.style.height="250px";
+        bottomTool.style.height=initBottomToolHeight+"px";
         bottomToolCloseIcon.style.display="block";
         bottomTool.style.right="unset";
+        bottomToolHeightSlideDiv.style.display="flex";
         if (layerTab.classList.contains('active')){
             layer.style.display="flex";
         }else{
@@ -79,4 +84,24 @@ function onlineState(){
         onlineSwitchText.textContent="OFFLINE";
         onlineSwitchText.style.color="white";
     }
+}
+let bottomToolHeight=false;
+let initBottomToolHeight=250;
+bottomToolHeightSlide.addEventListener("pointerdown",bottomToolHeightSlideDown)
+function bottomToolHeightSlideDown(event){
+    initBottomToolHeight=initBottomToolHeight+event.clientY;
+    bottomToolHeight=true;
+    window.addEventListener("pointermove",bottomToolHeightSlideMove)
+    window.addEventListener("pointerup",bottomToolHeightSlideUp)
+}
+function bottomToolHeightSlideMove(event){
+    if (bottomToolHeight){
+        bottomTool.style.height=((initBottomToolHeight-event.clientY))+"px";
+    }
+}
+function bottomToolHeightSlideUp(event){
+    initBottomToolHeight=(initBottomToolHeight-event.clientY);
+    bottomToolHeight=false;
+    window.removeEventListener("pointermove",bottomToolHeightSlideMove)
+    window.removeEventListener("pointerup",bottomToolHeightSlideUp)
 }

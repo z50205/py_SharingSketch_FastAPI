@@ -96,10 +96,10 @@
         <!-- Tools Panel Code -->
         <div class="bottom-tool-div" id="bottom-tool">
           <img class="bottom-tool-close-icon" src="static/icons/close-white.svg" id="bottom-tool-close-icon"/>
-          <div style="width: 100%; display: flex;align-items: center;">
-            <div style="flex:1; height: 1px;background-color: white;"></div>
-            <div style="flex:2; height: 2px;background-color: white;" id="bottom-tool-slide"></div>
-            <div style="flex:1; height: 1px;background-color: white;"></div>
+          <div style="width: 100%; display: flex;align-items: center;margin-bottom: 3px;" id="bottom-tool-slidediv">
+            <div style="flex:2; height: 2px;background-color: white;"></div>
+            <div style="flex:3; height: 4px;background-color: white;" id="bottom-tool-slide"></div>
+            <div style="flex:2; height: 2px;background-color: white;"></div>
           </div>
           <ul class="nav nav-tabs" id="bottom-tool-Tab" role="tablist" data-bs-auto-close="false"  style="--bs-nav-tabs-link-active-bg:rgb(128, 128, 128);--bs-nav-tabs-link-active-border-color:var(--bs-border-color) var(--bs-border-color) rgb(128, 128, 128);">
             <li class="nav-item" role="presentation">
@@ -147,7 +147,7 @@
             <div class="rounded-3 border p-1 message-title" id="chat">
                 <ul id="chat-messages" class="overflow-auto"style="max-height: 200px;"></ul>
                 <div class="input-group">
-                  <input type="text" class="form-control" id="message" placeholder="Enter a Message" style="background-color: transparent;color: rgb(255, 255, 255);" onkeydown="event.stopPropagation()" autocomplete="off" />
+                  <input type="text" class="form-control" id="message" placeholder="Enter a Message" style="background-color: transparent;color: rgb(255, 255, 255);" onkeydown="event.stopPropagation();" onkeyup="event.stopPropagation();" autocomplete="off" />
                   <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="sendMessage()">Send</button>
                 </div>
             </div>
