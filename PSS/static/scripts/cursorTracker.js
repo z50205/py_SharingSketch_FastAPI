@@ -32,12 +32,21 @@ function drawWidth() {
     ctx.closePath();
   }
   for(key in room_cursors){
-    cursor=room_cursors[key];
+    let cursor=room_cursors[key];
+    let message=room_messages[key];
     if (Date.now()-cursor["updateTime"]<CURSORSTAYTIME){
         const cursorSize=5/scale;
         const fontSize=15/scale;
         ctx.font = fontSize+"px Arial";
-        const text=cursor["username"];
+        let text=cursor["username"];
+        if(message){
+          if(Date.now()-message["updateTime"]<CURSORSTAYTIME){
+            text=text+":"+message["message"];
+          }else{
+            delete room_messages[key];
+        }
+        }
+
         const metrics = ctx.measureText(text);
         const xSize=metrics.width+10/scale;
         const ySize=fontSize+5/scale;

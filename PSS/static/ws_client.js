@@ -255,6 +255,7 @@ const connectWebSocket=()=>{
       li.appendChild(p2);
       ul.appendChild(li);
       ul.scrollTop = ul.scrollHeight;
+      room_messages[data["sid"]]={"message":data["message"],"updateTime":Date.now()};
     };
 
     // send self mouse_postition to ws server per second

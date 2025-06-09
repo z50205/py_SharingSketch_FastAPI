@@ -31,6 +31,7 @@ var scale_orgin = [w / 2, h / 2];
 var delete_canvas_pivots = [];
 
 let room_cursors={};
+let room_messages={};
 let lastSendCursorPos=Date.now();
 const CURSORUPDATERATE=100;
 const CURSORSTAYTIME=10000;

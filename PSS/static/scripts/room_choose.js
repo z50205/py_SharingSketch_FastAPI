@@ -120,3 +120,51 @@ document.addEventListener("click",()=>{
   let tool=document.getElementById("roomTool");
   tool.style.display="none";
 })
+
+let lobby=document.getElementById("main-room-lobby");
+let setting=document.getElementById("main-room-setting");
+let toggle=document.getElementById("toggle-div");
+let togglePivot=document.getElementById("toggle-title");
+let toggleIcon=document.getElementById("toggle-icon");
+let toggleText=document.getElementById("toggle-text");
+let lobbyPivot=document.getElementsByClassName("left-sidebar-item")[0];
+let settingPivot=document.getElementsByClassName("left-sidebar-item")[1];
+showManagePanel("lobby");
+toggleShowManagePanel();
+
+function toggleShowManagePanel(){
+  if (togglePivot.classList.contains("active")){
+    togglePivot.classList.remove("active");
+    toggle.style.display="none";
+  }else{
+    togglePivot.classList.add("active");
+    toggle.style.display="block";
+  }
+}
+
+function updateToggleTitle(panelName){
+  if (panelName=="lobby"){
+    toggleIcon.src="static/icons/people.svg";
+    toggleText.textContent="Room Lobby";
+  }else{
+    toggleIcon.src="static/icons/stack.svg";
+    toggleText.textContent="Room Setting";
+  }
+}
+
+
+function showManagePanel(panelName){
+  if (panelName=="lobby"){
+    setting.style.display="none";
+    lobby.style.display="block";
+    lobbyPivot.classList.add("active");
+    settingPivot.classList.remove("active");
+  }else{
+    setting.style.display="block";
+    lobby.style.display="none";
+    lobbyPivot.classList.remove("active");
+    settingPivot.classList.add("active");
+  }
+  updateToggleTitle(panelName);
+  toggleShowManagePanel();
+}

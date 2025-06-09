@@ -111,6 +111,13 @@
 .left-sidebar{
     flex:1 0 20%;
 }
+
+.left-sidebar > .left-sidebar-aboutme{
+    font-size: 15px;
+    color:white;
+    margin: 10px;
+}
+
 .main{
     flex:1 0 80%;
     display: flex;
@@ -128,12 +135,11 @@
 }
 .left-sidebar >.left-sidebar-portofolio{
     display: flex;
+    margin: 10px;
 }
 .left-sidebar >.left-sidebar-portofolio > .left-sidebar-avatar{
     width: 50%;
     border-radius: 100%;
-    padding-top: 15px;
-    padding-bottom: 15px;
 }
 .left-sidebar-name{
     display: flex;
@@ -142,11 +148,38 @@
     align-items: end;
 }
 .left-sidebardiv{
-    margin: 5px;
+    margin: 10px 0px;
+    width: 200px;
+}
+.left-sidebar-toggle-title{
+    display: flex;
+    padding: 5px;
+    border: 1px solid white;
+    border-radius: 5px;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.left-sidebar-toggle-title.active{
+    border-width: 1px 1px 0px 1px; 
+    border-radius: 5px 5px 0px 0px;
+}
+.left-sidebar-toggle{
+    width: 200px;
+    border: 1px solid white;
+    border-width: 0px 1px 1px 1px; 
+    border-radius: 0px 0px 5px 5px;
+    overflow: hidden;
+    position: absolute;
+    background: rgb(64, 64, 64);
+    z-index: 100;
 }
 .left-sidebar-item{
     display: flex;
-    margin: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+.left-sidebar-item:hover{
+    background-color: rgb(200, 200, 200);
 }
 .left-sidebar-item-text{
     color: white;
