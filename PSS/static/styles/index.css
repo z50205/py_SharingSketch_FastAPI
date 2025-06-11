@@ -171,9 +171,11 @@ body{
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 .main-container{
-  max-width: 1200px;
+  width: 100%;
+  justify-items: center;
 }
 .top-main-container{
+  max-width: 1200px;
   height: 500px;
   display: flex;
   align-items: center;
@@ -212,20 +214,34 @@ body{
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 .tab-container{
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+}
+.tab-bar{
+  width: 100%;
+  max-width: 1200px;
   display:flex;
   font-family: 'Montserrat';
   justify-content: space-between;
+  position: sticky;
+  top:0;
 }
 .tab-title{
   margin:10px;
   font-family: "Sans";
   font-weight: bold;
+  font-size: 20px;
   color:black
 }
 .tab-item-list{
   display: flex;
 }
 .tab-item{
+  font-size: 20px;
   margin:10px;
   color:rgb(170, 170, 170);
   cursor: pointer;
@@ -234,12 +250,92 @@ body{
   color:black;
 }
 .feature-main-container{
+  width:100%;
+  background-color: rgb(64, 64, 64);
+  color:white;
   display: flex;
-  align-items: start;
+  justify-content: center;
 }
 .feature-main-column{
   flex:1;
-  margin: 15px;
+  margin: 10px;
+}
+.feature-main-element{
+  display: flex;
+  margin: 40px 0px;
+}
+.feature-main-element-image{
+  display: flex;
+  height:400px;
+}
+.feature-main-element-description{
+  flex:1;
+  margin-left: 50px;
+}
+.feature-main-element-description.left{
+  margin-left: unset;
+  margin-right: 50px;
+}
+.feature-main-element-description-title{
+  font-family: 'Montserrat';
+  font-size: 30px;
+  font-weight: bold;
+}
+.feature-main-element-description-content{
+  font-family: 'Montserrat';
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.footer-container{
+  width: 100%;
+  height:100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.feature-main-timelinediv{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.feature-main-timeline-circle{
+  width: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 0 0 6px white;
+  position: relative;
+  z-index:2;
+}
+.feature-main-timeline-circle.active{
+  background-color: rgb(41, 193, 220);
+  box-shadow: 0 0 0 6px white;
+}
+.feature-main-timeline-line{
+  width: 8px;
+  height: 80px;
+  box-sizing: border-box;
+  background-color: white;
+  z-index:3;
+}
+.feature-main-timeline-line.active{
+  background-color: rgb(41, 193, 220);
+  border:1px solid white ;
+  border-width: 0px 3px 0px 3px;
+}
+.feature-main-timeline-text{
+  position: absolute;
+  font-family: 'Montserrat';
+  top: -8px;
+  left: 20px;
+  font-size: 14px;
+}
+.feature-main-timeline-text.active{
+  color: rgb(41, 193, 220);
+  font-weight: bold;
 }
 .feature-main-itemdiv{
   display: flex;
