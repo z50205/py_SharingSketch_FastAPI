@@ -39,9 +39,9 @@
     </div>
   </div>
   <div class="feature-main-container">
-    <div style="display: flex;align-items: start;max-width: 1200px;">
+    <div class="feature-main-container-flex">
       <div class="feature-main-column">
-        <div class="feature-main-element">
+        <div class="feature-main-element" id="sync">
           <div class="feature-main-element-image">
             <img src="static/pics/chooseroom.png" />
           </div>
@@ -56,7 +56,7 @@
             </div>
           </div>
         </div>
-        <div class="feature-main-element">
+        <div class="feature-main-element" id="sketch">
           <div class="feature-main-element-description left">
             <div class="feature-main-element-description-title">Sketch Tool</div>
             <div class="feature-main-element-description-content">
@@ -75,7 +75,7 @@
             <img src="static/pics/chooseroom.png" />
           </div>
         </div>
-        <div class="feature-main-element">
+        <div class="feature-main-element" id="manage">
           <div class="feature-main-element-image">
             <img src="static/pics/chooseroom.png" />
           </div>
@@ -91,19 +91,25 @@
           </div>
         </div>
       </div>
-      <div class="feature-main-column" style="flex:unset;width:150px;display: flex;margin-top: 50px;position:sticky;top:90px;margin-left: 40px;">
+      <div class="feature-main-column timeline">
         <div class="feature-main-timelinediv">
-          <div class="feature-main-timeline-circle active">
-            <div class="feature-main-timeline-text">Synchronization</div>
-          </div>
-          <div class="feature-main-timeline-line active"></div>
-          <div class="feature-main-timeline-circle active">
-            <div class="feature-main-timeline-text active">Sketch</div>
-          </div>
+          <a href="#sync" onclick="scrollActive(1)">
+            <div class="feature-main-timeline-circle active">
+              <div class="feature-main-timeline-text">Synchronization</div>
+            </div>
+          </a>
           <div class="feature-main-timeline-line"></div>
-          <div class="feature-main-timeline-circle">
-            <div class="feature-main-timeline-text">Management</div>
-          </div>
+          <a href="#sketch" onclick="scrollActive(2)">
+            <div class="feature-main-timeline-circle">
+              <div class="feature-main-timeline-text">Sketch</div>
+            </div>
+          </a>
+          <div class="feature-main-timeline-line"></div>
+          <a href="#manage" onclick="scrollActive(3)">
+            <div class="feature-main-timeline-circle">
+              <div class="feature-main-timeline-text">Management</div>
+            </div>
+          </a>
         </div>
       </div>
     </div>
