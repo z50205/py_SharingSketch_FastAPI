@@ -1,3 +1,6 @@
+.row{
+    width: 100%;
+}
 .mask.active::after{
     content:"";
     display:flex;
