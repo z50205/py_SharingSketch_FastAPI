@@ -89,6 +89,19 @@ class ImageData(SQLModel, table=True):
                 nextPage=None
             return {"nextPage":nextPage,"imageData":images_dict}
     @classmethod
+    def query_user_images(self,username,page):
+        with Session(engine) as session:
+            results=session.exec(select(ImageData,UserData.username,UserData.src_avatar,UserData.about_me).where(ImageData.creator_id == UserData.id).where(UserData.username == username).offset((page-1)*per_page).limit(per_page+1).order_by(ImageData.create_time.desc())).fetchall()
+            min_perpage=min(per_page,len(results))
+            images_dict=[]
+            for i,res in enumerate(results[0:min_perpage]):
+                images_dict.append({"id":res[0].id,"description":res[0].description,"src":res[0].src,"title":res[0].title,"create_time":res[0].create_time,"is_display":res[0].is_display,"tags":ImageTagData.query_tagAll(res[0].id)})
+            if per_page<len(results):
+                nextPage=page+1
+            else:
+                nextPage=None
+            return {"nextPage":nextPage,"imageData":images_dict,"user":{"avatar":res[2],"aboutme":res[3]}}
+    @classmethod
     def toggle_display(self,imageid:str,username,page):
         try:
             with Session(engine) as session:

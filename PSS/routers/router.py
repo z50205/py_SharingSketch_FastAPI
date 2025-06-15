@@ -188,6 +188,11 @@ async def getUserImages(request:Request,page:int):
     jsonRes=ImageData.query_portfolio_images(username,page)
     return JSONResponse(status_code=200,content=jsonRes)
 
+@router.get("/api/user/{username}",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["resources"])
+async def getUserImages(request:Request,page:int,username:str):
+    jsonRes=ImageData.query_user_images(username,page)
+    return JSONResponse(status_code=200,content=jsonRes)
+
 @router.patch("/api/image/{id}/display",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["patch_image_display"])
 async def patchImageDisplay(request:Request,id:str,page:int):
     jsonRes=ImageData.toggle_display(id,request.session['username'],page)
