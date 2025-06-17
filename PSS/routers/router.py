@@ -114,7 +114,7 @@ async def room(request:Request):
     if not roomsid:
         return RedirectResponse(request.headers.get('referer'),status_code=303)
     if (u and room.is_display) or (u.id==room.creator_id and not room.is_display):
-        return template.TemplateResponse(request=request,name="room.html",context={"roomname":room.roomname,"roomsid":roomsid,"username":username,'avatar':u.src_avatar})
+        return template.TemplateResponse(request=request,name="room.html",context={"roomname":room.roomname,"roomsid":roomsid,"username":username,"usersid":u.id,'avatar':u.src_avatar})
     else:
         return JSONResponse(status_code=401,content={
             'status': 'error',

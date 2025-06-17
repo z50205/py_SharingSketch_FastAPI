@@ -617,6 +617,11 @@ can_proj.toBlob(function(blob) {
         ctx_proj.drawImage(otherlayers[i], 0, 0);
         ctx_proj.globalAlpha=1;
     }
+  let thumbnailcanvases = document.getElementsByClassName("thumbnailcanvases");
+      for (let i = 0; i < thumbnailcanvases.length; i++) {
+        ctx_proj.drawImage(thumbnailcanvases[i], 0, 0);
+        ctx_proj.globalAlpha=1;
+    }
 
   can_proj.toBlob(function(blob) {
   if (blob) {

@@ -205,6 +205,9 @@ const connectWebSocket=()=>{
       if (leave_user_thumbnail) {
         leave_user_thumbnail.remove();
       }
+      if (leave_user_id==usersid){
+        return;
+      }
       let newThumbnailCanvas = document.createElement("canvas");
       newThumbnailCanvas.style =
         "position:absolute;border:0px solid; touch-action: none;z-index: 1;";

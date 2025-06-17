@@ -33,13 +33,13 @@
         <div class="tab-title" id="tab-title">Features</div>
       </div>
       <div  class="tab-item-list">
-        <div class="tab-item active">Features</div>
-        <div class="tab-item">About</div>
+        <div class="tab-item active" id="feature">Features</div>
+        <div class="tab-item" id="about">About</div>
       </div>
     </div>
   </div>
   <div class="feature-main-container">
-    <div class="feature-main-container-flex">
+    <div class="feature-main-container-flex" id="feature-div">
       <div class="feature-main-column">
         <div class="feature-main-element" id="sync">
           <div class="feature-main-element-image">
@@ -113,54 +113,29 @@
         </div>
       </div>
     </div>
+    <div class="feature-main-container-flex" style="display: none;" id="about-div">
+      <div class="feature-main-column">
+        <div class="about-intro-div">
+          <img class="about-intro-icon" src="static/pics/avatar.jfif"/>
+          <div class="about-intro-chat" id="chat-message-div">
+            <div style="margin-right: 20px; white-space: pre-line;" id="chat-message"></div>
+            <div class="about-arrow" id="chat-arrow"></div>
+          </div>
+        </div>
+        <div class="about-div">
+          <img class="about-icon" src="static/icons/email.svg"/>
+          <a style="text-decoration: none;color: inherit;" href="mailto:z50205@yahoo.com.tw"><p class="about-text">z50205@yahoo.com.tw</p></a>
+        </div>
+        <div class="about-div">
+          <img class="about-icon" src="static/icons/github.svg"/>
+          <a style="text-decoration: none;color: inherit;" href="https://github.com/z50205/py_SharingSketch_FastAPI"><p class="about-text">https://github.com/z50205/py_SharingSketch_FastAPI</p></a>
+        </div>
+      </div>
+    </div>
   </div>
-  <!-- <div class="feature-main-container">
-    <div class="feature-main-column">
-      <div class="feature-main-itemdiv" style="aspect-ratio: 3.5/4;">
-        <div class="feature-main-item">
-          <div class="feature-main-title">Room Management</div>
-          <div class="feature-main-item-back">
-            <img src="static/pics/chooseroom.png"/>
-          </div>
-        </div>
-      </div>
-      <div class="feature-main-itemdiv" style="aspect-ratio: 5/4;">
-        <div class="feature-main-item">
-          <div class="feature-main-title">Drawing Tool</div>
-          <div class="feature-main-item-back">
-            <img src="static/pics/room.png"/>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="feature-main-column">
-      <div class="feature-main-itemdiv" style="aspect-ratio: 3.2/4;">
-        <div class="feature-main-item">
-          <div class="feature-main-title">Communication</div>
-          <div class="feature-main-item-back">
-            <img id="communication" src="static/pics/chat.png"/>
-          </div>
-        </div>
-      </div>
-      <div class="feature-main-itemdiv" style="aspect-ratio: 3.8/4;">
-        <div class="feature-main-item">
-          <div class="feature-main-title">Gallery Management</div>
-          <div class="feature-main-item-back">
-            <img src="static/pics/gallery.png"/>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div class="footer-container">
     <p>© 2025 Biz Hung. All rights reserved.</p>
   </div>
-
-
-
-
-
-
 </div>
 <!-- <script src="static/scripts/index3D.js"></script> -->
 <script src="static/scripts/index.js"></script>

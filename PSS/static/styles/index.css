@@ -120,7 +120,7 @@ body{
   display: none;
   justify-content: center;
   align-items: center;
-  z-index: 1;
+  z-index: 2;
 }
 .overlay.active{
   display: flex;
@@ -221,6 +221,7 @@ body{
   justify-content: center;
   position: sticky;
   top: 0;
+  z-index: 1;
 }
 .tab-bar{
   width: 100%;
@@ -261,10 +262,12 @@ body{
   display: flex;
   align-items: start;
   max-width: 1200px;
+  width: 100%;
 }
 .feature-main-column{
   flex:1;
   margin: 10px;
+  font-family: 'Montserrat';;
 }
 .feature-main-column.timeline{
   flex:unset;
@@ -409,6 +412,79 @@ body{
   height: 100%;
   object-fit:cover;
   object-position: top;
+}
+.about-intro-div{
+  display: flex;
+  margin-bottom: 30px;
+}
+.about-intro-icon{
+  width: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  height: 80px;
+}
+.about-intro-chat{
+  position: relative;
+  height: 50%;
+  border-radius: 10px;
+  border: 2px solid white;
+  padding: 10px;
+  margin: 10px;
+  margin-left: 20px;
+}
+.about-intro-chat::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border-top: 25px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 10px solid #f1f0f0;
+}
+
+.about-intro-chat::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 25px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 10px solid rgb(64, 64, 64);
+}
+.about-div{
+  display: flex;
+}
+.about-icon{
+  width: 30px;
+  flex-shrink: 0;
+}
+.about-text{
+  margin: 10px;
+  white-space: normal;
+  word-break: break-word;
+}
+.about-arrow{
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid currentColor;
+  margin: 8px;
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
 }
 
 #communication{
