@@ -188,7 +188,7 @@ async def getUserImages(request:Request,page:int):
     jsonRes=ImageData.query_portfolio_images(username,page)
     return JSONResponse(status_code=200,content=jsonRes)
 
-@router.get("/api/user/{username}",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["resources"])
+@router.get("/api/user/{username}",response_class=HTMLResponse, tags=["resources"])
 async def getUserImages(request:Request,page:int,username:str):
     jsonRes=ImageData.query_user_images(username,page)
     return JSONResponse(status_code=200,content=jsonRes)

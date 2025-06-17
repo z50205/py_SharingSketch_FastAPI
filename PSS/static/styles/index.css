@@ -190,6 +190,7 @@ body{
   top:0px;
   right: 0px;
   margin: 10px;
+  font-size: 30px;
   color:rgb(64, 64, 64);
   background-color:unset;
   border: 1px solid rgb(64, 64, 64);
@@ -198,7 +199,6 @@ body{
 .top-main-gallery-link{
   all: unset;
   cursor: pointer;
-  font-size: 30px;
   font-family: 'Montserrat';
   margin: 20px;
 }
@@ -540,6 +540,9 @@ body{
 @media (max-width:768px) {
   .feature-main-container{
     display: block;
+  }
+  .top-main-gallerydiv{
+    font-size: 25px;
   }
   .top-main-title{
     font-size: 50px;
