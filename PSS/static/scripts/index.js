@@ -81,7 +81,7 @@ let tabText=document.getElementById("tab-title");
 let feature=document.getElementById("feature");
 let about=document.getElementById("about");
 feature.addEventListener("click",()=>{
-    tabText.textContent="Feature";
+    tabText.textContent="Features";
     featureDiv.style.display="flex";
     feature.classList.add("active");
     aboutDiv.style.display="none";
@@ -114,7 +114,6 @@ async function messageAnimate(Pivot,i){
             chatMessage.textContent += message[i];
             i++;
             let time=(Math.random()*50-25)+40;
-            console.log(time);
             setTimeout(() => messageAnimate(Pivot,i), time);
         }else{
             isFinish=true;
