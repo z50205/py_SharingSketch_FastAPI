@@ -23,6 +23,17 @@
       "cwd": "${workspaceFolder}/PSS",
       "justMyCode": false
     },
+
+    {
+      "name": "Python Debugger: FastAPI Unit Test",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app:test_app", "--reload"],
+      "jinja": true,
+      "cwd": "${workspaceFolder}/PSS",
+      "justMyCode": false
+    },
     {
       "name": "Run current locust scenario, autostart",
       "type": "debugpy",
