@@ -13,6 +13,7 @@ unit-test:
     - group_docker 
   image: python:3.10-alpine
   before_script:
+    - cp .env.test .env
     - pip install --upgrade pip
     - pip install -r requirement.txt
   script:
