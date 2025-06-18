@@ -2,9 +2,9 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 
 
-with patch("models.__init__.create_engine") as mock_engine:
+with patch("app.models.create_engine") as mock_engine:
     mock_engine.return_value = MagicMock()
-    
+
     from app import app
     client = TestClient(app)
 
