@@ -8,7 +8,7 @@ stages:
   - deploy
 
 unit-test:
-  stage: test
+  stage: testing
   tags: 
     - group_docker 
   image: python:3.10-alpine
