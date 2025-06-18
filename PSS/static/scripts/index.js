@@ -13,6 +13,11 @@ function toggleLogin(){
 toggleCloseIcon.addEventListener('click', toggleLogin);
 toggleShowButton.addEventListener('click', toggleLogin);
 
+if(message){
+    let messageDiv=document.getElementById("login-message");
+    messageDiv.textContent=message;
+    toggleLogin();
+}
 
 function scrollActive(index){
     let lines=document.getElementsByClassName("feature-main-timeline-line");
@@ -93,6 +98,9 @@ about.addEventListener("click",()=>{
     feature.classList.remove("active");
     aboutDiv.style.display="flex";
     about.classList.add("active");
+    if (!initMessageAnimate)
+    messageAnimate(messagePivot,0);
+    initMessageAnimate=true;
 })
 
 
@@ -106,6 +114,7 @@ let messages=[
 ]
 let messagePivot=0;
 let isFinish=false;
+let initMessageAnimate=false;
 
 async function messageAnimate(Pivot,i){
     if(Pivot==messagePivot && !isFinish){
@@ -136,5 +145,4 @@ chatMessageDiv.addEventListener("click",()=>{
     }
 })
 
-messageAnimate(messagePivot,0);
 

@@ -27,9 +27,9 @@ def login_required(request:Request):
 @router.get("/",response_class=HTMLResponse, tags=["index"])
 async def index(request:Request,message:str=None):
     if message=="unauthorized":
-        return template.TemplateResponse(request=request,name="index.html",context={"message":"請先登入"})
+        return template.TemplateResponse(request=request,name="index.html",context={"message":"Please log in to continue."})
     elif message=="signup":
-        return template.TemplateResponse(request=request,name="index.html",context={"message":"帳號已註冊完成，請登入"})
+        return template.TemplateResponse(request=request,name="index.html",context={"message":"Sign-up successful! You can now log in."})
     elif "username" in request.session:
         redirect_url=request.url_for('roomlist') 
         return RedirectResponse(redirect_url,status_code=303)
@@ -39,16 +39,16 @@ async def index(request:Request,message:str=None):
 @router.post("/",response_class=HTMLResponse, tags=["login"])
 async def login(request:Request,username:str=Form(),password:str=Form()):
     if username=="" or password=="":
-        return template.TemplateResponse(request=request,name="index.html",context={"message":"帳號或密碼未輸入，請重新輸入"})
+        return template.TemplateResponse(request=request,name="index.html",context={"message":"Please enter both your username and password."})
     u:UserData=UserData.query_name(username)
     if u==None:
-        return template.TemplateResponse(request=request,name="index.html",context={"message":"此帳號名尚未註冊"})
+        return template.TemplateResponse(request=request,name="index.html",context={"message":"Invalid username or password."})
     if u.check_pw(password):
         request.session["username"]=username
         redirect_url=request.url_for('roomlist') 
         return RedirectResponse(redirect_url,status_code=303)
     else:
-        return template.TemplateResponse(request=request,name="index.html",context={"message":"帳號或密碼錯誤"})
+        return template.TemplateResponse(request=request,name="index.html",context={"message":"Invalid username or password."})
 
 @router.get("/logout",response_class=HTMLResponse, tags=["logout"])
 async def logout(request:Request):
