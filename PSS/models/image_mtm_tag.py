@@ -56,6 +56,3 @@ class ImageTagData(SQLModel, table=True):
         with Session(engine) as session:
             tag_records = session.exec(select(TagData.tag).where(ImageTagData.image_id== image_id).where(ImageTagData.tag_id== TagData.id))
             return tag_records
-        
-SQLModel.metadata.create_all(engine)
-

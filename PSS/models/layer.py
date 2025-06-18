@@ -122,5 +122,3 @@ class LayerData(SQLModel, table=True):
                 return {"message":"create room thumbnail failed!"}
         except Exception as e:
             return {"message":"create room thumbnail failed!"}
-
-SQLModel.metadata.create_all(engine)

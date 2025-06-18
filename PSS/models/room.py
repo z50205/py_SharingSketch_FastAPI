@@ -73,6 +73,3 @@ class RoomData(SQLModel, table=True):
                 return {"message":"Get display success!","status":result.is_display}
         except Exception as e:
             return {"message":"Get display failed!", "error": str(e)}
-                
-    
-SQLModel.metadata.create_all(engine)

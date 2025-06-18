@@ -59,6 +59,3 @@ class UserData(SQLModel, table=True):
     def query_avatar(self,src_avatar:str):
         response = client.get_object(Bucket=BUCKET_NAME,Key=src_avatar)
         return response['Body'].read()
-        
-    
-SQLModel.metadata.create_all(engine)

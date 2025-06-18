@@ -2,8 +2,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 
 
-with patch("app.models.create_engine") as mock_engine:
-    mock_engine.return_value = MagicMock()
+with patch("models.init_db"):
 
     from app import app
     client = TestClient(app)

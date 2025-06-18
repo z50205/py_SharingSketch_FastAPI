@@ -1,4 +1,4 @@
-from sqlalchemy import URL,create_engine
+from sqlmodel import SQLModel, create_engine
 from dotenv import load_dotenv
 import os
 import boto3
@@ -29,3 +29,8 @@ from .image_mtm_tag import ImageTagData
 from .image import ImageData
 from .room import RoomData
 from .layer import LayerData
+
+def init_db():
+    SQLModel.metadata.create_all(engine)
+
+init_db()

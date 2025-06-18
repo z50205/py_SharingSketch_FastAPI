@@ -130,5 +130,3 @@ class ImageData(SQLModel, table=True):
                 if is_display or username_from_db==username:
                     response = client.get_object(Bucket=BUCKET_NAME,Key=filename)
                     return response['Body'].read()
-
-SQLModel.metadata.create_all(engine)

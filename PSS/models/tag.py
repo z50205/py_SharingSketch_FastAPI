@@ -61,5 +61,3 @@ class TagData(SQLModel, table=True):
             statement = select(TagData.tag).where(TagData.tag.like(f"{prefix}%")).order_by(TagData.times.desc()).limit(5)
             tag = session.exec(statement).fetchall()
             return {"tags_list":tag}
-
-SQLModel.metadata.create_all(engine)
