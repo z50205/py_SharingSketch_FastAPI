@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 
 
-with patch("models.init_db"):
+with patch("sqlmodel.SQLModel.metadata.create_all"):
 
     from app import app
     client = TestClient(app)

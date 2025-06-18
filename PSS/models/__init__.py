@@ -30,7 +30,6 @@ from .image import ImageData
 from .room import RoomData
 from .layer import LayerData
 
-def init_db():
-    SQLModel.metadata.create_all(engine)
 
-init_db()
+SQLModel.metadata.create_all(engine)
+
