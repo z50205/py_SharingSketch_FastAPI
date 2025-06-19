@@ -24,8 +24,10 @@ async def uploadLayer(request:Request):
 
 @roomrouter.get("/api/room/{roomsid}/participants",response_class=HTMLResponse, tags=["resources"])
 async def getRoomParticipants(request:Request,roomsid:str):
-    participants=LayerData.query_room_participants(roomsid)
-    return JSONResponse(status_code=200,content=participants)
+    participants_id=LayerData.query_room_participants(roomsid)
+    participants_data=UserData.query_room_userdata(participants_id)
+    participants_data_dict =[{"id": uid, "username": uname} for uid, uname in participants_data]
+    return JSONResponse(status_code=200,content=participants_data_dict)
 
 @roomrouter.post("/api/layers",response_class=HTMLResponse,dependencies=[Depends(login_required)], tags=["getDatabaselayers"])
 async def getLayers(request:Request):

@@ -155,7 +155,7 @@ async function save_layer_database() {
                 }else{
                     resolve();
                 }
-            }, 'image/webp');
+            }, 'image/png');
         })
         uploadPromises.push(promise);
     }

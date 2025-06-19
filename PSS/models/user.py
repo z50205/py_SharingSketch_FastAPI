@@ -27,6 +27,12 @@ class UserData(SQLModel, table=True):
             users = session.exec(statement)
             return users.first()
     @classmethod
+    def query_room_userdata(self,userids:str):
+        with Session(engine) as session:
+            statement = select(UserData.id,UserData.username).where(UserData.id.in_(userids))
+            users = session.exec(statement)
+            return users.fetchall()
+    @classmethod
     def create_account(self,username:str,password:str):
         dt = datetime.datetime.now(datetime.timezone.utc)
         dt_sec = dt.isoformat(timespec='seconds') 

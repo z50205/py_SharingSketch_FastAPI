@@ -59,12 +59,16 @@ const connectWebSocket=()=>{
 
     }
     socket.onclose=(ev)=>{
-      let othercanvasessetting = document.getElementsByClassName(
-        "othermembercanvases"
-      );
-      while (othercanvasessetting.length > 0) {
-        othercanvasessetting[0].remove();
-      }
+      let othercanvasessetting = document.getElementsByClassName("othermembercanvases");
+      while (othercanvasessetting.length > 0) {othercanvasessetting[0].remove();}
+      let othermembers = document.getElementsByClassName("othermember-online-item");
+      while (othermembers.length > 0) {othermembers[0].remove();}
+
+      let thumbnailcanvasessetting = document.getElementsByClassName("thumbnailcanvases");
+      while (thumbnailcanvasessetting.length > 0) {thumbnailcanvasessetting[0].remove();}
+      let thumbnailmembers = document.getElementsByClassName("thumbnailmember-online-item");
+      while (thumbnailmembers.length > 0) {thumbnailmembers[0].remove();}
+
       onlineSwitchInput.checked=false;
       online=false;
       onlineState();
@@ -76,20 +80,6 @@ const connectWebSocket=()=>{
       // update
       room_cursors[data["sid"]]={"username":data["username"],"cursorPos":data["cursor_pos"],"updateTime":Date.now()};
     }
-    const ws_updateMemberList=(data)=>{
-      // memberlist
-        memberlist = data["memberlist"];
-        console.log("roomname" + room + "memberlist" + memberlist);
-        let ul = document.getElementById("members-list");
-        ul.textContent = "";
-        for (i = 0; i < memberlist.length; i++) {
-          let li = document.createElement("li");
-          li.appendChild(
-            document.createTextNode("member " + i + ":" + memberlist[i])
-          );
-          ul.appendChild(li);
-        }
-    }
     const ws_createRoomCanvas= async (data)=>{
       let canvassids = data["canvassids"];
       let canvasParentNode = document.getElementById("painting-area");
@@ -99,23 +89,27 @@ const connectWebSocket=()=>{
       });
       let participants=await response.json();
       // 2.分離在線及離線使用者
-      const onlineCanvassIds = canvassids.map(item => item[1]);
-      const offlineParticipants = participants.filter(participant => !onlineCanvassIds.includes(participant));
+      const onlineCanvasIds = canvassids.map(item =>({ id: item[1], username: item[2],wsSid:item[0]}));
+      const onlineUserIdSet = new Set(onlineCanvasIds.map(item => item.id));
+
+      const offlineParticipants = participants.filter(p => !onlineUserIdSet.has(p.id));
+      // 3.初始MemberList
+      let ul = document.getElementById("members-list");
       // 3.製作離線使用者thumbnail的canvas
       for(let i =0;i<offlineParticipants.length;i++){
-        if (!document.getElementById(offlineParticipants[i])){
+        if (!document.getElementById(offlineParticipants[i].id)){
             let newThumbnailCanvas = document.createElement("canvas");
             newThumbnailCanvas.style =
               "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
             newThumbnailCanvas.style.top = top_key;
             newThumbnailCanvas.style.left = left_key;
-            newThumbnailCanvas.id = offlineParticipants[i];
+            newThumbnailCanvas.id = offlineParticipants[i].id;
             newThumbnailCanvas.height = h;
             newThumbnailCanvas.width = w;
             newThumbnailCanvas.className = "thumbnailcanvases";
             newThumbnailCanvas.style.transform = scaleKey;
             canvasParentNode.insertBefore(newThumbnailCanvas, canvas);
-            const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+offlineParticipants[i],{
+            const thumbnailResponse=await fetch("/thumbnail/room/"+roomsid+"/"+offlineParticipants[i].id,{
               method:"GET"
             });
             const blob = await thumbnailResponse.blob();
@@ -127,38 +121,67 @@ const connectWebSocket=()=>{
                 newThumbnailCtx.globalCompositeOperation = "source-over";
                 newThumbnailCtx.drawImage(img, 0, 0);
             }
+            let li = document.createElement("li");
+            li.id=`memberlist-${offlineParticipants[i].id}`;
+            li.style.display="flex";
+            li.classList.add("thumbnailmember-online-item");
+            let offlineIcon = document.createElement("div");
+            offlineIcon.classList.add("memberlist-onlineicon");
+            offlineIcon.classList.add("offline");
+            let offlineDisplayIcon = document.createElement("img");
+            offlineDisplayIcon.src="static/icons/eye.svg";
+            bindShowSpecMemberCanvas(offlineParticipants[i].id,offlineDisplayIcon);
+            let offlineUserName = document.createElement("div");
+            offlineUserName.textContent=`User:${offlineParticipants[i].username}`;
+            offlineUserName.classList.add("memberlist-username");
+            li.appendChild(offlineIcon);
+            li.appendChild(offlineDisplayIcon);
+            li.appendChild(offlineUserName);
+            ul.appendChild(li);
           }
         }
       // 3.移除已上線使用者的thumbnail canvas
-      for(let i =0;i<onlineCanvassIds.length;i++){
-        let removeThumbnailCanvas=document.getElementById(onlineCanvassIds[i])
-        if (removeThumbnailCanvas){
-          removeThumbnailCanvas.remove();
+      for(let i =0;i<onlineCanvasIds.length;i++){
+        let removeThumbnailCanvas=document.getElementById(onlineCanvasIds[i].id)
+        if (removeThumbnailCanvas){removeThumbnailCanvas.remove();}
+        const leave_user_memberlist_item = document.getElementById(`memberlist-${onlineCanvasIds[i].id}`);
+          if (leave_user_memberlist_item) {
+            leave_user_memberlist_item.remove();
         }
       }
 
       // 4.製作上線使用者的canvas以供同步
         let allcanvases = document.getElementsByTagName("canvas");
         let allcanvaseslength = allcanvases.length;
-        for (i = 0; i < canvassids.length; i++) {
-          var newone_pivot = true;
-          for (ii = 0; ii < allcanvaseslength; ii++) {
-            if (allcanvases[ii].id == canvassids[i][0] || self_sid == canvassids[i][0]) {
-              newone_pivot = false;
-            }
-          }
-          if (newone_pivot) {
+        for (i = 0; i < onlineCanvasIds.length; i++) {
+          if(!document.getElementById(onlineCanvasIds[i].wsSid)&&self_sid!=onlineCanvasIds[i].wsSid){
             var newcanvas = document.createElement("canvas");
             newcanvas.style =
               "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
             newcanvas.style.top = top_key;
             newcanvas.style.left = left_key;
-            newcanvas.id = canvassids[i][0];
+            newcanvas.id = onlineCanvasIds[i].wsSid;
             newcanvas.height = h;
             newcanvas.width = w;
             newcanvas.className = "othermembercanvases";
             newcanvas.style.transform = scaleKey;
             canvasParentNode.insertBefore(newcanvas, canvas);
+            let li = document.createElement("li");
+            li.id=`memberlist-${onlineCanvasIds[i].wsSid}`;
+            li.style.display="flex";
+            li.classList.add("othermember-online-item");
+            let onlineIcon = document.createElement("div");
+            onlineIcon.classList.add("memberlist-onlineicon");
+            let onlineDisplayIcon = document.createElement("img");
+            onlineDisplayIcon.src="static/icons/eye.svg";
+            bindShowSpecMemberCanvas(onlineCanvasIds[i].wsSid,onlineDisplayIcon);
+            let onlineUserName = document.createElement("div");
+            onlineUserName.textContent=`User:${onlineCanvasIds[i].username}`;
+            onlineUserName.classList.add("memberlist-username");
+            li.appendChild(onlineIcon);
+            li.appendChild(onlineDisplayIcon);
+            li.appendChild(onlineUserName);
+            ul.appendChild(li);
           }
         }
       // 5.取得過去自己的畫布資訊
@@ -169,6 +192,21 @@ const connectWebSocket=()=>{
           });
           let selfLayerResult=await selfLayerResponse.json();
           init_layer_database(selfLayerResult);
+          let li = document.createElement("li");
+          li.style.display="flex";
+          let selfOnlineIcon = document.createElement("div");
+          selfOnlineIcon.classList.add("memberlist-onlineicon");
+          selfOnlineIcon.id="self-online-icon";
+          let selfOnlineDisplayIcon = document.createElement("img");
+          selfOnlineDisplayIcon.src="static/icons/eye.svg";
+          selfOnlineDisplayIcon.style.opacity=0;
+          let selfOnlineUserName = document.createElement("div");
+          selfOnlineUserName.textContent=`You:${username}`;
+          selfOnlineUserName.classList.add("memberlist-username");
+          li.appendChild(selfOnlineIcon);
+          li.appendChild(selfOnlineDisplayIcon);
+          li.appendChild(selfOnlineUserName);
+          ul.insertBefore(li, ul.firstChild);
         }
         selfLayerPivot=true;
       }
@@ -201,13 +239,19 @@ const connectWebSocket=()=>{
       document.getElementById(leave_sid).remove();
       let canvasParentNode = document.getElementById("painting-area");
       let leave_user_id = data["user_id"];
+      let leave_user_name = data["user_name"];
       const leave_user_thumbnail = document.getElementById(leave_user_id);
       if (leave_user_thumbnail) {
         leave_user_thumbnail.remove();
       }
+      const leave_user_memberlist_item = document.getElementById(`memberlist-${leave_sid}`);
+      if (leave_user_memberlist_item) {
+        leave_user_memberlist_item.remove();
+      }
       if (leave_user_id==usersid){
         return;
       }
+
       let newThumbnailCanvas = document.createElement("canvas");
       newThumbnailCanvas.style =
         "position:absolute;border:0px solid; touch-action: none;z-index: 1;";
@@ -224,13 +268,31 @@ const connectWebSocket=()=>{
       });
       const blob = await thumbnailResponse.blob();
       let img = new Image();
-          const imgURL = URL.createObjectURL(blob);
-          img.src = imgURL;
-          img.onload = function () {
-              let newThumbnailCtx=newThumbnailCanvas.getContext("2d");
-              newThumbnailCtx.globalCompositeOperation = "source-over";
-              newThumbnailCtx.drawImage(img, 0, 0);
-          }
+      const imgURL = URL.createObjectURL(blob);
+      img.src = imgURL;
+      img.onload = function () {
+          let newThumbnailCtx=newThumbnailCanvas.getContext("2d");
+          newThumbnailCtx.globalCompositeOperation = "source-over";
+          newThumbnailCtx.drawImage(img, 0, 0);
+      }
+      let ul = document.getElementById("members-list");
+      let li = document.createElement("li");
+      li.id=`memberlist-${leave_user_id}`;
+      li.style.display="flex";
+      li.classList.add("thumbnailmember-online-item");
+      let offlineIcon = document.createElement("div");
+      offlineIcon.classList.add("memberlist-onlineicon");
+      offlineIcon.classList.add("offline");
+      let offlineDisplayIcon = document.createElement("img");
+      offlineDisplayIcon.src="static/icons/eye.svg";
+      bindShowSpecMemberCanvas(leave_user_id,offlineDisplayIcon);
+      let offlineUserName = document.createElement("div");
+      offlineUserName.textContent=`User:${leave_user_name}`;
+      offlineUserName.classList.add("memberlist-username");
+      li.appendChild(offlineIcon);
+      li.appendChild(offlineDisplayIcon);
+      li.appendChild(offlineUserName);
+      ul.appendChild(li);
     };
     const ws_removeRoomCanvas=(data)=>{
       leave_sid = data["sid"];

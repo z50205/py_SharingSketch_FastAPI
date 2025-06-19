@@ -6,6 +6,7 @@ let onlineSwitchImg=document.getElementById("online-switch-img");
 let onlineSwitchText=document.getElementById("online-switch-text");
 let onlineSwitchInput=document.getElementById("online-switch-input");
 let onlineSwitchLabel=document.getElementById("online-switch-label");
+let selfOnlineIcon;
 
 let layer=document.getElementById("layer");
 let chat=document.getElementById("chatroom");
@@ -74,15 +75,18 @@ onlineSwitchLabel.addEventListener("click",()=>{
 })
 
 function onlineState(){
+    selfOnlineIcon=document.getElementById("self-online-icon");
     if(online){
         onlineSwitchImg.src="static/icons/record.svg";
         onlineSwitchText.textContent="ONLINE";
         onlineSwitchText.style.color="red";
+        selfOnlineIcon.classList.remove("offline");
     }
     else{
         onlineSwitchImg.src="static/icons/offline.svg";
         onlineSwitchText.textContent="OFFLINE";
         onlineSwitchText.style.color="white";
+        selfOnlineIcon.classList.add("offline");
     }
 }
 let bottomToolHeight=false;
@@ -104,4 +108,21 @@ function bottomToolHeightSlideUp(event){
     bottomToolHeight=false;
     window.removeEventListener("pointermove",bottomToolHeightSlideMove)
     window.removeEventListener("pointerup",bottomToolHeightSlideUp)
+}
+
+function showSpecMemberCanvas(id,itemElement){
+    let specMemberCanvas=document.getElementById(id);
+    if(specMemberCanvas){
+        if(specMemberCanvas.style.display!="none"){
+            specMemberCanvas.style.display="none";
+            itemElement.src="static/icons/eye-slash.svg";
+        }else{
+            specMemberCanvas.style.display="block";
+            itemElement.src="static/icons/eye.svg";
+        }
+    }
+}
+
+function bindShowSpecMemberCanvas(id,element){
+    element.onclick= (ev) => {showSpecMemberCanvas(id, ev.currentTarget);};
 }

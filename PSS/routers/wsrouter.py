@@ -20,13 +20,10 @@ class ConnectionManager:
                 break
         leave_roomsid=self.active_connections[sid][0]
         self.rooms[leave_roomsid]["member"].remove(sid)
-        room_memberlist=[]
         room_canvassids=[]
         for membersid in self.rooms[leave_roomsid]["member"]:
-            room_memberlist.append(self.active_connections[membersid][1])
             room_canvassids.append(membersid)
-        await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},leave_roomsid)
-        await ws_manager.event_send_filter(websocket,{"event":"removeLeaveCanvas","user_id":self.active_connections[sid][3],"sid":sid},leave_roomsid)
+        await ws_manager.event_send_filter(websocket,{"event":"removeLeaveCanvas","user_name":self.active_connections[sid][1],"user_id":self.active_connections[sid][3],"sid":sid},leave_roomsid)
         if not self.rooms[leave_roomsid]["member"]:
             del self.rooms[leave_roomsid]
         del self.active_connections[sid]
@@ -81,13 +78,10 @@ class ConnectionManager:
         else:
             room=RoomData.query_room(roomsid)
             self.rooms[roomsid] = {"roomname":room.roomname,"member": [sid]}
-        room_memberlist=[]
         room_canvassids=[]
         for membersid in self.rooms[roomsid]["member"]:
-            room_memberlist.append(self.active_connections[membersid][1])
-            room_canvassids.append([membersid,self.active_connections[membersid][3]])
+            room_canvassids.append([membersid,self.active_connections[membersid][3],self.active_connections[membersid][1]])
         await ws_manager.event_send_filter(websocket,{"event":"join","sid":sid})
-        await ws_manager.event_send_filter(websocket,{"event":"updateMemberList","memberlist":room_memberlist,"sid":sid},roomsid)
         await ws_manager.event_send_filter(websocket,{"event":"createRoomCanvas","canvassids":room_canvassids,"sid":sid},roomsid)
 
         
@@ -122,8 +116,6 @@ class ConnectionManager:
             await ws_manager.send_personal_message(websocket,ws_data)
         elif event=="updateCursorPos":
             await ws_manager.broadcast(ws_data,to,False)
-        elif event=="updateMemberList":
-            await ws_manager.broadcast(ws_data,to,True)
         elif event=="createRoomCanvas":
             await ws_manager.broadcast(ws_data,to,True)
         elif event=="createRoomCanvasDatabase":
