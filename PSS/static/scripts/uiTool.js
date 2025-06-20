@@ -130,6 +130,7 @@ function bindShowSpecMemberCanvas(id,element){
 
 let messageForm=document.getElementById("message");
 messageForm.addEventListener("keydown",(ev)=>{
+    if (ev.isComposing) return;
     if(ev.code === "Enter" && !ev.shiftKey){
         ev.preventDefault();
         sendMessage();
