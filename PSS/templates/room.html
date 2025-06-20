@@ -164,6 +164,20 @@
     </div>
     </div>
       <div class="item" id="painting-area">
+      <div id="guide" style="display:none;position: absolute;border: 0px solid;touch-action: none;z-index: 101;width:100%;height: 100%;top:0px;background-color: rgba(0, 0, 0, 0.2);">
+        <div style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">
+          <ul style="padding: 20px 20px 20px 40px;border-radius: 5px;border: 1px solid black;overflow: hidden;background-color:white;">
+            <li>[B] – Brush Tool</li>
+            <li>[E] – Eraser Tool</li>
+            <li>[Space] – Pan Tool (hold to move canvas)</li>
+            <li>Right Click – Eyedropper Tool</li>
+            <li>[Q] – Mirror Tool</li>
+            <li>[ – Decrease Brush Size</li>
+            <li>] – Increase Brush Size</li>
+          </ul>
+          <img id="guide-close-icon" src="static/icons/close.svg" style="width: 30px;position: absolute;top:0px;right:0px;margin: 10px;"/>
+        </div>
+      </div>
       <canvas
         id="middle"
         style="

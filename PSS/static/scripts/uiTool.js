@@ -136,3 +136,16 @@ messageForm.addEventListener("keydown",(ev)=>{
         sendMessage();
     }
 })
+
+
+function show_guide(){
+    let guide=document.getElementById("guide");
+    if (guide.style.display=="none"){
+        guide.style.display="block";
+    }else{
+        guide.style.display="none";
+    }
+}
+
+let guideIcon=document.getElementById("guide-close-icon");
+guideIcon.addEventListener("click",show_guide)
