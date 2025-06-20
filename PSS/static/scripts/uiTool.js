@@ -36,16 +36,16 @@ bottomToolCloseIcon.addEventListener("click",()=>{
     rightToolBar.style.height="fit-content";
     bottomTool.style.height="fit-content";
     bottomTool.style.right="0px";
+    bottomTool.style.width="unset";
     bottomToolHeightSlideDiv.style.display="none";
 })
 bottomToolTab.addEventListener("click",()=>{
     if (bottomTool.style.height=="fit-content")
     {
-        rightToolBar.style.height="unset";
         bottomTool.style.height=initBottomToolHeight+"px";
         bottomToolCloseIcon.style.display="block";
-        bottomTool.style.right="unset";
         bottomToolHeightSlideDiv.style.display="flex";
+        bottomTool.style.width="250px";
         if (layerTab.classList.contains('active')){
             layer.style.display="flex";
         }else{
@@ -126,3 +126,12 @@ function showSpecMemberCanvas(id,itemElement){
 function bindShowSpecMemberCanvas(id,element){
     element.onclick= (ev) => {showSpecMemberCanvas(id, ev.currentTarget);};
 }
+
+
+let messageForm=document.getElementById("message");
+messageForm.addEventListener("keydown",(ev)=>{
+    if(ev.code === "Enter" && !ev.shiftKey){
+        ev.preventDefault();
+        sendMessage();
+    }
+})

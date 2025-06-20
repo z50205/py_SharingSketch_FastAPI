@@ -1,6 +1,6 @@
 {% extends "base.html" %} {% block nav %}
 {% if request.url.path == '/room'  %}
-<body onload="init()" style="background-color: rgb(64, 64, 64)">
+<body onload="init()" style="background-color: rgb(64, 64, 64);overflow: hidden;">
   <div class="row" style="height: 100%;flex-direction: column;">
     <div style="position: relative;z-index: 101; background-color:  rgb(80, 80, 80);">
 {% else %}

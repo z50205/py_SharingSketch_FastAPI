@@ -55,7 +55,7 @@ h1{
     display: flex;
     flex-direction: column;
     min-height: 0;
-    font-size: 10px;
+    font-size: 18px;
 }
 
 #members{
@@ -68,7 +68,9 @@ h1{
 .bottom-tool-div{
     position: absolute;
     bottom: 0px;
+    right:0px;
     height: 250px;
+    width: 250px;
     display: flex;
     flex-direction: column;
     background-color: rgb(80, 80, 80);
@@ -127,7 +129,7 @@ h1{
 
 .message-tool-container{
     padding:2px;
-    font-size: small;
+    font-size: 18px;
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -143,7 +145,6 @@ input {
   }
 .form-control{
     padding: 3px;
-    font-size: 10px;
   }
 .form-control::placeholder {
     color: rgb(184, 184, 184);
@@ -194,7 +195,9 @@ input {
     font-size: 1.2rem;
     padding-left:10px;
 }
-
+.tool_name{
+    padding: 0px 5px;
+}
 
 .tool_name:hover{
     background-color: rgb(168, 168, 168);
@@ -327,7 +330,7 @@ input {
 }
 
 .nav-too-href{
-    padding: 4px 10px;
+    padding: 4px 5px;
     display: flex;
 }
 .tool-icon-href{
