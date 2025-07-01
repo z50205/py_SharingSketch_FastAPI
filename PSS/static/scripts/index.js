@@ -79,29 +79,47 @@ observer.observe(manage);
 
 
 
-let featureDiv=document.getElementById("feature-div");
-let aboutDiv=document.getElementById("about-div");
-let tabText=document.getElementById("tab-title");
+const tabText = document.getElementById("tab-title");
+const tabs = {
+  feature: {
+    button: document.getElementById("feature"),
+    content: document.getElementById("feature-div"),
+    title: "Features"
+  },
+  guide: {
+    button: document.getElementById("guide"),
+    content: document.getElementById("guide-div"),
+    title: "Guide"
+  },
+  about: {
+    button: document.getElementById("about"),
+    content: document.getElementById("about-div"),
+    title: "About"
+  }
+};
 
-let feature=document.getElementById("feature");
-let about=document.getElementById("about");
-feature.addEventListener("click",()=>{
-    tabText.textContent="Features";
-    featureDiv.style.display="flex";
-    feature.classList.add("active");
-    aboutDiv.style.display="none";
-    about.classList.remove("active");
-})
-about.addEventListener("click",()=>{
-    tabText.textContent="About";
-    featureDiv.style.display="none";
-    feature.classList.remove("active");
-    aboutDiv.style.display="flex";
-    about.classList.add("active");
-    if (!initMessageAnimate)
-    messageAnimate(messagePivot,0);
-    initMessageAnimate=true;
-})
+
+function switchTab(selectedKey) {
+  for (const key in tabs) {
+    const tab = tabs[key];
+    const isActive = key === selectedKey;
+    tab.content.style.display = isActive ? "flex" : "none";
+    tab.button.classList.toggle("active", isActive);
+  }
+
+  tabText.textContent = tabs[selectedKey].title;
+
+  // Optional animation logic for "about"
+  if (selectedKey === "about" && !initMessageAnimate) {
+    messageAnimate(messagePivot, 0);
+    initMessageAnimate = true;
+  }
+}
+
+// 綁定事件
+for (const key in tabs) {
+  tabs[key].button.addEventListener("click", () => switchTab(key));
+}
 
 
 let chatMessage=document.getElementById("chat-message");

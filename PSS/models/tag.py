@@ -10,7 +10,7 @@ class TagData(SQLModel, table=True):
     tag: str= Field(unique=True,nullable=False)
     tag_en: Optional[str]= Field(unique=True)
     tag_ja: Optional[str]= Field(unique=True)
-    times:int= None
+    times:int = Field(default=0, nullable=False)
     
     @classmethod
     def create_tag(self,tag:str):
@@ -21,7 +21,8 @@ class TagData(SQLModel, table=True):
                 session.add(tag)
                 session.commit()
                 return tagid
-            except:
+            except Exception as e:
+                print(e)
                 return {"result":"Oops."}
     @classmethod
     def update_tag_times(self,tagid:str,times:int):

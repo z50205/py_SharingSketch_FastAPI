@@ -439,4 +439,7 @@ input:checked + .slider:before {
     h3{
         font-size:4vw;
         }
+    .guide-text{
+        font-size: 2.5vw;
+    }
 }
