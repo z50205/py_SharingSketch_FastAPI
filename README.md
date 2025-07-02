@@ -1,18 +1,16 @@
-# SharingSketch _- a synchronization drawing tool._
-**Sharing Sketch is a real-time synchronization drawing tool, designed to collaborate with users on one canvas.**
+# SharingSketch _- Real-time collaborative cnavas_
 - **Demo Site**: https://bizara.link/
-
+- **Demo Video**: (yet to be recorded)
 <div align="center">
   <img src="./images/homepage.png" width="80%"></img>
 </div>
 
-
 ## Features
 
-### Join Room
+### Join Room(/chooseroom)
 
-- **Join Room:** Enter a new room name and join the room, or use the room list to enter an existing room.
-
+- **Room Access:** Enter a new room or use the room list to enter an existing room.
+- **Room Management:** Support room deletion and display status control in the lobby.
 
 
 https://github.com/user-attachments/assets/4d9941dd-5cf0-4f7d-abd3-edac81c2cad4
@@ -21,7 +19,8 @@ https://github.com/user-attachments/assets/4d9941dd-5cf0-4f7d-abd3-edac81c2cad4
 
 ---
 
-### Sketch
+### Sketch(/room)
+- **Synchronization:** Synchronize member canvases, display member cursors and messages, and monitor online status to automatically switch between real-time canvas and saved canvas snapshots.
 
 - **Paint Tools:** Draw with a pen or an eraser that allows you to adjust color and line width.
 
@@ -43,7 +42,7 @@ https://github.com/user-attachments/assets/8adad9de-992a-4383-b10b-2db6b417b02f
 
 ---
 
-- **File Tools:** Download image or export to SketchGallery for storage, as well as import image from your device to continue drawing.
+- **File Tools:** Save room layers, download canvas image, and export to gallery for publishing and display.
 
 
 
@@ -63,31 +62,42 @@ https://github.com/user-attachments/assets/d8609c4b-e8d2-4e44-82f9-d9eed0fb6c73
 
 ---
 
-### Gallery
+### Gallery(/gallery)
 
-- **Delete:** Delete images if the user is the creator, ensuring proper permissions.
-- **Export:** Export image to SharingSketch for further editing.
-- **Download:** Download images to your device.
+- **Display:** Show all publicly available images organized by a tagging system for easy categorization.
+- **User Profile Access:** Facilitate navigation to a user’s profile page by selecting the user icon.
 - **Pagination:** Display 6 images per page to enhance navigation and performance.
 
 
 
 https://github.com/user-attachments/assets/25be2cd3-9278-4877-b3ab-30764efa6006
 
+---
 
+### Portfolio(/portfolio)
+
+- **Image Management:** Support image removal, download, and display status control across the gallery.
+- **Profile Management:** Enables avatar uploads and About Me edits for user personalization.
+- **Export:** Export image to SharingSketch for further editing.
+
+
+
+https://github.com/user-attachments/assets/25be2cd3-9278-4877-b3ab-30764efa6006
 
 ## Tech Stack
 
 - **Sharing Sketch:**
   - **Backend:** FastAPI
-  - **Frontend:** Jinja2(HTML,CSS,Bootstrap,JavaScript),WebSocket
+  - **Frontend:** Jinja2(HTML,CSS,Bootstrap,JavaScript)
   - **Database:** MySQL
 - **Sketch Gallery(Repo [link](https://github.com/z50205/SketchGallery_front.git)):**
   - **Frontend:** React.js
 - **Deploy and Environment:**
+  - **CI/CD Pipeline:** GitLab CI/CD
+  - **Protocols:** WebSocket
   - **Proxy Server:** Nginx
   - **Containerization:** Docker
-  - **AWS Cloud Service:** EC2,S3
+  - **AWS Cloud Service:** EC2,S3,Route53
 
 ## Design Concept
 
