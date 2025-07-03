@@ -1,20 +1,10 @@
 # SharingSketch _- Real-time collaborative cnavas_
 - **Demo Site**: https://bizara.link/
-- **Demo Video**: (yet to be recorded)
 <div align="center">
   <img src="./images/homepage.png" width="80%"></img>
 </div>
 
 ## Features
-
-### Join Room(/chooseroom)
-
-- **Room Access:** Enter a new room or use the room list to enter an existing room.
-- **Room Management:** Support room deletion and display status control in the lobby.
-
-
-https://github.com/user-attachments/assets/4d9941dd-5cf0-4f7d-abd3-edac81c2cad4
-
 
 
 ---
@@ -22,21 +12,20 @@ https://github.com/user-attachments/assets/4d9941dd-5cf0-4f7d-abd3-edac81c2cad4
 ### Sketch(/room)
 - **Synchronization:** Synchronize member canvases, display member cursors and messages, and monitor online status to automatically switch between real-time canvas and saved canvas snapshots.
 
+
+
+https://github.com/user-attachments/assets/5de9d0d8-b4ba-4c53-b6fb-6599ff7a5be3
+
+
+
 - **Paint Tools:** Draw with a pen or an eraser that allows you to adjust color and line width.
-
-
-
-https://github.com/user-attachments/assets/ec60eb34-b3ad-41e0-9908-fbc97749e72f
-
-
-
----
-
 - **Canvas Tools:** Provide undo, mirror, and selection adjustment functionalities to enhance drawing efficiency.
 
 
 
-https://github.com/user-attachments/assets/8adad9de-992a-4383-b10b-2db6b417b02f
+
+
+https://github.com/user-attachments/assets/ecc1d081-3ece-4499-a591-a90fe5bc58cf
 
 
 
@@ -46,7 +35,10 @@ https://github.com/user-attachments/assets/8adad9de-992a-4383-b10b-2db6b417b02f
 
 
 
-https://github.com/user-attachments/assets/f64e9b7f-2e1b-41a8-91cd-c0119cfb9306
+
+https://github.com/user-attachments/assets/5ecd06af-b760-49a5-a6fa-a92764eb2723
+
+
 
 
 
@@ -56,7 +48,22 @@ https://github.com/user-attachments/assets/f64e9b7f-2e1b-41a8-91cd-c0119cfb9306
 
 
 
-https://github.com/user-attachments/assets/d8609c4b-e8d2-4e44-82f9-d9eed0fb6c73
+
+https://github.com/user-attachments/assets/654fdb97-953b-4aed-9ab3-d59d7b34ed4e
+
+
+
+
+---
+
+### Join Room(/chooseroom)
+
+- **Room Access:** Enter a new room or use the room list to enter an existing room.
+- **Room Management:** Support room deletion and display status control in the lobby.
+
+
+
+https://github.com/user-attachments/assets/40f572ab-64e4-4776-98b9-2d134af4c403
 
 
 
@@ -68,12 +75,6 @@ https://github.com/user-attachments/assets/d8609c4b-e8d2-4e44-82f9-d9eed0fb6c73
 - **User Profile Access:** Facilitate navigation to a user’s profile page by selecting the user icon.
 - **Pagination:** Display 6 images per page to enhance navigation and performance.
 
-
-
-https://github.com/user-attachments/assets/25be2cd3-9278-4877-b3ab-30764efa6006
-
----
-
 ### Portfolio(/portfolio)
 
 - **Image Management:** Support image removal, download, and display status control across the gallery.
@@ -82,7 +83,14 @@ https://github.com/user-attachments/assets/25be2cd3-9278-4877-b3ab-30764efa6006
 
 
 
-https://github.com/user-attachments/assets/25be2cd3-9278-4877-b3ab-30764efa6006
+https://github.com/user-attachments/assets/623c60f0-6d6d-4748-b9aa-c52d6c92af8c
+
+
+
+
+## Demo Timelapse
+
+https://github.com/user-attachments/assets/8f94d57c-3ad7-4381-8088-dae1fbbbd921
 
 ## Tech Stack
 
